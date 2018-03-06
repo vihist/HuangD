@@ -1,13 +1,23 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class InitScene : MonoBehaviour 
 {
 
+	void Awake()
+	{
+		GameObject UIRoot = GameObject.Find("Canvas/Panel");
+
+		inPeriodName = UIRoot.transform.Find("PeriodName/InputField").GetComponent<InputField>();
+		inYearName = UIRoot.transform.Find("YearName/InputField").GetComponent<InputField>();
+		inPersonName = UIRoot.transform.Find("PersonName/InputField").GetComponent<InputField>();
+	}
+
 	// Use this for initialization
 	void Start () 
 	{
-
+		RefreshRandomData ();
     }
 	
 	// Update is called once per frame
@@ -18,15 +28,27 @@ public class InitScene : MonoBehaviour
 
     public void OnBtnRandom()
     {
-        Transform UIRoot = GameObject.Find("Canvas").transform.Find("Panel");
-
-        InputField inPeriodName = UIRoot.transform.Find("PeriodName").Find("InputField").GetComponent<InputField>();
-		inPeriodName.text = StreamManager.periodName.GetRandom ();
-
-        InputField inYearName = UIRoot.transform.Find("YearName").Find("InputField").GetComponent<InputField>();
-		inYearName.text = StreamManager.yearName.GetRandom();
-
-        InputField inPersonName = UIRoot.transform.Find("PersonName").Find("InputField").GetComponent<InputField>();
-		inPersonName.text = StreamManager.personName.GetRandom();
+		RefreshRandomData();
     }
+
+	public void OnBtnConfirm()
+	{
+		SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Single);
+	}
+
+	public void OnBtnCannel()
+	{
+		SceneManager.LoadSceneAsync("StartScene", LoadSceneMode.Single);
+	}
+
+	private void RefreshRandomData()
+	{
+		inPeriodName.text = StreamManager.periodName.GetRandom ();
+		inYearName.text = StreamManager.yearName.GetRandom();
+		inPersonName.text = StreamManager.personName.GetRandom();
+	}
+
+	InputField inPeriodName;
+	InputField inYearName;
+	InputField inPersonName;
 }
