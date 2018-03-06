@@ -44,7 +44,7 @@ namespace Tools
 			do {
 				
 				double V1, V2, S, X;
-				int phase = 0;
+				//int phase = 0;
 
 				System.Random ra = new System.Random (GetRandomSeed ());
 
@@ -116,8 +116,6 @@ namespace Tools
 
 			return resultList;
 		}
-
-        static int seed = 1;
 
         private static int GetRandomSeed()
         {

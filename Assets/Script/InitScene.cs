@@ -33,6 +33,7 @@ public class InitScene : MonoBehaviour
 
 	public void OnBtnConfirm()
 	{
+        MyGame.Inst.Initialize(inPersonName.text);
 		SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Single);
 	}
 
