@@ -8,7 +8,10 @@ public class MainScene : MonoBehaviour
 {
     void Awake()
     {
-		txtTime      = GameObject.Find("Canvas/PanelTop/TIME/value").GetComponent<Text>();
+        Stability = GameObject.Find("Canvas/PanelTop/Stability/value").GetComponent<Text>();
+        Economy   = GameObject.Find("Canvas/PanelTop/Economy/value").GetComponent<Text>();
+        Military  = GameObject.Find("Canvas/PanelTop/Military/value").GetComponent<Text>();
+        txtTime   = GameObject.Find("Canvas/PanelTop/Time").GetComponent<Text>();
 
         txtEmpName   = GameObject.Find("Canvas/PanelTop/BtnEmp/name/value").GetComponent<Text>();
 		txtEmpAge    = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail/age/value").GetComponent<Text>();
@@ -19,22 +22,17 @@ public class MainScene : MonoBehaviour
 
     void Start()
     {
-		//txtTime.text = MyGame.Inst.;
-
-        txtEmpName.text = MyGame.Inst.empName;
-		txtEmpAge.text = MyGame.Inst.empAge.ToString();
-		sldEmpHeath.value = MyGame.Inst.empHeath;
-
 		btnEmpDetail.SetActive(false);
-
         SceneManager.LoadSceneAsync("TianXScene", LoadSceneMode.Additive);
+
+        onRefresh();
     }
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		
-	}
+        onRefresh();
+    }
 
     public void OnSelectScene(Toggle toggle)
     {
@@ -43,7 +41,8 @@ public class MainScene : MonoBehaviour
             return;
         }
 
-        OnSelectScene(toggle.name);
+        SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1).name);
+        SceneManager.LoadSceneAsync(toggle.name, LoadSceneMode.Additive);
     }
 
     public void onEmperorButtonClick()
@@ -58,15 +57,26 @@ public class MainScene : MonoBehaviour
         }
     }
 
-    private void OnSelectScene(string sceneName)
+    private void onRefresh()
     {
-        SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1).name);
-        SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        Stability.text = MyGame.Inst.Stability.ToString();
+        Economy.text   = MyGame.Inst.Economy.ToString();
+        Military.text  = MyGame.Inst.Military.ToString();
+        txtTime.text   = MyGame.Inst.time;
+
+        txtEmpName.text = MyGame.Inst.empName;
+        txtEmpAge.text = MyGame.Inst.empAge.ToString();
+        sldEmpHeath.value = MyGame.Inst.empHeath;
     }
 
     private float m_fWaitTime;
 
     GameObject btnEmpDetail;
+
+    Text Stability;
+    Text Economy;
+    Text Military;
+
     Text txtEmpName;
 	Text txtEmpAge;
 	Text txtTime;
