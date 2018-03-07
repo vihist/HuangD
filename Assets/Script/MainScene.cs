@@ -17,7 +17,11 @@ public class MainScene : MonoBehaviour
 		txtEmpAge    = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail/age/value").GetComponent<Text>();
 		sldEmpHeath  = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail/heath/slider").GetComponent<Slider>();
 
+        btnEmp = GameObject.Find("Canvas/PanelTop/BtnEmp");
         btnEmpDetail = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail");
+
+        btnEmp.transform.SetAsFirstSibling();
+        btnEmpDetail.transform.SetAsFirstSibling();
     }
 
     void Start()
@@ -71,6 +75,7 @@ public class MainScene : MonoBehaviour
 
     private float m_fWaitTime;
 
+    GameObject btnEmp;
     GameObject btnEmpDetail;
 
     Text Stability;
