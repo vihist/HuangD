@@ -223,8 +223,13 @@ namespace Tools
 
 	public class StringT 
 	{
-		public bool isChinese(string str)
+		public static bool isChinese(string str)
 		{
+			if (str == null) 
+			{
+				return false;
+			}
+
 			char[] ch = str.ToCharArray();
 			if (str != null)
 			{

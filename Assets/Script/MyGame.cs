@@ -5,32 +5,40 @@ public class MyGame
 {
     public static MyGame Inst = new MyGame();
 
-    public string strEmpName{
-        get
-        {
-#if UNITY_EDITOR_OSX
-			return GetText(m_strEmpName);
-#else
-            return m_strEmpName;
-#endif
-        }
-    }
-
-    public void Initialize(string strEmpName)
+	public void Initialize(string strEmpName, string strYearName, string strPeriodName)
     {
-        m_strEmpName = strEmpName;
+        empName = strEmpName;
+		m_strYearName = strYearName;
+		m_strPeriodName = strPeriodName;
+
+		empAge = Tools.Probability.GetRandomNum (16, 40);
+		empHeath = Tools.Probability.GetRandomNum (50, 90);
     }
 
     private MyGame()
     {
-
     }
 
     private string GetText(string str)
     {
-        byte[] bytes = Encoding.Default.GetBytes(str);
-        return Encoding.Default.GetString(bytes);
+
+#if UNITY_EDITOR_OSX
+		if(Tools.StringT.isChinese(str))
+		{
+			byte[] bytes = Encoding.Unicode.GetBytes(str);
+			return BitConverter.ToString (bytes, 0).Replace ("-", string.Empty);
+		}
+#endif
+		return str;
     }
 
-    private string m_strEmpName;
+	public string empName;
+	public int empAge;
+	public int empHeath;
+
+	private string m_strYearName;
+	private string m_strPeriodName;
+	private int    m_iWending;
+	private int    m_iFuku;
+	private int    m_iWubei;
 }

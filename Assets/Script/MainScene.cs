@@ -8,14 +8,24 @@ public class MainScene : MonoBehaviour
 {
     void Awake()
     {
-        txtEmpName = GameObject.Find("Canvas/PanelTop/BtnEmp/name").GetComponent<Text>();
+		txtTime      = GameObject.Find("Canvas/PanelTop/TIME/value").GetComponent<Text>();
+
+        txtEmpName   = GameObject.Find("Canvas/PanelTop/BtnEmp/name/value").GetComponent<Text>();
+		txtEmpAge    = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail/age/value").GetComponent<Text>();
+		sldEmpHeath  = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail/heath/slider").GetComponent<Slider>();
+
         btnEmpDetail = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail");
     }
 
     void Start()
     {
-        btnEmpDetail.SetActive(false);
-        txtEmpName.text = MyGame.Inst.strEmpName;
+		//txtTime.text = MyGame.Inst.;
+
+        txtEmpName.text = MyGame.Inst.empName;
+		txtEmpAge.text = MyGame.Inst.empAge.ToString();
+		sldEmpHeath.value = MyGame.Inst.empHeath;
+
+		btnEmpDetail.SetActive(false);
 
         SceneManager.LoadSceneAsync("TianXScene", LoadSceneMode.Additive);
     }
@@ -55,6 +65,10 @@ public class MainScene : MonoBehaviour
     }
 
     private float m_fWaitTime;
+
     GameObject btnEmpDetail;
     Text txtEmpName;
+	Text txtEmpAge;
+	Text txtTime;
+	Slider sldEmpHeath;
 }
