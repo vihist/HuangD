@@ -142,3 +142,22 @@ public interface ItfPersonName
 	string family { get; }
 	string given { get; }
 }
+
+[CSharpCallLua]
+public interface ItfOption
+{
+	string op1 { get; }
+	string op2 { get; }
+	string op3 { get; }
+	string op4 { get; }
+	string op5 { get; }
+	int process(string op);
+}
+
+[CSharpCallLua]
+public interface ItfEvent
+{
+	string title { get; }
+	string desc { get; }
+	ItfOption option { get;}
+}
