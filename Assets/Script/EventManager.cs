@@ -6,16 +6,10 @@ public class Event
 {
 	public Event()
 	{
-		name = testname.ToString();
+        _title = testname.ToString();
 		testname++;
 
 		time = DateTime.Now;
-	}
-
-
-	public string getName()
-	{ 
-		return name;
 	}
 
 	public bool isChecked()
@@ -29,10 +23,18 @@ public class Event
 	}
 
 
-	string name;
+	public string title
+    {
+        get
+        {
+            return _title;
+        }
+    }
+
 	static int testname = 1;
 
 	DateTime  time;
+    string _title;
 }
 
 public class EventManager
