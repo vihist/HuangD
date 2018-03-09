@@ -24,7 +24,7 @@ public class EventLogic : MonoBehaviour
 	{
 		
 	}
-
+	
     private IEnumerator OnTimer()
 	{
 		int eventCount = eventManager.GetEventCout ();
@@ -37,22 +37,25 @@ public class EventLogic : MonoBehaviour
 		{
 			yield return new WaitForSeconds (m_fWaitTime/eventManager.GetEventCout());
 
-            GameObject UIRoot = GameObject.Find("Canvas").gameObject;
-            GameObject dialog = Instantiate(Resources.Load("Prefabs/Dialog/Dialog_1Btn"), UIRoot.transform) as GameObject;
-            dialog.transform.SetAsFirstSibling();
+			GameObject dialog = CreateDialog (eventobj);
 
-            Text txTitle = dialog.transform.Find("title").GetComponent<Text>();
-            txTitle.text = eventobj.title;
-
-            Text txop = dialog.transform.Find("option1/Text").GetComponent<Text>();
-            txop.text = eventobj.title;
-
-            Debug.Log ("do event:" + eventobj.title);
-
-			yield return new WaitUntil (eventobj.isChecked);
+			yield return new WaitUntil (isChecked);
+		
+			Destroy (dialog);
 		}
 	}
-		
+
+	private GameObject CreateDialog(Event eventobj)
+	{
+		GameObject dialog = DialogLogic.newDialogInstace ();
+		return dialog;
+	}	
+
+	private bool isChecked()
+	{
+		return GameObject.Find ("Canvas/Dialog_1Btn(Clone)").GetComponent<DialogLogic> ().isChecked ();
+	}
+
 	private float m_fWaitTime;
 	private EventManager eventManager;
 }
