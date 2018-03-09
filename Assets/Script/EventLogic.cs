@@ -37,19 +37,13 @@ public class EventLogic : MonoBehaviour
 		{
 			yield return new WaitForSeconds (m_fWaitTime/eventManager.GetEventCout());
 
-			GameObject dialog = CreateDialog (eventobj);
+			GameObject dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options);
 
 			yield return new WaitUntil (isChecked);
 		
 			Destroy (dialog);
 		}
 	}
-
-	private GameObject CreateDialog(Event eventobj)
-	{
-		GameObject dialog = DialogLogic.newDialogInstace ();
-		return dialog;
-	}	
 
 	private bool isChecked()
 	{

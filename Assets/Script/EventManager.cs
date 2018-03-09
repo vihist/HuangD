@@ -6,22 +6,13 @@ public class Event
 {
 	public Event()
 	{
-        _title = testname.ToString();
-		testname++;
+        _title = "title:" + testname.ToString();
+        _content = "content:" + testname.ToString();
+
+        testname++;
 
 		time = DateTime.Now;
 	}
-
-	public bool isChecked()
-	{
-		if((DateTime.Now.Minute - time.Minute)*60 + DateTime.Now.Second - time.Second > 10)
-		{
-			return true;
-		}
-
-		return false;
-	}
-
 
 	public string title
     {
@@ -30,7 +21,26 @@ public class Event
             return _title;
         }
     }
-	public string op1
+
+    public string content
+    {
+        get
+        {
+            return _content;
+        }
+    }
+
+    public string[] options
+    {
+        get
+        {
+            List<string> list = new List<string>();
+            list.Add(_op1);
+            return list.ToArray();
+        }
+    }
+
+    public string op1
     {
         get
         {
@@ -70,6 +80,8 @@ public class Event
 
 	DateTime  time;
     string _title;
+    string _content;
+
     string _op1;
     string _op2;
     string _op3;
