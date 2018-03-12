@@ -2,100 +2,80 @@
 using System.Collections.Generic;
 using System;
 
-public class Event
+public class GMEvent
 {
-	public Event()
+	public GMEvent(ItfEvent itf)
 	{
-        _title = "title:" + testname.ToString();
-        _content = "content:" + testname.ToString();
+		this.itf = itf;
 
-        testname++;
+		optionList = new List<string> ();
 
-		time = DateTime.Now;
+		if (itf.option.op1 != null)
+		{
+			optionList.Add (itf.option.op1);
+		}
+		if (itf.option.op2 != null)
+		{
+			optionList.Add (itf.option.op2);
+		}
+		if (itf.option.op3 != null)
+		{
+			optionList.Add (itf.option.op3);
+		}
+		if (itf.option.op4 != null)
+		{
+			optionList.Add (itf.option.op4);
+		}
+		if (itf.option.op5 != null)
+		{
+			optionList.Add (itf.option.op5);
+		}
 	}
 
 	public string title
-    {
-        get
-        {
-            return _title;
-        }
-    }
+	{
+		get 
+		{
+			return itf.title;
+		}
+	}
 
-    public string content
-    {
-        get
-        {
-            return _content;
-        }
-    }
+	public string content
+	{
+		get 
+		{
+			return itf.desc;
+		}
+	}
 
     public string[] options
     {
         get
         {
-            List<string> list = new List<string>();
-            list.Add(_op1);
-            return list.ToArray();
-        }
-    }
-
-    public string op1
-    {
-        get
-        {
-            return _op1;
-        }
-    }
-    public string op2
-    {
-        get
-        {
-            return _op2;
-        }
-    }
-    public string op3
-    {
-        get
-        {
-            return _op3;
-        }
-    }
-    public string op4
-    {
-        get
-        {
-            return _op4;
-        }
-    }
-    public string op5
-    {
-        get
-        {
-            return _op5;
+			return optionList.ToArray ();
         }
     }
     
-	static int testname = 1;
-
-	DateTime  time;
-    string _title;
-    string _content;
-
-    string _op1;
-    string _op2;
-    string _op3;
-    string _op4;
-    string _op5;
+	private ItfEvent itf;
+	private List<string> optionList;
 }
 
 public class EventManager
 {
-	Event[] events = { new Event(), new Event()};
+	public EventManager()
+	{
+		eventList = new List<GMEvent> ();
+	}
 
-	public IEnumerable<Event> GetEvent()
+	public IEnumerable<GMEvent> GetEvent()
 	{  
-		foreach (Event e in events) {
+		if(eventList.Count == 0)
+		{
+			makeEvent ();
+		}
+
+		foreach (GMEvent e in eventList)
+		{
 			yield return e;
 		}
 
@@ -104,6 +84,19 @@ public class EventManager
 
 	public int GetEventCout()
 	{
-		return events.Length;
+		return eventList.Count;
 	}
+
+	private void makeEvent ()
+	{
+		foreach (ItfEvent ie in StreamManager.eventList) 
+		{
+			if (ie.percondition ()) 
+			{
+				eventList.Add (new GMEvent(ie));
+			}
+		}
+	}
+
+	private List<GMEvent> eventList;
 }

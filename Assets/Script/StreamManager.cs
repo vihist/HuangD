@@ -17,14 +17,8 @@ public class StreamManager
 
 		public string GetRandom()
 		{
-			streamManager.LoadLua ("/native/static/", "name");
-
-			string periodName = streamManager.luaenv.Global.Get<string>("period_name");
-
-			string[] periodNameList = periodName.Split (',');
-
-			int i = Tools.Probability.GetRandomNum(0, periodNameList.Length - 1);
-			return periodNameList[i];
+			int i = Tools.Probability.GetRandomNum(0, streamManager.periodNames.Count - 1);
+			return streamManager.periodNames[i];
 		}
 
 		private StreamManager streamManager;
@@ -40,18 +34,10 @@ public class StreamManager
 
 		public string GetRandom()
 		{
-			streamManager.LoadLua ("/native/static/", "name");
+			int i = Tools.Probability.GetRandomNum(0, streamManager.yearNameFirst.Count-1);
+			int j = Tools.Probability.GetRandomNum(0, streamManager.yearNameSecond.Count-1);
 
-			ItfYearName yearName = streamManager.luaenv.Global.Get<ItfYearName>("year_name");
-
-			string[] first = yearName.first.Split (',');
-			string[] second = yearName.second.Split (',');
-
-			int i = Tools.Probability.GetRandomNum(0, first.Length - 1);
-			int j = Tools.Probability.GetRandomNum(0, second.Length - 1);
-
-			return first[i] + second[j];
-
+			return streamManager.yearNameFirst[i] + streamManager.yearNameSecond[j];
 		}
 
 		private StreamManager streamManager;
@@ -67,18 +53,10 @@ public class StreamManager
 
 		public string GetRandom()
 		{
-			streamManager.LoadLua ("/native/static/", "name");
+			int i = Tools.Probability.GetRandomNum(0, streamManager.personNameFamily.Count - 1);
+			int j = Tools.Probability.GetRandomNum(0, streamManager.personNameGiven.Count - 1);
 
-			ItfPersonName personName = streamManager.luaenv.Global.Get<ItfPersonName>("person_name");
-
-			string[] family = personName.family.Split (',');
-			string[] given = personName.given.Split (',');
-
-			int i = Tools.Probability.GetRandomNum(0, family.Length - 1);
-			int j = Tools.Probability.GetRandomNum(0, given.Length - 1);
-
-			return family [i] + given [j];
-
+			return streamManager.personNameFamily [i] + streamManager.personNameGiven [j];
 		}
 
 		private StreamManager streamManager;
@@ -87,6 +65,24 @@ public class StreamManager
 	private StreamManager ()
 	{
 		luaenv = new LuaEnv();
+		LoadLua ("/native/static/", "name");
+
+		ItfYearName yearName = luaenv.Global.Get<ItfYearName>("year_name");
+		ItfPersonName personName = luaenv.Global.Get<ItfPersonName>("person_name");
+		string speriodName = luaenv.Global.Get<string>("period_name");
+		
+		yearNameFirst = new List<string>(yearName.first.Split (','));
+		yearNameSecond = new List<string>(yearName.second.Split (','));
+		personNameFamily = new List<string>(personName.family.Split (','));
+		personNameGiven = new List<string>(personName.given.Split (','));
+		periodNames = new List<string>(speriodName.Split (','));
+
+		luaenv = new LuaEnv();
+		LoadLua ("/native/event/", "event");
+
+		ItfEvent Event = luaenv.Global.Get<ItfEvent>("event");
+		eventList = new List<ItfEvent> ();
+		eventList.Add (Event);
 	}
 
 	private void LoadLua(string path, string file)
@@ -99,7 +95,6 @@ public class StreamManager
 
 		luaenv.DoString("require '"+file+"'");
 	}
-
 
 	private byte[] CustomLoaderMethod(ref string fileName, string path)
 	{
@@ -119,13 +114,20 @@ public class StreamManager
 
 	private static StreamManager Inst = new StreamManager();
 
-	public static PeriodName periodName = new PeriodName(Inst);
-	public static YearName yearName = new YearName(Inst);
-	public static PersonName personName = new PersonName(Inst);
-
-
+	public  static PeriodName periodName = new PeriodName(Inst);
+	public  static YearName yearName = new YearName(Inst);
+	public  static PersonName personName = new PersonName(Inst);
+	public  static List<ItfEvent> eventList;
 
 	private LuaEnv luaenv;
+
+	private List<string> periodNames;
+
+	private List<string> yearNameFirst;
+	private List<string> yearNameSecond;
+	private List<string> personNameFamily;
+	private List<string> personNameGiven;
+
 }
 
 
@@ -151,7 +153,7 @@ public interface ItfOption
 	string op3 { get; }
 	string op4 { get; }
 	string op5 { get; }
-	int process(string op);
+	int process(int opIndex);
 }
 
 [CSharpCallLua]
@@ -159,5 +161,6 @@ public interface ItfEvent
 {
 	string title { get; }
 	string desc { get; }
+	bool percondition () ;
 	ItfOption option { get;}
 }

@@ -33,11 +33,11 @@ public class EventLogic : MonoBehaviour
 			yield return new WaitForSeconds (m_fWaitTime);
 		}
 
-		foreach(Event eventobj in eventManager.GetEvent())
+		foreach(GMEvent eventobj in eventManager.GetEvent())
 		{
 			yield return new WaitForSeconds (m_fWaitTime/eventManager.GetEventCout());
 
-			GameObject dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options);
+			dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options);
 
 			yield return new WaitUntil (isChecked);
 		
@@ -47,9 +47,10 @@ public class EventLogic : MonoBehaviour
 
 	private bool isChecked()
 	{
-		return GameObject.Find ("Canvas/Dialog_1Btn(Clone)").GetComponent<DialogLogic> ().isChecked ();
+		return dialog.GetComponent<DialogLogic> ().isChecked ();
 	}
 
 	private float m_fWaitTime;
 	private EventManager eventManager;
+	private GameObject dialog;
 }

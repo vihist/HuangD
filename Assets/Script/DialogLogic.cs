@@ -10,6 +10,7 @@ public class DialogLogic : MonoBehaviour
 	void Start ()
     {
 		_isChecked = false;
+			
 	}
 	
 	// Update is called once per frame
@@ -51,5 +52,5 @@ public class DialogLogic : MonoBehaviour
 		return _isChecked;
 	}
 
-	bool _isChecked = false;
+	private bool _isChecked = false;
 }
