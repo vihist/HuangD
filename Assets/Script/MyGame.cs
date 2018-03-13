@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
 using UnityEngine;
+using XLua;
 
+[LuaCallCSharp]
 public class MyGame
 {
     public static MyGame Inst = new MyGame();

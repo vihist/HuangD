@@ -6,6 +6,7 @@ public class GMEvent
 {
 	public GMEvent(ItfEvent itf)
 	{
+		_isChecked = false;
 		this.itf = itf;
 
 		optionList = new List<string> ();
@@ -56,8 +57,23 @@ public class GMEvent
         }
     }
     
+	public bool isChecked
+	{
+		get 
+		{
+			return _isChecked;
+		}
+	}
+
+	public string SelectOption(string op)
+	{
+		_isChecked = true;
+		return itf.option.process (op);
+	}
+
 	private ItfEvent itf;
 	private List<string> optionList;
+	private bool _isChecked;
 }
 
 public class EventManager
@@ -87,9 +103,33 @@ public class EventManager
 		return eventList.Count;
 	}
 
-	private void makeEvent ()
+	public void Insert(string key)
 	{
-		foreach (ItfEvent ie in StreamManager.eventList) 
+		if (key.Length == 0) 
+		{
+			return;
+		}
+
+		int index=eventList.FindIndex(a=>!a.isChecked);
+		if (index == -1) 
+		{
+			index = eventList.Count;
+		}
+
+		eventList.Insert (index, new GMEvent(StreamManager.eventDictionary[key]));
+	}
+
+	public List<GMEvent> EventList
+	{
+		get 
+		{
+			return eventList;
+		}
+	}
+
+	public void makeEvent ()
+	{
+		foreach (ItfEvent ie in StreamManager.eventDictionary.Values) 
 		{
 			if (ie.percondition ()) 
 			{

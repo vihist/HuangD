@@ -67,7 +67,7 @@ EVENT_yinghuoshouxin={
 	end,
 
 	option={
-		op1='',
+		op1='啊啊啊啊',
 		op2='op2_test',
 		op3='op3_test',
 		

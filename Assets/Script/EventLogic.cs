@@ -27,27 +27,36 @@ public class EventLogic : MonoBehaviour
 	
     private IEnumerator OnTimer()
 	{
-		int eventCount = eventManager.GetEventCout ();
-		if(eventCount == 0)
+		if(eventManager.GetEventCout () == 0)
 		{
 			yield return new WaitForSeconds (m_fWaitTime);
+			eventManager.makeEvent ();
 		}
 
-		foreach(GMEvent eventobj in eventManager.GetEvent())
+		for (int i = 0; i < eventManager.EventList.Count; i++) 
 		{
-			yield return new WaitForSeconds (m_fWaitTime/eventManager.GetEventCout());
+			yield return new WaitForSeconds (m_fWaitTime/eventManager.GetEventCout ());
 
-			dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options);
+			GMEvent eventobj = eventManager.EventList [i];
+			dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options, eventobj.SelectOption);
 
 			yield return new WaitUntil (isChecked);
-		
+
+			string key = dialog.GetComponent<DialogLogic> ().result;
+			eventManager.Insert (key);
+
 			Destroy (dialog);
 		}
 	}
 
 	private bool isChecked()
 	{
-		return dialog.GetComponent<DialogLogic> ().isChecked ();
+		if (dialog.GetComponent<DialogLogic> ().result == null) 
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	private float m_fWaitTime;

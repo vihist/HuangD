@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ public class DialogLogic : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-		_isChecked = false;
+		_result = null;
 			
 	}
 	
@@ -18,9 +19,10 @@ public class DialogLogic : MonoBehaviour
     {
 		
 	}
-		
 
-	public static GameObject newDialogInstace(string title, string content, string[] options)
+	public delegate string DelegateProcess (string op);
+
+	public static GameObject newDialogInstace(string title, string content, string[] options, DelegateProcess delegateProcess)
 	{
 		GameObject UIRoot = GameObject.Find("Canvas").gameObject;
 		GameObject dialog = Instantiate(Resources.Load(string.Format("Prefabs/Dialog/Dialog_{0}Btn", options.Length)), UIRoot.transform) as GameObject;
@@ -38,19 +40,33 @@ public class DialogLogic : MonoBehaviour
             txop.text = options[i];
         }
 
+		dialog.GetComponent<DialogLogic> ().delegateProcess = delegateProcess;
+
         return dialog;
 	}
 
     public void OnEventButton(Button btn)
     {
         Debug.Log("OnEventButton:" + btn.name);
-        _isChecked = true;
+        
+		string name = btn.name.Replace ("option", "op");
+		_result = delegateProcess (name);
+		if (_result == null) 
+		{
+			_result = "";
+		}
+
+		Debug.Log("result:" + result);
     }
 
-	public bool isChecked()
+	public string result
 	{
-		return _isChecked;
+		get
+		{
+			return _result;
+		}
 	}
 
-	private bool _isChecked = false;
+	private DelegateProcess delegateProcess;
+	private string _result;
 }

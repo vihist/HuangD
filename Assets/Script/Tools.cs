@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using XLua;
 
 namespace Tools
 {
+	[LuaCallCSharp]
 	public class Probability
 	{
         public static bool IsProbOccur(double prob)
@@ -125,6 +128,16 @@ namespace Tools
             return BitConverter.ToInt32(bytes, 0);
         }
     }
+
+	[LuaCallCSharp]
+	public class StreamDir
+	{
+		public static string[] GetLuaFileName(string path)
+		{
+			string fullPath = Application.streamingAssetsPath + path + "/";
+			return Directory.GetFiles(fullPath, "*.lua");
+		}
+	}
 
 //	public class Cvs
 //	{

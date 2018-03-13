@@ -64,25 +64,44 @@ public class StreamManager
 
 	private StreamManager ()
 	{
+		LoadName ();
+		LoadEvent ();
+	}
+
+	private void LoadName()
+	{
 		luaenv = new LuaEnv();
-		LoadLua ("/native/static/", "name");
+		LoadLua ("/native/", "loader");
 
 		ItfYearName yearName = luaenv.Global.Get<ItfYearName>("year_name");
 		ItfPersonName personName = luaenv.Global.Get<ItfPersonName>("person_name");
 		string speriodName = luaenv.Global.Get<string>("period_name");
-		
+
 		yearNameFirst = new List<string>(yearName.first.Split (','));
 		yearNameSecond = new List<string>(yearName.second.Split (','));
 		personNameFamily = new List<string>(personName.family.Split (','));
 		personNameGiven = new List<string>(personName.given.Split (','));
 		periodNames = new List<string>(speriodName.Split (','));
+	}
 
+	private void LoadEvent()
+	{
 		luaenv = new LuaEnv();
-		LoadLua ("/native/event/", "event");
+		LoadLua ("/native/event/", "event3");
 
-		ItfEvent Event = luaenv.Global.Get<ItfEvent>("event");
-		eventList = new List<ItfEvent> ();
-		eventList.Add (Event);
+		eventDictionary = new Dictionary<string, ItfEvent> ();
+
+		Action<string, ItfEvent> action = AnaylizeEvent;
+		luaenv.Global.ForEach (action);
+	}
+
+	private void AnaylizeEvent(string name, ItfEvent value)
+	{
+		if (name.StartsWith ("EVENT_")) 
+		{
+			Debug.Log (name);
+			eventDictionary.Add (name, value);
+		}
 	}
 
 	private void LoadLua(string path, string file)
@@ -117,7 +136,7 @@ public class StreamManager
 	public  static PeriodName periodName = new PeriodName(Inst);
 	public  static YearName yearName = new YearName(Inst);
 	public  static PersonName personName = new PersonName(Inst);
-	public  static List<ItfEvent> eventList;
+	public  static Dictionary<string, ItfEvent> eventDictionary;
 
 	private LuaEnv luaenv;
 
@@ -153,7 +172,7 @@ public interface ItfOption
 	string op3 { get; }
 	string op4 { get; }
 	string op5 { get; }
-	int process(int opIndex);
+	string process(string op);
 }
 
 [CSharpCallLua]
