@@ -134,9 +134,20 @@ namespace Tools
 	{
 		public static string[] GetLuaFileName(string path)
 		{
-			string fullPath = Application.streamingAssetsPath + path + "/";
-			return Directory.GetFiles(fullPath, "*.lua");
-		}
+			string fullPath = Application.streamingAssetsPath + path;
+            Debug.Log(fullPath);
+
+            string[] names = Directory.GetFiles(fullPath, "*.lua");
+
+            for (int i=0; i< names.Length; i++)
+            {
+                names[i] = names[i].Replace(fullPath, "");
+                names[i] = names[i].Replace(".lua", "");
+            }
+
+            return names;
+
+        }
 	}
 
 //	public class Cvs

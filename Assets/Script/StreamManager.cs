@@ -64,14 +64,15 @@ public class StreamManager
 
 	private StreamManager ()
 	{
-		LoadName ();
+        luaenv = new LuaEnv();
+        LoadLua("/native/", "loader");
+
+        LoadName ();
 		LoadEvent ();
 	}
 
 	private void LoadName()
 	{
-		luaenv = new LuaEnv();
-		LoadLua ("/native/", "loader");
 
 		ItfYearName yearName = luaenv.Global.Get<ItfYearName>("year_name");
 		ItfPersonName personName = luaenv.Global.Get<ItfPersonName>("person_name");
@@ -86,14 +87,11 @@ public class StreamManager
 
 	private void LoadEvent()
 	{
-		luaenv = new LuaEnv();
-		LoadLua ("/native/event/", "event3");
+        eventDictionary = new Dictionary<string, ItfEvent>();
 
-		eventDictionary = new Dictionary<string, ItfEvent> ();
-
-		Action<string, ItfEvent> action = AnaylizeEvent;
-		luaenv.Global.ForEach (action);
-	}
+        Action<string, ItfEvent> action = AnaylizeEvent;
+        luaenv.Global.ForEach(action);
+    }
 
 	private void AnaylizeEvent(string name, ItfEvent value)
 	{
