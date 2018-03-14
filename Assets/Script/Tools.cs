@@ -134,20 +134,46 @@ namespace Tools
 	{
 		public static string[] GetLuaFileName(string path)
 		{
-			string fullPath = Application.streamingAssetsPath + path;
-            Debug.Log(fullPath);
+			string fullPath = Application.streamingAssetsPath + "/" + path;
 
-            string[] names = Directory.GetFiles(fullPath, "*.lua");
+			try
+			{
+	            string[] names = Directory.GetFiles(fullPath, "*.lua");
 
-            for (int i=0; i< names.Length; i++)
-            {
-                names[i] = names[i].Replace(fullPath, "");
-                names[i] = names[i].Replace(".lua", "");
-            }
+	            for (int i=0; i< names.Length; i++)
+	            {
+	                names[i] = names[i].Replace(fullPath, "");
+	                names[i] = names[i].Replace(".lua", "");
+	            }
 
-            return names;
-
+	            return names;
+			}
+			catch (DirectoryNotFoundException) 
+			{
+				Debug.LogWarning("GetLuaFileName failed, " + fullPath);
+				string[] names = { };
+				return names;
+			}
         }
+
+		public static string[] GetSubDirName(string path)
+		{
+			string fullPath = Application.streamingAssetsPath;
+			if (path != null) 
+			{
+				fullPath = Application.streamingAssetsPath + "/" + path;
+			}
+			Debug.Log(fullPath);
+
+			string[] names = Directory.GetDirectories(fullPath);
+
+			for (int i=0; i< names.Length; i++)
+			{
+				names[i] = names[i].Replace(fullPath, "");
+			}
+
+			return names;
+		}
 	}
 
 //	public class Cvs

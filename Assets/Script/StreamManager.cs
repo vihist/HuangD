@@ -65,7 +65,8 @@ public class StreamManager
 	private StreamManager ()
 	{
         luaenv = new LuaEnv();
-        LoadLua("/native/", "loader");
+		luaenv.DoString("require 'loader'");
+        //LoadLua("/native/", "loader");
 
         LoadName ();
 		LoadEvent ();
