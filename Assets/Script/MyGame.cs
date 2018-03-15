@@ -8,7 +8,7 @@ public class MyGame
 {
     public static MyGame Inst = new MyGame();
 
-	public void Initialize(string strEmpName, string strYearName, string strPeriodName)
+	public void Initialize(string strEmpName, string strYearName, string strDynastyName)
     {
         empName  = strEmpName;
         empAge   = Tools.Probability.GetRandomNum (16, 40);
@@ -19,7 +19,7 @@ public class MyGame
         Military  = Tools.Probability.GetRandomNum(60, 90);
 
         yearName = strYearName;
-        periodName = strPeriodName;
+		dynastyName = strDynastyName;
         date = new GameDateTime();
     }
 
@@ -44,7 +44,7 @@ public class MyGame
     {
         get
         {
-            return periodName + " " + yearName + date.ToString();
+			return dynastyName + " " + yearName + date.ToString();
         }
     }
 
@@ -53,7 +53,7 @@ public class MyGame
 	public int    empHeath;
 
 
-    public string periodName;
+	public string dynastyName;
     public int    Stability;
     public int    Economy;
     public int    Military;
@@ -61,6 +61,8 @@ public class MyGame
     private string yearName;
     private GameDateTime date;
 }
+
+
 
 [Serializable]
 public class GameDateTime

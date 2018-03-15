@@ -9,7 +9,7 @@ public class InitScene : MonoBehaviour
 	{
 		GameObject UIRoot = GameObject.Find("Canvas/Panel");
 
-		inPeriodName = UIRoot.transform.Find("PeriodName/InputField").GetComponent<InputField>();
+		inDynastyName = UIRoot.transform.Find("DynastyName/InputField").GetComponent<InputField>();
 		inYearName = UIRoot.transform.Find("YearName/InputField").GetComponent<InputField>();
 		inPersonName = UIRoot.transform.Find("PersonName/InputField").GetComponent<InputField>();
 	}
@@ -33,7 +33,7 @@ public class InitScene : MonoBehaviour
 
 	public void OnBtnConfirm()
 	{
-		MyGame.Inst.Initialize(inPersonName.text, inYearName.text, inPeriodName.text);
+		MyGame.Inst.Initialize(inPersonName.text, inYearName.text, inDynastyName.text);
 		SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Single);
 	}
 
@@ -44,12 +44,12 @@ public class InitScene : MonoBehaviour
 
 	private void RefreshRandomData()
 	{
-		inPeriodName.text = StreamManager.periodName.GetRandom ();
+		inDynastyName.text = StreamManager.dynastyName.GetRandom ();
 		inYearName.text = StreamManager.yearName.GetRandom();
 		inPersonName.text = StreamManager.personName.GetRandom();
 	}
 
-	InputField inPeriodName;
+	InputField inDynastyName;
 	InputField inYearName;
 	InputField inPersonName;
 }

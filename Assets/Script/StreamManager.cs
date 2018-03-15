@@ -8,7 +8,7 @@ using XLua;
 
 public class StreamManager
 {
-	public class PeriodName
+	public class DynastyName
 	{
 		public string GetRandom()
 		{
@@ -66,8 +66,8 @@ public class StreamManager
 		Action<string, ItfYearName> actionYear = AnaylizeYearName;
 		luaenv.Global.ForEach(actionYear);
 
-		Action<string, string> actionPeriod = AnaylizePeriodName;
-		luaenv.Global.ForEach(actionPeriod);
+		Action<string, string> actionDynasty = AnaylizeDynastyName;
+		luaenv.Global.ForEach(actionDynasty);
 	}
 
 	private void LoadEvent()
@@ -105,16 +105,16 @@ public class StreamManager
 		}
 	}
 
-	private void AnaylizePeriodName(string name, string value)
+	private void AnaylizeDynastyName(string name, string value)
 	{
-		if (name.Contains ("period_name")) 
+		if (name.Contains ("dynasty_name")) 
 		{
 			Debug.Log ("anaylize period name: " + name);
-			periodName.names.AddRange (value.Split (','));
+			dynastyName.names.AddRange (value.Split (','));
 		}
 	}
 
-	public  static PeriodName periodName = new PeriodName();
+	public  static DynastyName dynastyName = new DynastyName();
 	public  static YearName yearName = new YearName();
 	public  static PersonName personName = new PersonName();
 	public  static Dictionary<string, ItfEvent> eventDictionary = new Dictionary<string, ItfEvent>();
