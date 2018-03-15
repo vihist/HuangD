@@ -21,23 +21,26 @@ public class ChaoTScene : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		
-	}
+        RefreshOffice();
+    }
 
 	private void AddOfficeToDict(string path)
 	{
-		GameObject[] gmArray = GameObject.Find (path).GetComponentsInChildren<GameObject> ();
-		foreach(GameObject obj in gmArray)
-		{
-			UIDict.Add (obj.name, obj);
-		}
+        Transform currTransform = GameObject.Find(path).transform;
+        for(int i=0; i< currTransform.childCount; i++)
+        {
+            Transform sub = currTransform.GetChild(i);
+
+            Debug.Log(sub.name);
+            UIDict.Add(sub.name, sub);
+        }
 	}
 
 	void RefreshOffice()
 	{
-		GameObject obj = UIDict ["SG1"];
-		obj.transform.Find ("value").GetComponent<Text> ().text = MyGame.Inst.relPersonAndOffice.GetBySecond ("SG1");
+        Transform obj = UIDict ["SG1"];
+		obj.Find ("value").GetComponent<Text> ().text = MyGame.Inst.relPersonAndOffice.GetBySecond ("SG1");
 	}
 
-	private Dictionary<string, GameObject> UIDict = new Dictionary<string, GameObject>();
+	private Dictionary<string, Transform> UIDict = new Dictionary<string, Transform>();
 }
