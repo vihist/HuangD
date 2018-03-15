@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+
 using UnityEngine;
+
 using XLua;
 
 [LuaCallCSharp]
@@ -21,6 +25,14 @@ public class MyGame
         yearName = strYearName;
 		dynastyName = strDynastyName;
         date = new GameDateTime();
+
+		officeManager = new OfficeManager ();
+		personManager = new PersonManager (officeManager.Count);
+		relPersonAndOffice = new RelationManager ();
+
+		InitRelationPerson2Office ();
+
+
     }
 
     private MyGame()
@@ -40,6 +52,18 @@ public class MyGame
 		return str;
     }
 
+	private void InitRelationPerson2Office ()
+	{
+		int iCount = officeManager.Count;
+		Person[] persons = personManager.GetRange (0, iCount);
+		Office[] offices = officeManager.GetRange (0, iCount);
+
+		for (int i = 0; i < iCount; i++) 
+		{
+			relPersonAndOffice.Set (persons[i].name, offices[i].name);
+		}
+	}
+
     public string time
     {
         get
@@ -47,6 +71,7 @@ public class MyGame
 			return dynastyName + " " + yearName + date.ToString();
         }
     }
+
 
 	public string empName;
 	public int    empAge;
@@ -58,10 +83,206 @@ public class MyGame
     public int    Economy;
     public int    Military;
 
+	public PersonManager personManager;
+	public OfficeManager officeManager;
+	public RelationManager relPersonAndOffice;
+	public RelationManager relPersonAndFaction;
+
     private string yearName;
     private GameDateTime date;
 }
 
+public class OfficeManager
+{
+	public enum ENUM_OFFICE
+	{
+		SG1=10,
+		SG2=8,
+		SG3=7,
+		JQ1=5,
+		JQ2=5,
+		JQ3=5,
+		JQ4=5,
+		JQ5=5,
+		JQ6=5,
+		JQ7=5,
+		JQ8=5,
+		JQ9=5,
+		CS1=3,
+		CS2=3,
+		CS3=3,
+		CS4=3,
+		CS5=3,
+		CS6=3,
+		CS7=3,
+		CS8=3,
+		CS9=3,
+	}
+
+	public OfficeManager()
+	{
+		foreach (ENUM_OFFICE eOffice in Enum.GetValues(typeof(ENUM_OFFICE)))
+		{
+			lstOffice.Add (new Office(eOffice.ToString(), (int)eOffice));
+		}
+	}
+
+	public Office[] GetRange(int start, int end)
+	{
+		if (start > lstOffice.Count || start >= end) 
+		{
+			Office[] ps = { };
+			return ps;
+		}
+
+		if (end > lstOffice.Count) 
+		{
+			end = lstOffice.Count;
+		}
+
+		return lstOffice.GetRange (start, end - start).ToArray ();
+	}
+
+	public int Count
+	{
+		get 
+		{
+			return lstOffice.Count;
+		}
+	}
+
+	private List<Office> lstOffice = new List<Office> ();
+}
+
+public class RelationManager
+{
+	public void Set(string first, string second)
+	{
+		dictionary.Add (first, second);
+	}
+
+	public string GetByFirst(string first)
+	{
+		if (!dictionary.ContainsKey (first)) 
+		{
+			return null;
+		}
+
+		return dictionary [first];
+	}
+
+	public string GetBySecond(string second)
+	{
+		foreach (KeyValuePair<string, string> kvp in dictionary)
+		{
+			if (kvp.Value.Equals(second))
+			{ 
+				return kvp.Key;
+			}
+		}
+
+		return null;
+	}
+
+	private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+}
+
+[Serializable]
+public class Office
+{
+	public Office(string name, int power)
+	{
+		_name = name;
+		_power = power;
+	}
+
+	public string name
+	{
+		get 
+		{
+			return _name;
+		}
+	}
+
+	public int power
+	{
+		get 
+		{
+			return _power;
+		}
+	}
+
+	string _name;
+	int _power;
+}
+
+public class PersonManager
+{
+	public PersonManager(int count)
+	{
+		while(lstMalePerson.Count < count)
+		{
+			Person p = new Person ();
+			if (lstMalePerson.Find(x => x.name == p.name) != null)
+			{
+				continue;
+			}
+
+			lstMalePerson.Add (new Person ());
+		}
+
+		lstMalePerson.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
+	}
+
+	public Person[] GetRange(int start, int end)
+	{
+		if (start > lstMalePerson.Count || start >= end) 
+		{
+			Person[] ps = { };
+			return ps;
+		}
+
+		if (end > lstMalePerson.Count) 
+		{
+			end = lstMalePerson.Count;
+		}
+
+		return lstMalePerson.GetRange (start, end - start).ToArray ();
+	}
+		
+
+	private List<Person> lstMalePerson = new List<Person>();
+	private List<Person> lstFemalePerson;
+}
+
+[Serializable]
+public class Person
+{
+	public Person()
+	{
+		_name = StreamManager.personName.GetRandom ();
+		_score = Tools.Probability.GetRandomNum (10, 90);
+	}
+
+	public string name
+	{
+		get 
+		{
+			return _name;
+		}
+	}
+
+	public int score
+	{
+		get 
+		{
+			return _score;
+		}
+	}
+
+	string _name;
+	int _score;
+}
 
 
 [Serializable]
