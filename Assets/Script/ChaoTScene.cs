@@ -29,18 +29,38 @@ public class ChaoTScene : MonoBehaviour
         Transform currTransform = GameObject.Find(path).transform;
         for(int i=0; i< currTransform.childCount; i++)
         {
-            Transform sub = currTransform.GetChild(i);
-
-            Debug.Log(sub.name);
-            UIDict.Add(sub.name, sub);
+			lstChaoc.Add (new ChaoChenUI (currTransform.GetChild(i)));
         }
 	}
 
 	void RefreshOffice()
 	{
-        Transform obj = UIDict ["SG1"];
-		obj.Find ("value").GetComponent<Text> ().text = MyGame.Inst.relPersonAndOffice.GetBySecond ("SG1");
+		foreach(ChaoChenUI obj in lstChaoc)
+		{
+			obj.Refresh ();
+		}
 	}
 
 	private Dictionary<string, Transform> UIDict = new Dictionary<string, Transform>();
+	private List<ChaoChenUI> lstChaoc = new List<ChaoChenUI>();
+}
+
+class ChaoChenUI
+{
+	public ChaoChenUI(Transform tran)
+	{
+		personName = tran.Find ("value").GetComponent<Text> ();
+		personScore = tran.Find("score/value").GetComponent<Text> ();
+
+		key = tran.name;
+	}
+
+	public void Refresh()
+	{
+		personName.text = MyGame.Inst.relPersonAndOffice.GetBySecond(key);
+	}
+
+	string key;
+	Text personName;
+	Text personScore;
 }

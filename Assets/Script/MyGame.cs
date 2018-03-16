@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections;
+using System.Reflection;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -28,7 +29,7 @@ public class MyGame
 
 		officeManager = new OfficeManager ();
 		personManager = new PersonManager (officeManager.Count);
-		relPersonAndOffice = new RelationManager ();
+		relPersonAndOffice = new RelationManager<string, string> ();
 
 		InitRelationPerson2Office ();
 
@@ -72,6 +73,40 @@ public class MyGame
         }
     }
 
+	class RelationOffice2Person
+	{
+		public RelationOffice2Person(PersonManager p, OfficeManager o)
+		{
+			personManager = p;
+			officeManager = o;
+		}
+
+		public void Set(Person p, Office o)
+		{
+			relation.Set (o.name, p.name);
+		}
+
+		public Person GetPerson(Office o)
+		{
+			return personManager.GetByName (relation.GetByFirst(o.name));
+		}
+
+		public Office GetOffice(Person p)
+		{
+			return officeManager.GetByName (relation.GetByFirst(p.name));
+		}
+
+		private RelationManager<string, string> relation = new RelationManager<string, string> ();
+		private PersonManager personManager;
+		private OfficeManager officeManager;
+	}
+
+	class RelationFaction2Person
+	{
+		
+	}
+
+
 
 	public string empName;
 	public int    empAge;
@@ -85,45 +120,95 @@ public class MyGame
 
 	public PersonManager personManager;
 	public OfficeManager officeManager;
-	public RelationManager relPersonAndOffice;
-	public RelationManager relPersonAndFaction;
+	public RelationManager<string, string> relPersonAndOffice;
+	public RelationManager<string, string> relPersonAndFaction;
 
     private string yearName;
     private GameDateTime date;
 }
 
+public class OfficeAttrAttribute : Attribute
+{
+	public int Power;
+}  
+	
 public class OfficeManager
 {
 	public enum ENUM_OFFICE
 	{
-		SG1=10,
-		SG2=8,
-		SG3=7,
-		JQ1=5,
-		JQ2=5,
-		JQ3=5,
-		JQ4=5,
-		JQ5=5,
-		JQ6=5,
-		JQ7=5,
-		JQ8=5,
-		JQ9=5,
-		CS1=3,
-		CS2=3,
-		CS3=3,
-		CS4=3,
-		CS5=3,
-		CS6=3,
-		CS7=3,
-		CS8=3,
-		CS9=3,
+		[OfficeAttr(Power=10)] 
+		SG1,
+
+		[OfficeAttr(Power=8)]
+		SG2,
+
+		[OfficeAttr(Power=7)]
+		SG3,
+
+		[OfficeAttr(Power=10)]
+		JQ1,
+
+		[OfficeAttr(Power=5)]
+		JQ2,
+
+		[OfficeAttr(Power=5)]
+		JQ3,
+
+		[OfficeAttr(Power=5)]
+		JQ4,
+
+		[OfficeAttr(Power=5)]
+		JQ5,
+
+		[OfficeAttr(Power=5)]
+		JQ6,
+
+		[OfficeAttr(Power=5)]
+		JQ7,
+
+		[OfficeAttr(Power=5)]
+		JQ8,
+
+		[OfficeAttr(Power=5)]
+		JQ9,
+
+		[OfficeAttr(Power=3)]
+		CS1,
+
+		[OfficeAttr(Power=3)]
+		CS2,
+
+		[OfficeAttr(Power=3)]
+		CS3,
+
+		[OfficeAttr(Power=3)]
+		CS4,
+
+		[OfficeAttr(Power=3)]
+		CS5,
+
+		[OfficeAttr(Power=3)]
+		CS6,
+
+		[OfficeAttr(Power=3)]
+		CS7,
+
+		[OfficeAttr(Power=3)]
+		CS8,
+
+		[OfficeAttr(Power=3)]
+		CS9,
 	}
 
 	public OfficeManager()
 	{
 		foreach (ENUM_OFFICE eOffice in Enum.GetValues(typeof(ENUM_OFFICE)))
 		{
-			lstOffice.Add (new Office(eOffice.ToString(), (int)eOffice));
+			FieldInfo field = eOffice.GetType().GetField(eOffice.ToString());
+			OfficeAttrAttribute attribute = Attribute.GetCustomAttribute(field, typeof(OfficeAttrAttribute)) as OfficeAttrAttribute;
+		
+			Debug.Log (eOffice.ToString () + ":" + attribute.Power.ToString());
+			lstOffice.Add (new Office(eOffice.ToString(), attribute.Power));
 		}
 	}
 
@@ -154,26 +239,28 @@ public class OfficeManager
 	private List<Office> lstOffice = new List<Office> ();
 }
 
-public class RelationManager
+public class RelationManager<T1, T2>
 {
-	public void Set(string first, string second)
+	public void Set(T1 first, T2 second)
 	{
+		//Debug.Log (first + "--" + second);
+
 		dictionary.Add (first, second);
 	}
 
-	public string GetByFirst(string first)
+	public T2 GetByFirst(T1 first)
 	{
 		if (!dictionary.ContainsKey (first)) 
 		{
-			return null;
+			return default(T2);
 		}
 
 		return dictionary [first];
 	}
 
-	public string GetBySecond(string second)
+	public T1 GetBySecond(T2 second)
 	{
-		foreach (KeyValuePair<string, string> kvp in dictionary)
+		foreach (KeyValuePair<T1, T2> kvp in dictionary)
 		{
 			if (kvp.Value.Equals(second))
 			{ 
@@ -181,10 +268,10 @@ public class RelationManager
 			}
 		}
 
-		return null;
+		return default(T1);
 	}
 
-	private Dictionary<string, string> dictionary = new Dictionary<string, string>();
+	private Dictionary<T1, T2> dictionary = new Dictionary<T1, T2>();
 }
 
 [Serializable]
