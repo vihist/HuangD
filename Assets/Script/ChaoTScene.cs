@@ -41,7 +41,6 @@ public class ChaoTScene : MonoBehaviour
 		}
 	}
 
-	private Dictionary<string, Transform> UIDict = new Dictionary<string, Transform>();
 	private List<ChaoChenUI> lstChaoc = new List<ChaoChenUI>();
 }
 
@@ -49,18 +48,37 @@ class ChaoChenUI
 {
 	public ChaoChenUI(Transform tran)
 	{
+		UIKey = tran.name;
+
+		officeName = tran.Find ("Text").GetComponent<Text> ();
 		personName = tran.Find ("value").GetComponent<Text> ();
 		personScore = tran.Find("score/value").GetComponent<Text> ();
+		factionName = tran.Find("faction/value").GetComponent<Text> ();
 
-		key = tran.name;
+		office = MyGame.Inst.officeManager.GetByName (UIKey);
+		officeName.text = office.name;
+
+		tran.Find ("reserve1").gameObject.SetActive (false);
+		tran.Find ("reserve2").gameObject.SetActive (false); 
+
 	}
 
 	public void Refresh()
 	{
-		personName.text = MyGame.Inst.relPersonAndOffice.GetBySecond(key);
+		Person p  = MyGame.Inst.relOffice2Person.GetPerson (office);
+		Faction f = MyGame.Inst.relFaction2Person. GetFaction(p);
+
+		personName.text = p.name;
+		personScore.text = p.score.ToString();
+		factionName.text = f.name;
 	}
 
-	string key;
+	string UIKey;
+
+	Text officeName;
 	Text personName;
 	Text personScore;
+	Text factionName;
+
+	Office office;
 }
