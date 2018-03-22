@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public class RelationOffice2Person
+public class RelationOffice2Person<Type>
 {
-	public RelationOffice2Person(OfficeManager o, PersonManager p)
+	public RelationOffice2Person(OfficeManager<Type> o, PersonManager p)
 	{
 		personManager = p;
 		officeManager = o;
@@ -36,7 +36,7 @@ public class RelationOffice2Person
 
 	private Dictionary<string, string> relation = new Dictionary<string, string> ();
 	private PersonManager personManager;
-	private OfficeManager officeManager;
+	private OfficeManager<Type> officeManager;
 }
 
 public class RelationFaction2Person

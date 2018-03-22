@@ -46,7 +46,7 @@ public class InitScene : MonoBehaviour
 	{
 		inDynastyName.text = StreamManager.dynastyName.GetRandom ();
 		inYearName.text = StreamManager.yearName.GetRandom();
-		inPersonName.text = StreamManager.personName.GetRandom();
+		inPersonName.text = StreamManager.personName.GetRandomMale();
 	}
 
 	InputField inDynastyName;

@@ -28,15 +28,25 @@ public class MyGame
 		dynastyName = strDynastyName;
         date = new GameDateTime();
 
-		officeManager = new OfficeManager ();
-		factionManager = new FactionManager ();
-		personManager = new PersonManager (officeManager.Count);
+		officeManager = new OfficeManager<ENUM_OFFICE> ();
+		femaleOfficeManager = new OfficeManager<ENUM_OFFICE_FEMALE> ();
 
-		relOffice2Person = new RelationOffice2Person (officeManager, personManager);
+		factionManager = new FactionManager ();
+
+		personManager = new PersonManager (officeManager.Count, true);
+		personManager.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
+
+		femalePersonManager = new PersonManager (femaleOfficeManager.Count, false);
+
+		relOffice2Person = new RelationOffice2Person<ENUM_OFFICE> (officeManager, personManager);
+		relFemaleoffice2Person = new RelationOffice2Person<ENUM_OFFICE_FEMALE> (femaleOfficeManager, femalePersonManager);
+
 		relFaction2Person = new RelationFaction2Person (factionManager, personManager);
 
 		InitRelationOffice2Person ();
 		InitRelationFaction2Person ();
+
+		InitRelationFemaleOffice2Person ();
     }
 
     private MyGame()
@@ -79,6 +89,18 @@ public class MyGame
 		}
 	}
 
+	private void InitRelationFemaleOffice2Person()
+	{
+		int iCount = femaleOfficeManager.Count;
+		Person[] persons = femalePersonManager.GetRange (0, iCount);
+		Office[] offices = femaleOfficeManager.GetRange (0, iCount);
+
+		for (int i = 0; i < iCount; i++) 
+		{
+			relFemaleoffice2Person.Set(persons[i], offices[i]);
+		}
+	}
+
     public string time
     {
         get
@@ -98,10 +120,16 @@ public class MyGame
     public int    Military;
 
 	public PersonManager personManager;
-	public OfficeManager officeManager;
+	public PersonManager femalePersonManager;
+
+	public OfficeManager<ENUM_OFFICE> officeManager;
+	public OfficeManager<ENUM_OFFICE_FEMALE> femaleOfficeManager;
+
 	public FactionManager factionManager;
 
-	public RelationOffice2Person relOffice2Person;
+	public RelationOffice2Person<ENUM_OFFICE> relOffice2Person;
+	public RelationOffice2Person<ENUM_OFFICE_FEMALE> relFemaleoffice2Person;
+
 	public RelationFaction2Person relFaction2Person;
 
     private string yearName;

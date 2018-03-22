@@ -26,6 +26,10 @@ namespace Tools
 
         public static int GetRandomNum(int min, int max)
         {
+			if (min == max) 
+			{
+				return min;
+			}
 
             System.Random ra = new System.Random(GetRandomSeed());
             return ra.Next(min, max);

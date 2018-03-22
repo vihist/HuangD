@@ -37,7 +37,7 @@ public class StreamManager
 
 	public class PersonName
 	{
-		public string GetRandom()
+		public string GetRandomMale()
 		{
 			int i = Probability.GetRandomNum(0, family.Count - 1);
 			int j = Probability.GetRandomNum(0, given.Count - 1);
@@ -45,8 +45,17 @@ public class StreamManager
 			return family [i] + given [j];
 		}
 
+		public string GetRandomFemale()
+		{
+			int i = Probability.GetRandomNum(0, family.Count - 1);
+			int j = Probability.GetRandomNum(0, givenfemale.Count - 1);
+
+			return family [i] + givenfemale [j];
+		}
+
 		internal List<string> family = new List<string> ();
 		internal List<string> given = new List<string> ();
+		internal List<string> givenfemale = new List<string> ();
 	}
 
 	private StreamManager ()
@@ -92,6 +101,7 @@ public class StreamManager
 			Debug.Log ("anaylize person name: " + name);
 			personName.family.AddRange (value.family.Split (','));
 			personName.given.AddRange (value.given.Split (','));
+			personName.givenfemale.AddRange (value.givenfemale.Split (','));
 		}
 	}
 
@@ -183,6 +193,7 @@ public interface ItfPersonName
 {
 	string family { get; }
 	string given { get; }
+	string givenfemale { get; }
 }
 
 [CSharpCallLua]

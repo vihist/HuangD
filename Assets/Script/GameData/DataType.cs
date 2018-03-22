@@ -35,77 +35,110 @@ public class Office
 	int _power;
 }
 
-public class OfficeManager
+public enum ENUM_OFFICE
 {
-	public enum ENUM_OFFICE
-	{
-		[OfficeAttr(Power=10)] 
-		SG1,
+	[OfficeAttr(Power=10)] 
+	SG1,
 
-		[OfficeAttr(Power=8)]
-		SG2,
+	[OfficeAttr(Power=8)]
+	SG2,
 
-		[OfficeAttr(Power=7)]
-		SG3,
+	[OfficeAttr(Power=7)]
+	SG3,
 
-		[OfficeAttr(Power=10)]
-		JQ1,
+	[OfficeAttr(Power=10)]
+	JQ1,
 
-		[OfficeAttr(Power=5)]
-		JQ2,
+	[OfficeAttr(Power=5)]
+	JQ2,
 
-		[OfficeAttr(Power=5)]
-		JQ3,
+	[OfficeAttr(Power=5)]
+	JQ3,
 
-		[OfficeAttr(Power=5)]
-		JQ4,
+	[OfficeAttr(Power=5)]
+	JQ4,
 
-		[OfficeAttr(Power=5)]
-		JQ5,
+	[OfficeAttr(Power=5)]
+	JQ5,
 
-		[OfficeAttr(Power=5)]
-		JQ6,
+	[OfficeAttr(Power=5)]
+	JQ6,
 
-		[OfficeAttr(Power=5)]
-		JQ7,
+	[OfficeAttr(Power=5)]
+	JQ7,
 
-		[OfficeAttr(Power=5)]
-		JQ8,
+	[OfficeAttr(Power=5)]
+	JQ8,
 
-		[OfficeAttr(Power=5)]
-		JQ9,
+	[OfficeAttr(Power=5)]
+	JQ9,
 
-		[OfficeAttr(Power=3)]
-		CS1,
+	[OfficeAttr(Power=3)]
+	CS1,
 
-		[OfficeAttr(Power=3)]
-		CS2,
+	[OfficeAttr(Power=3)]
+	CS2,
 
-		[OfficeAttr(Power=3)]
-		CS3,
+	[OfficeAttr(Power=3)]
+	CS3,
 
-		[OfficeAttr(Power=3)]
-		CS4,
+	[OfficeAttr(Power=3)]
+	CS4,
 
-		[OfficeAttr(Power=3)]
-		CS5,
+	[OfficeAttr(Power=3)]
+	CS5,
 
-		[OfficeAttr(Power=3)]
-		CS6,
+	[OfficeAttr(Power=3)]
+	CS6,
 
-		[OfficeAttr(Power=3)]
-		CS7,
+	[OfficeAttr(Power=3)]
+	CS7,
 
-		[OfficeAttr(Power=3)]
-		CS8,
+	[OfficeAttr(Power=3)]
+	CS8,
 
-		[OfficeAttr(Power=3)]
-		CS9,
-	}
+	[OfficeAttr(Power=3)]
+	CS9,
+}
 
+public enum ENUM_OFFICE_FEMALE
+{
+	[OfficeAttr(Power=0)]
+	HOU,
+
+	[OfficeAttr(Power=0)]
+	GUI1,
+
+	[OfficeAttr(Power=0)]
+	GUI2,
+
+	[OfficeAttr(Power=0)]
+	GUI3,
+
+	[OfficeAttr(Power=0)]
+	FEI1,
+
+	[OfficeAttr(Power=0)]
+	FEI2,
+
+	[OfficeAttr(Power=0)]
+	FEI3,
+
+	[OfficeAttr(Power=0)]
+	FEI4,
+
+	[OfficeAttr(Power=0)]
+	FEI5,
+
+	[OfficeAttr(Power=0)]
+	FEI6,
+}
+
+public class OfficeManager<Type>
+{
 	public OfficeManager()
 	{
-		foreach (ENUM_OFFICE eOffice in Enum.GetValues(typeof(ENUM_OFFICE)))
+		foreach (Type eOffice in Enum.GetValues(typeof(Type)))
 		{
 			FieldInfo field = eOffice.GetType().GetField(eOffice.ToString());
 			OfficeAttrAttribute attribute = Attribute.GetCustomAttribute(field, typeof(OfficeAttrAttribute)) as OfficeAttrAttribute;
@@ -235,9 +268,17 @@ public class FactionManager
 [Serializable]
 public class Person
 {
-	public Person()
+	public Person(Boolean isMale)
 	{
-		_name = StreamManager.personName.GetRandom ();
+		if (isMale) 
+		{
+			_name = StreamManager.personName.GetRandomMale ();
+		} 
+		else 
+		{
+			_name = StreamManager.personName.GetRandomFemale ();
+		}
+
 		_score = Tools.Probability.GetRandomNum (10, 90);
 	}
 
@@ -263,20 +304,19 @@ public class Person
 
 public class PersonManager
 {
-	public PersonManager(int count)
+	public PersonManager(int count, Boolean isMale)
 	{
 		while(lstPerson.Count < count)
 		{
-			Person p = new Person ();
-			if (lstPerson.Find(x => x.name == p.name) != null)
+			Person p = new Person (isMale);
+			if (lstPerson.Find(x => x.name.Equals(p.name)) != null)
 			{
 				continue;
 			}
 
-			lstPerson.Add (new Person ());
+			lstPerson.Add (p);
 		}
 
-		lstPerson.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
 	}
 
 	public Person[] GetRange(int start, int end)
@@ -325,6 +365,11 @@ public class PersonManager
 		{
 			return lstPerson.Count;
 		}
+	}
+
+	public void Sort(Comparison<Person> comparison)
+	{
+		lstPerson.Sort (comparison);
 	}
 
 	private List<Person> lstPerson = new List<Person>();
