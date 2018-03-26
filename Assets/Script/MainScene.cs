@@ -70,6 +70,7 @@ public class MainScene : MonoBehaviour
 	public void OnSave()
 	{
 		GameFrame.GetInstance ().OnSave ();
+		panelCenter.SetActive (false);
 	}
 
     private void onRefresh()

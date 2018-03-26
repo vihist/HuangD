@@ -3,7 +3,7 @@ EVENT_001={
 	desc='desc_test1',
 	
 	percondition = function(self)
-		return true
+		return false
 	end,
 
 	option={
@@ -41,7 +41,7 @@ EVENT_003={
 	desc='desc_test3',
 	
 	percondition = function(self)
-		return true
+		return false
 	end,
 
 	option={
@@ -56,7 +56,8 @@ EVENT_003={
 	}
 }
 
-local myGame = CS.MyGame.Inst
+local Inst = CS.MyGame.Inst
+local Tools = CS.Tools
 
 EVENT_yinghuoshouxin={
 	title='yinghuoshouxin',
@@ -67,13 +68,21 @@ EVENT_yinghuoshouxin={
 	end,
 
 	option={
-		op1='啊啊啊啊',
+		op1='op1_test',
 		op2='op2_test',
 		op3='op3_test',
 		
 		process = function(self, op)
-			print(' do '..op)
-			myGame.empAge = 10;
+			if (op=='op1') then
+				print('op1')
+			elseif(op=='op2') then
+				print('op2')
+			elseif(op=='op3') then
+				if(Tools.Probability.IsProbOccur(0.5)) then
+					return 'EVENT_002';
+				end
+			end
+			print('do '..op)
 		end
 		
 	}
