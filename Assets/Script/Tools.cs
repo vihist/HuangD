@@ -251,6 +251,25 @@ namespace Tools
 //        public static Cvs Nianhao2 = new Tools.Cvs ("text/nianhao2");
 //    }
 		
+	[Serializable]  
+	public class SerialList<T>  
+	{  
+		[SerializeField]  
+		List<T> target;  
+
+		public SerialList()
+		{
+			target = new List<T> ();
+		}
+
+		public List<T> ToList() { return target; }  
+
+		public SerialList(List<T> target)  
+		{  
+			this.target = target;  
+		}  
+	} 
+
 	[Serializable]
 	public class SerialDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
 	{

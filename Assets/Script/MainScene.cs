@@ -20,12 +20,17 @@ public class MainScene : MonoBehaviour
         btnEmp = GameObject.Find("Canvas/PanelTop/BtnEmp");
         btnEmpDetail = GameObject.Find("Canvas/PanelTop/BtnEmp/BtnEmpDetail");
 
+
+		panelCenter = GameObject.Find ("Canvas/PanelCenter");
+
         btnEmp.transform.SetAsFirstSibling();
         btnEmpDetail.transform.SetAsFirstSibling();
+		panelCenter.transform.SetAsFirstSibling ();
     }
 
     void Start()
     {
+		panelCenter.SetActive (false);
 		btnEmpDetail.SetActive(false);
         SceneManager.LoadSceneAsync("TianXScene", LoadSceneMode.Additive);
 
@@ -36,6 +41,7 @@ public class MainScene : MonoBehaviour
 	void Update () 
 	{
         onRefresh();
+		OnKeyBoard();
     }
 
     public void OnSelectScene(Toggle toggle)
@@ -61,6 +67,11 @@ public class MainScene : MonoBehaviour
         }
     }
 
+	public void OnSave()
+	{
+		GameFrame.GetInstance ().OnSave ();
+	}
+
     private void onRefresh()
     {
         Stability.text = MyGame.Inst.Stability.ToString();
@@ -72,6 +83,22 @@ public class MainScene : MonoBehaviour
         txtEmpAge.text = MyGame.Inst.empAge.ToString();
         sldEmpHeath.value = MyGame.Inst.empHeath;
     }
+
+	private void OnKeyBoard()
+	{
+		if (Input.GetKeyDown (KeyCode.Escape))  
+		{  
+			if (panelCenter.activeSelf) 
+			{
+				panelCenter.SetActive (false);
+			} 
+			else 
+			{
+				panelCenter.SetActive (true);
+			}
+
+		} 
+	}
 
     private float m_fWaitTime;
 
@@ -86,4 +113,6 @@ public class MainScene : MonoBehaviour
 	Text txtEmpAge;
 	Text txtTime;
 	Slider sldEmpHeath;
+
+	GameObject panelCenter;
 }

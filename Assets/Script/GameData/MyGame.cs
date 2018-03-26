@@ -9,9 +9,10 @@ using XLua;
 
 using Tools;
 
-[LuaCallCSharp]
-public class MyGame
+[LuaCallCSharp, Serializable]
+public partial class MyGame
 {
+	[NonSerialized]
     public static MyGame Inst = new MyGame();
 
 	public void Initialize(string strEmpName, string strYearName, string strDynastyName)
@@ -28,8 +29,8 @@ public class MyGame
 		dynastyName = strDynastyName;
         date = new GameDateTime();
 
-		officeManager = new OfficeManager<ENUM_OFFICE> ();
-		femaleOfficeManager = new OfficeManager<ENUM_OFFICE_FEMALE> ();
+		officeManager = new OfficeManager (typeof(ENUM_OFFICE));
+		femaleOfficeManager = new OfficeManager (typeof(ENUM_OFFICE_FEMALE));
 
 		factionManager = new FactionManager ();
 
@@ -38,20 +39,16 @@ public class MyGame
 
 		femalePersonManager = new PersonManager (femaleOfficeManager.Count, false);
 
-		relOffice2Person = new RelationOffice2Person<ENUM_OFFICE> (officeManager, personManager);
-		relFemaleoffice2Person = new RelationOffice2Person<ENUM_OFFICE_FEMALE> (femaleOfficeManager, femalePersonManager);
-
-		relFaction2Person = new RelationFaction2Person (factionManager, personManager);
-
 		InitRelationOffice2Person ();
 		InitRelationFaction2Person ();
 
 		InitRelationFemaleOffice2Person ();
     }
-
+		
     private MyGame()
     {
     }
+
 
 	private void InitRelationOffice2Person ()
 	{
@@ -67,9 +64,7 @@ public class MyGame
 
 	private void InitRelationFaction2Person ()
 	{
-
 		Person[] persons = personManager.GetRange (0, personManager.Count);
-		Faction[] Factions = factionManager.GetRange (0, factionManager.Count);
 
 		for (int i = 0; i < persons.Length; i++) 
 		{
@@ -97,7 +92,7 @@ public class MyGame
 
 		for (int i = 0; i < iCount; i++) 
 		{
-			relFemaleoffice2Person.Set(persons[i], offices[i]);
+			relOffice2Person.Set(persons[i], offices[i]);
 		}
 	}
 
@@ -122,17 +117,12 @@ public class MyGame
 	public PersonManager personManager;
 	public PersonManager femalePersonManager;
 
-	public OfficeManager<ENUM_OFFICE> officeManager;
-	public OfficeManager<ENUM_OFFICE_FEMALE> femaleOfficeManager;
+	public OfficeManager officeManager;
+	public OfficeManager femaleOfficeManager;
 
 	public FactionManager factionManager;
 
-	public RelationOffice2Person<ENUM_OFFICE> relOffice2Person;
-	public RelationOffice2Person<ENUM_OFFICE_FEMALE> relFemaleoffice2Person;
-
-	public RelationFaction2Person relFaction2Person;
-
-    private string yearName;
-    private GameDateTime date;
+	public string yearName;
+	public GameDateTime date;
 }
 

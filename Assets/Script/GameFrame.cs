@@ -27,25 +27,27 @@ public class GameFrame
 
     public void OnSave()
     {
-        //string strSavePath = GetSavePath();
-        //Debug.Log(strSavePath);
-        //if (!Directory.Exists(strSavePath))
-        //{
-        //    Directory.CreateDirectory(strSavePath);
-        //}
+        string strSavePath = GetSavePath();
+        Debug.Log(strSavePath);
+        if (!Directory.Exists(strSavePath))
+        {
+            Directory.CreateDirectory(strSavePath);
+        }
 
-        //string json = JsonUtility.ToJson(Global.GetMyGame().GetGameData());
-        //File.WriteAllText(GetSavePath() + "/game.save", json);
+		string json = JsonUtility.ToJson(MyGame.Inst);
+        File.WriteAllText(GetSavePath() + "/game.save", json);
     }
 
     public void OnLoad()
     {
-        //string strSavePath = GetSavePath();
-        //Debug.Log(strSavePath);
+        string strSavePath = GetSavePath();
+        Debug.Log(strSavePath);
 
-        //string json = File.ReadAllText(GetSavePath() + "/game.save");
+        string json = File.ReadAllText(GetSavePath() + "/game.save");
+		MyGame.Inst = JsonUtility.FromJson<MyGame> (json);
+
         //Global.SetMyGame(new MyGame(JsonUtility.FromJson<GameData>(json)));
-        //SceneManager.LoadSceneAsync("MainScene");
+        SceneManager.LoadSceneAsync("MainScene");
     }
 
     public void OnEnd()

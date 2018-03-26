@@ -1,83 +1,112 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
 
-public class RelationOffice2Person<Type>
+using Tools;
+
+[Serializable]
+class StringSerialDictionary : SerialDictionary<string,string>{};
+
+[Serializable]
+class PersonNameList : SerialList<string>{};
+
+[Serializable]
+class ListSerialDictionary : SerialDictionary<string, PersonNameList>{};
+
+partial class MyGame
 {
-	public RelationOffice2Person(OfficeManager<Type> o, PersonManager p)
-	{
-		personManager = p;
-		officeManager = o;
-	}
+	[NonSerialized]
+	public RelationOffice2Person relOffice2Person = new RelationOffice2Person();
 
-	public void Set(Person p, Office o)
-	{
-		relation.Add (o.name, p.name);
-	}
+	[NonSerialized]
+	public RelationFaction2Person relFaction2Person = new RelationFaction2Person();
 
-	public Person GetPerson(Office o)
-	{
-		return personManager.GetByName (relation[o.name]);
-	}
+	[SerializeField]
+	private StringSerialDictionary DictOffce2Person = new StringSerialDictionary ();
 
-	public Office GetOffice(Person p)
+	[SerializeField]
+	private  ListSerialDictionary DictFaction2Person = new ListSerialDictionary ();
+
+	public class RelationOffice2Person
 	{
-		foreach (KeyValuePair<string, string> kvp in relation)
+		public RelationOffice2Person()
 		{
-			if (kvp.Value.Equals(p.name))
-			{ 
-				return officeManager.GetByName (kvp.Key);
+		}
+
+		public void Set(Person p, Office o)
+		{
+			Inst.DictOffce2Person.Add (o.name, p.name);
+		}
+
+		public Person GetPerson(Office o)
+		{
+			string personName = Inst.DictOffce2Person [o.name];
+			Person p = Inst.personManager.GetByName (personName);
+			if (p == null) 
+			{
+				p = Inst.femalePersonManager.GetByName (personName);
 			}
+
+			return p;
 		}
 
-		return null;
-	}
-
-	private Dictionary<string, string> relation = new Dictionary<string, string> ();
-	private PersonManager personManager;
-	private OfficeManager<Type> officeManager;
-}
-
-public class RelationFaction2Person
-{
-	public RelationFaction2Person(FactionManager f, PersonManager p)
-	{
-		personManager = p;
-		factionManager = f;
-	}
-
-	public void Set(Faction f, Person p)
-	{
-		if (!relation.ContainsKey (f.name))
+		public Office GetOffice(Person p)
 		{
-			relation.Add (f.name, new List<string>());
-		}
-
-		relation [f.name].Add (p.name);
-	}
-
-	public Person[] GetPerson(Faction f)
-	{
-		string[] personNames = relation [f.name].ToArray();
-
-		return personManager.GetByName (personNames);
-	}
-
-	public Faction GetFaction(Person p)
-	{
-		foreach (KeyValuePair<string, List<string>> kvp in relation)
-		{
-			if (kvp.Value.Contains(p.name))
-			{ 
-				return factionManager.GetByName (kvp.Key);
+			string officeName = "";
+			foreach (KeyValuePair<string, string> kvp in Inst.DictOffce2Person)
+			{
+				if (kvp.Value.Equals(p.name))
+				{ 
+					officeName = kvp.Key;
+				}
 			}
-		}
 
-		return null;
+			if (officeName == "") 
+			{
+				return null;
+			}
+
+			Office  office = Inst.officeManager.GetByName (officeName);
+			if (office == null) 
+			{
+				office = Inst.femaleOfficeManager.GetByName (officeName);
+			}
+			return office;
+		}
 	}
 
-	private Dictionary<string, List<string>> relation = new Dictionary<string, List<string>> ();
-	private PersonManager personManager;
-	private FactionManager factionManager;
+	public class RelationFaction2Person
+	{
+		public void Set(Faction f, Person p)
+		{
+			if (!Inst.DictFaction2Person.ContainsKey (f.name))
+			{
+				Inst.DictFaction2Person.Add (f.name, new PersonNameList());
+			}
+
+			Inst.DictFaction2Person [f.name].ToList().Add (p.name);
+		}
+
+		public Person[] GetPerson(Faction f)
+		{
+			string[] personNames = Inst.DictFaction2Person [f.name].ToList().ToArray();
+
+			return Inst.personManager.GetByName (personNames);
+		}
+
+		public Faction GetFaction(Person p)
+		{
+			foreach (KeyValuePair<string, PersonNameList> kvp in Inst.DictFaction2Person)
+			{
+				if (kvp.Value.ToList().Contains(p.name))
+				{ 
+					return Inst.factionManager.GetByName (kvp.Key);
+				}
+			}
+
+			return null;
+		}
+	}
 }

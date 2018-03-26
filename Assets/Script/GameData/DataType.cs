@@ -30,8 +30,11 @@ public class Office
 			return _power;
 		}
 	}
-
+		
+	[SerializeField]
 	string _name;
+
+	[SerializeField]
 	int _power;
 }
 
@@ -134,12 +137,14 @@ public enum ENUM_OFFICE_FEMALE
 	FEI6,
 }
 
-public class OfficeManager<Type>
+[Serializable]
+public class OfficeManager
 {
-	public OfficeManager()
+	public OfficeManager(Type t)
 	{
-		foreach (Type eOffice in Enum.GetValues(typeof(Type)))
+		foreach (var eOffice in Enum.GetValues(t))
 		{
+			
 			FieldInfo field = eOffice.GetType().GetField(eOffice.ToString());
 			OfficeAttrAttribute attribute = Attribute.GetCustomAttribute(field, typeof(OfficeAttrAttribute)) as OfficeAttrAttribute;
 
@@ -184,9 +189,9 @@ public class OfficeManager<Type>
 		return null;
 	}
 
+	[SerializeField]
 	private List<Office> lstOffice = new List<Office> ();
 }
-
 
 [Serializable]
 public class Faction
@@ -204,9 +209,11 @@ public class Faction
 		}
 	}
 
+	[SerializeField]
 	string _name;
 }
 
+[Serializable]
 public class FactionManager
 {
 	public enum ENUM_FACTION
@@ -262,6 +269,7 @@ public class FactionManager
 		return lstFaction.GetRange (start, end - start).ToArray ();
 	}
 
+	[SerializeField]
 	private List<Faction> lstFaction = new List<Faction> ();
 }
 
@@ -298,10 +306,14 @@ public class Person
 		}
 	}
 
+	[SerializeField]
 	string _name;
+
+	[SerializeField]
 	int _score;
 }
 
+[Serializable]
 public class PersonManager
 {
 	public PersonManager(int count, Boolean isMale)
@@ -372,6 +384,7 @@ public class PersonManager
 		lstPerson.Sort (comparison);
 	}
 
+	[SerializeField]
 	private List<Person> lstPerson = new List<Person>();
 }
 

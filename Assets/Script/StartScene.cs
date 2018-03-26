@@ -78,6 +78,11 @@ public class StartScene : MonoBehaviour
         GameFrame.GetInstance().OnQuit();
     }
 
+	public void OnButtonSave()
+	{
+		GameFrame.GetInstance().OnSave();
+	}
+
     public void OnButtonLoad()
     {
         GameFrame.GetInstance().OnLoad();
