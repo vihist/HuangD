@@ -180,7 +180,6 @@ public class StreamManager
     ";
 }
 
-
 [CSharpCallLua]
 public interface ItfYearName
 {
@@ -204,7 +203,7 @@ public interface ItfOption
 	string op3 { get; }
 	string op4 { get; }
 	string op5 { get; }
-	string process(string op);
+	string process(string op, out string result);
 }
 
 [CSharpCallLua]
@@ -213,5 +212,6 @@ public interface ItfEvent
 	string title { get; }
 	string desc { get; }
 	bool percondition () ;
+	void Initlize(string param);
 	ItfOption option { get;}
 }

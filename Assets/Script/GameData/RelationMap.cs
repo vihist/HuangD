@@ -75,6 +75,25 @@ partial class MyGame
 			}
 			return office;
 		}
+
+		public void Listen(object obj, string cmd)
+		{
+			switch (cmd) 
+			{
+			case "DIE":
+				{
+					Office o = GetOffice ((Person) obj);
+					if (o == null)
+					{
+						break;
+					}
+					Inst.DictOffce2Person [o.name] = "";
+				}
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	public class RelationFaction2Person
@@ -107,6 +126,26 @@ partial class MyGame
 			}
 
 			return null;
+		}
+
+		public void Listen(object obj, string cmd)
+		{
+			switch (cmd) 
+			{
+			case "DIE":
+				{
+					Person p = (Person)obj;
+					Faction o = GetFaction (p);
+					if (o == null)
+					{
+						break;
+					}
+					Inst.DictFaction2Person [o.name].ToList ().Remove (p.name);
+				}
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }

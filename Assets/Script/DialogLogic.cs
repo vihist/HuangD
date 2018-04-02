@@ -20,7 +20,9 @@ public class DialogLogic : MonoBehaviour
 		
 	}
 
-	public delegate string DelegateProcess (string op);
+
+
+	public delegate string DelegateProcess (string op, out string nextParam);
 
 	public static GameObject newDialogInstace(string title, string content, string[] options, DelegateProcess delegateProcess)
 	{
@@ -32,7 +34,7 @@ public class DialogLogic : MonoBehaviour
         Text txContent = dialog.transform.Find("content").GetComponent<Text>();
 
         txTitle.text = title;
-        txContent.text = title;
+		txContent.text = content;
 
         for(int i=0; i<options.Length; i++)
         {
@@ -50,13 +52,12 @@ public class DialogLogic : MonoBehaviour
         Debug.Log("OnEventButton:" + btn.name);
         
 		string name = btn.name.Replace ("option", "op");
-		_result = delegateProcess (name);
+
+		_result = delegateProcess (name, out _nexparam);
 		if (_result == null) 
 		{
 			_result = "";
 		}
-
-		Debug.Log("result:" + result);
     }
 
 	public string result
@@ -67,6 +68,15 @@ public class DialogLogic : MonoBehaviour
 		}
 	}
 
+	public string nexparam
+	{
+		get
+		{
+			return _nexparam;
+		}
+	}
+
 	private DelegateProcess delegateProcess;
 	private string _result;
+	private string _nexparam;
 }

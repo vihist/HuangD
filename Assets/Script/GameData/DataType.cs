@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using UnityEngine;
+using XLua;
 
-[Serializable]
+[Serializable, LuaCallCSharp]
 public class Office
 {
 	public Office(string name, int power)
@@ -137,7 +138,7 @@ public enum ENUM_OFFICE_FEMALE
 	FEI6,
 }
 
-[Serializable]
+[Serializable, LuaCallCSharp]
 public class OfficeManager
 {
 	public OfficeManager(Type t)
@@ -193,7 +194,7 @@ public class OfficeManager
 	private List<Office> lstOffice = new List<Office> ();
 }
 
-[Serializable]
+[Serializable, LuaCallCSharp]
 public class Faction
 {
 	public Faction(string name)
@@ -213,7 +214,7 @@ public class Faction
 	string _name;
 }
 
-[Serializable]
+[Serializable, LuaCallCSharp]
 public class FactionManager
 {
 	public enum ENUM_FACTION
@@ -273,7 +274,7 @@ public class FactionManager
 	private List<Faction> lstFaction = new List<Faction> ();
 }
 
-[Serializable]
+[Serializable, LuaCallCSharp]
 public class Person
 {
 	public Person(Boolean isMale)
@@ -306,6 +307,16 @@ public class Person
 		}
 	}
 
+	public void Die()
+	{
+		foreach (Action<object, string> listener in ListListener) 
+		{
+			listener (this, "DIE");
+		}
+	}
+
+	public static List<Action<object, string>> ListListener = new List<Action<object, string>>();
+
 	[SerializeField]
 	string _name;
 
@@ -313,7 +324,7 @@ public class Person
 	int _score;
 }
 
-[Serializable]
+[Serializable, LuaCallCSharp]
 public class PersonManager
 {
 	public PersonManager(int count, Boolean isMale)
@@ -384,6 +395,18 @@ public class PersonManager
 		lstPerson.Sort (comparison);
 	}
 
+	public void Listen(object obj, string cmd)
+	{
+		switch (cmd) 
+		{
+		case "DIE":
+			lstPerson.Remove ((Person)obj);
+			break;
+		default:
+			break;
+		}
+	}
+
 	[SerializeField]
 	private List<Person> lstPerson = new List<Person>();
 }
@@ -393,7 +416,7 @@ public class OfficeAttrAttribute : Attribute
 	public int Power;
 }  
 
-[Serializable]
+[Serializable, LuaCallCSharp]
 public class GameDateTime
 {
 	public GameDateTime()

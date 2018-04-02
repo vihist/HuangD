@@ -9,7 +9,7 @@ public class EventLogic : MonoBehaviour
 	{
 		eventManager = new EventManager ();
 
-		m_fWaitTime = 3.0F;
+		m_fWaitTime = 1.0F;
 		StartCoroutine(OnTimer());  
 	}
 
@@ -33,20 +33,26 @@ public class EventLogic : MonoBehaviour
 			eventManager.makeEvent ();
 		}
 
+		string param = null;
 		for (int i = 0; i < eventManager.EventList.Count; i++) 
 		{
 			yield return new WaitForSeconds (m_fWaitTime/eventManager.GetEventCout ());
 
 			GMEvent eventobj = eventManager.EventList [i];
+
 			dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options, eventobj.SelectOption);
 
 			yield return new WaitUntil (isChecked);
 
 			string key = dialog.GetComponent<DialogLogic> ().result;
-			eventManager.Insert (key);
+			param = dialog.GetComponent<DialogLogic> ().nexparam;
+			eventManager.Insert (key, param);
 
 			Destroy (dialog);
 		}
+
+		MyGame.Inst.date.Increase ();
+		StartCoroutine(OnTimer());
 	}
 
 	private bool isChecked()

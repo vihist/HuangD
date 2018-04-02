@@ -4,33 +4,13 @@ using System;
 
 public class GMEvent
 {
-	public GMEvent(ItfEvent itf)
+	public GMEvent(ItfEvent itf, string param)
 	{
 		_isChecked = false;
 		this.itf = itf;
+		this.param = param;
 
 		optionList = new List<string> ();
-
-		if (itf.option.op1 != null)
-		{
-			optionList.Add (itf.option.op1);
-		}
-		if (itf.option.op2 != null)
-		{
-			optionList.Add (itf.option.op2);
-		}
-		if (itf.option.op3 != null)
-		{
-			optionList.Add (itf.option.op3);
-		}
-		if (itf.option.op4 != null)
-		{
-			optionList.Add (itf.option.op4);
-		}
-		if (itf.option.op5 != null)
-		{
-			optionList.Add (itf.option.op5);
-		}
 	}
 
 	public string title
@@ -65,15 +45,42 @@ public class GMEvent
 		}
 	}
 
-	public string SelectOption(string op)
+	public void Initlize()
+	{
+			itf.Initlize (param);
+
+			if (itf.option.op1 != null)
+			{
+				optionList.Add (itf.option.op1);
+			}
+			if (itf.option.op2 != null)
+			{
+				optionList.Add (itf.option.op2);
+			}
+			if (itf.option.op3 != null)
+			{
+				optionList.Add (itf.option.op3);
+			}
+			if (itf.option.op4 != null)
+			{
+				optionList.Add (itf.option.op4);
+			}
+			if (itf.option.op5 != null)
+			{
+				optionList.Add (itf.option.op5);
+			}
+	}
+
+	public string SelectOption(string op, out string ret)
 	{
 		_isChecked = true;
-		return itf.option.process (op);
+		return itf.option.process (op, out ret);
 	}
 
 	private ItfEvent itf;
 	private List<string> optionList;
 	private bool _isChecked;
+	private string param;
 }
 
 public class EventManager
@@ -103,7 +110,7 @@ public class EventManager
 		return eventList.Count;
 	}
 
-	public void Insert(string key)
+	public void Insert(string key, string param)
 	{
 		if (key.Length == 0) 
 		{
@@ -116,7 +123,10 @@ public class EventManager
 			index = eventList.Count;
 		}
 
-		eventList.Insert (index, new GMEvent(StreamManager.eventDictionary[key]));
+		GMEvent eventobj = new GMEvent (StreamManager.eventDictionary [key], param);
+		eventobj.Initlize ();
+
+		eventList.Insert (index, eventobj);
 	}
 
 	public List<GMEvent> EventList
@@ -133,7 +143,10 @@ public class EventManager
 		{
 			if (ie.percondition ()) 
 			{
-				eventList.Add (new GMEvent(ie));
+				GMEvent eventobj = new GMEvent (ie, null);
+				eventobj.Initlize ();
+
+				eventList.Add (eventobj);
 			}
 		}
 	}

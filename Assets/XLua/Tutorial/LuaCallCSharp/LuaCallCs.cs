@@ -82,7 +82,7 @@ namespace Tutorial
 
         public void TestFunc(string i)
         {
-            Debug.Log("TestFunc(string i)");
+			Debug.Log("TestFunc(string " + i);
         }
 
         public static DrivenClass operator +(DrivenClass a, DrivenClass b)
@@ -217,6 +217,10 @@ public class LuaCallCs : MonoBehaviour {
 
            --重载方法调用
            testobj:TestFunc(100)
+		   array = {'SG1', 'SG2', 'SG3'}
+		   for i= 0, 3 do
+             testobj:TestFunc(array[i])
+		   end
            testobj:TestFunc('hello')
 
            --操作符

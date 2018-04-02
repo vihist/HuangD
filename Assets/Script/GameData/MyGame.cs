@@ -19,7 +19,7 @@ public partial class MyGame
     {
         empName  = strEmpName;
         empAge   = Probability.GetRandomNum (16, 40);
-		empHeath = Probability.GetRandomNum (50, 90);
+		empHeath = Probability.GetRandomNum (5, 8);
 
         Stability = Probability.GetRandomNum(60, 90);
         Economy   = Probability.GetRandomNum(60, 90);
@@ -38,6 +38,11 @@ public partial class MyGame
 		personManager.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
 
 		femalePersonManager = new PersonManager (femaleOfficeManager.Count, false);
+
+		Person.ListListener.Add (personManager.Listen);
+		Person.ListListener.Add (femalePersonManager.Listen);
+		Person.ListListener.Add (relFaction2Person.Listen);
+		Person.ListListener.Add (relOffice2Person.Listen);
 
 		InitRelationOffice2Person ();
 		InitRelationFaction2Person ();
