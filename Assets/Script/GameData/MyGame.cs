@@ -39,10 +39,10 @@ public partial class MyGame
 
 		femalePersonManager = new PersonManager (femaleOfficeManager.Count, false);
 
+		Person.ListListener.Add (relOffice2Person.Listen);
+		Person.ListListener.Add (relFaction2Person.Listen);
 		Person.ListListener.Add (personManager.Listen);
 		Person.ListListener.Add (femalePersonManager.Listen);
-		Person.ListListener.Add (relFaction2Person.Listen);
-		Person.ListListener.Add (relOffice2Person.Listen);
 
 		InitRelationOffice2Person ();
 		InitRelationFaction2Person ();
@@ -50,6 +50,155 @@ public partial class MyGame
 		InitRelationFemaleOffice2Person ();
     }
 		
+	public Person[] GetPerson(BySelector selecor)
+	{
+		List<Person> results = null;
+
+		if (selecor.empty)
+		{
+			throw new ArgumentException ("seletor is empty!");
+		}
+			
+		List<Person> o_persons = null;
+		List<Person> f_persons = null;
+		List<Person> p_persons = null;
+
+		if(!selecor.offices.empty)
+		{
+			o_persons = relOffice2Person.GetPerson (selecor.offices);
+		}
+
+		if(!selecor.factions.empty)
+		{
+			f_persons = relFaction2Person.GetPerson (selecor.factions);
+		}
+
+		if(!selecor.persons.empty)
+		{
+			p_persons = personManager.GetByName (selecor.persons);
+		}
+			
+
+		if(o_persons != null)
+		{
+			results = o_persons;
+		}
+		if(f_persons != null)
+		{
+			if (results == null) 
+			{
+				results = f_persons;
+			} 
+			else 
+			{
+				for (int i = 0; i < results.Count; i++) 
+				{
+					if (f_persons.Find (x => x.name == results [i].name) == null) 
+					{
+						results.RemoveAt (i);
+					}
+				}
+			}
+		}
+		if(p_persons != null)
+		{
+			if (results == null) 
+			{
+				results = p_persons;
+			} 
+			else 
+			{
+				for (int i = 0; i < results.Count; i++) 
+				{
+					if (p_persons.Find (x => x.name == results [i].name) == null) 
+					{
+						results.RemoveAt (i);
+					}
+				}
+			}
+		}
+
+		return results.ToArray ();
+	}
+
+	public Faction[] GetFaction(BySelector selecor)
+	{
+		List<Faction> results = null;
+
+//		if (selecor.empty)
+//		{
+//			throw new ArgumentException ("seletor is empty!");
+//		}
+//
+//		List<Faction> o_factions = null;
+//		List<Faction> f_factions = null;
+//		List<Faction> p_factions = null;
+//
+//		if(selecor.offices.Length != 0)
+//		{
+//			List<Person>  lstPerson = relOffice2Person.GetPerson (selecor.offices);
+//			o_factions = new List<Faction> ();
+//
+//			foreach (Person p in lstPerson) 
+//			{
+//				o_factions.Add (relFaction2Person.GetFaction (p));
+//			}
+//		}
+//
+//		if(selecor.factions.Length != 0)
+//		{
+//			f_factions = factionManager.GetByName (selecor.factions);
+//		}
+//
+//		if(selecor.persons.Length != 0)
+//		{
+//
+//			p_factions = relFaction2Person.GetFaction (selecor.persons);
+//		}
+//
+//
+//		if(o_factions != null)
+//		{
+//			results = o_factions;
+//		}
+//		if(f_factions != null)
+//		{
+//			if (results == null) 
+//			{
+//				results = f_factions;
+//			} 
+//			else 
+//			{
+//				for (int i = 0; i < results.Count; i++) 
+//				{
+//					if (f_factions.Find (x => x.name == results [i].name) == null) 
+//					{
+//						results.RemoveAt (i);
+//					}
+//				}
+//			}
+//		}
+//		if(p_factions != null)
+//		{
+//			if (results == null) 
+//			{
+//				results = p_factions;
+//			} 
+//			else 
+//			{
+//				for (int i = 0; i < results.Count; i++) 
+//				{
+//					if (p_factions.Find (x => x.name == results [i].name) == null) 
+//					{
+//						results.RemoveAt (i);
+//					}
+//				}
+//			}
+//		}
+
+		return results.ToArray ();
+	}
+
     private MyGame()
     {
     }
@@ -101,13 +250,13 @@ public partial class MyGame
 		}
 	}
 
-    public string time
-    {
-        get
-        {
+	public string time
+	{
+		get
+		{
 			return dynastyName + " " + yearName + date.ToString();
-        }
-    }
+		}
+	}
 
 	public string empName;
 	public int    empAge;

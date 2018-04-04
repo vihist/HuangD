@@ -65,8 +65,13 @@ class ChaoChenUI
 
 	public void Refresh()
 	{
-		Person p  = MyGame.Inst.relOffice2Person.GetPerson (office);
-		Faction f = MyGame.Inst.relFaction2Person. GetFaction(p);
+		MyGame.Person p  = MyGame.Inst.relOffice2Person.GetPerson (office);
+		if (p == null) 
+		{
+			return;
+		}
+
+		MyGame.Faction f = MyGame.Inst.relFaction2Person. GetFaction(p);
 
 		personName.text = p.name;
 		personScore.text = p.score.ToString();
@@ -80,5 +85,5 @@ class ChaoChenUI
 	Text personScore;
 	Text factionName;
 
-	Office office;
+	MyGame.Office office;
 }

@@ -51,6 +51,8 @@ public class EventLogic : MonoBehaviour
 			Destroy (dialog);
 		}
 
+		eventManager.ClearEvent ();
+
 		MyGame.Inst.date.Increase ();
 		StartCoroutine(OnTimer());
 	}

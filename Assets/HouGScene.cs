@@ -62,7 +62,7 @@ class HouFeiUI
 
 	public void Refresh()
 	{
-		Person p  = MyGame.Inst.relOffice2Person.GetPerson (office);
+		MyGame.Person p  = MyGame.Inst.relOffice2Person.GetPerson (office);
 		//Faction f = MyGame.Inst.relFaction2Person. GetFaction(p);
 
 		personName.text = p.name;
@@ -77,5 +77,5 @@ class HouFeiUI
 	Text personScore;
 	//Text factionName;
 
-	Office office;
+	MyGame.Office office;
 }

@@ -151,5 +151,10 @@ public class EventManager
 		}
 	}
 
+	public void ClearEvent()
+	{
+		eventList.Clear ();
+	}
+
 	private List<GMEvent> eventList;
 }

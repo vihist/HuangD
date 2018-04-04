@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 
 using Tools;
@@ -42,7 +42,12 @@ partial class MyGame
 
 		public Person GetPerson(Office o)
 		{
-			string personName = Inst.DictOffce2Person [o.name];
+			return GetPerson (o.name);
+		}
+
+		public Person GetPerson(string office)
+		{
+			string personName = Inst.DictOffce2Person [office];
 			Person p = Inst.personManager.GetByName (personName);
 			if (p == null) 
 			{
@@ -50,6 +55,69 @@ partial class MyGame
 			}
 
 			return p;
+		}
+
+		public List<Person> GetPerson(Office[] offices)
+		{
+			List<Person> listResult = new List<Person> ();
+			foreach (Office o in offices) 
+			{
+				Person p = GetPerson (o);
+				if (p == null) 
+				{
+					continue;
+				}
+
+				listResult.Add (p);
+			}
+
+			return listResult;
+		}
+
+		public List<Person> GetPerson(SelectElem[] offices)
+		{
+			List<Person> listResult = new List<Person> ();
+
+//			IEnumerable<IGrouping<bool, SelectElem>> officeGroup = offices.GroupBy(s => s.isNOT);
+//			foreach(IGrouping<bool, SelectElem> groupSelector in officeGroup)
+//			{
+//				List<SelectElem> lstSelect = groupSelector.ToList ();
+//				if (!groupSelector.Key) 
+//				{
+//					foreach (SelectElem elem in lstSelect) 
+//					{
+//						Person p = GetPerson (elem.value);
+//						if (p == null) 
+//						{
+//							continue;
+//						}
+//
+//						listResult.Add (p);
+//					}
+//				} 
+//				else 
+//				{
+//					
+//				}
+//			}
+//
+//			foreach (SelectElem o in offices) 
+//			{
+//				if (!o.isNOT) {
+//					Person p = GetPerson (o);
+//					if (p == null) {
+//						continue;
+//					}
+//
+//					listResult.Add (p);
+//				} 
+//				else 
+//				{
+//					
+//				}
+//			}
+
+			return listResult;
 		}
 
 		public Office GetOffice(Person p)
@@ -110,22 +178,89 @@ partial class MyGame
 
 		public Person[] GetPerson(Faction f)
 		{
-			string[] personNames = Inst.DictFaction2Person [f.name].ToList().ToArray();
+			return GetPerson (f.name);
+		}
 
-			return Inst.personManager.GetByName (personNames);
+		public Person[] GetPerson(string f)
+		{
+			string[] personNames = Inst.DictFaction2Person [f].ToList().ToArray();
+
+			return Inst.personManager.GetByName (personNames).ToArray();
+		}
+
+		public List<Person> GetPerson(Faction[] factions)
+		{
+			List<Person> listResult = new List<Person> ();
+			foreach (Faction o in factions) 
+			{
+				Person[] p = GetPerson (o);
+
+				listResult.AddRange (p);
+			}
+
+			return listResult;
+		}
+
+		public List<Person> GetPerson(string[] factions)
+		{
+			List<Person> listResult = new List<Person> ();
+			foreach (string o in factions) 
+			{
+				Person[] p = GetPerson (o);
+
+				listResult.AddRange (p);
+			}
+
+			return listResult;
 		}
 
 		public Faction GetFaction(Person p)
 		{
+			return GetFaction(p.name);
+		}
+
+		public Faction GetFaction(string pname)
+		{
 			foreach (KeyValuePair<string, PersonNameList> kvp in Inst.DictFaction2Person)
 			{
-				if (kvp.Value.ToList().Contains(p.name))
+				if (kvp.Value.ToList().Contains(pname))
 				{ 
 					return Inst.factionManager.GetByName (kvp.Key);
 				}
 			}
 
 			return null;
+		}
+
+		public List<Faction> GetFaction(string[] pnames)
+		{
+			List<string> listFactionName = new List<string> ();
+			
+			foreach (KeyValuePair<string, PersonNameList> kvp in Inst.DictFaction2Person)
+			{
+				foreach (string name in pnames)
+				{
+					if (kvp.Value.ToList().Contains(name))
+					{ 
+						if (!listFactionName.Contains (kvp.Key)) 
+						{
+							listFactionName.Add (kvp.Key);
+						}
+					}
+				}
+			}
+
+			List<Faction> listResult = new List<Faction> ();
+			foreach(string name in listFactionName)
+			{
+				Faction faction = Inst.factionManager.GetByName (name);
+				if (faction != null) 
+				{
+					listResult.Add (faction);
+				}
+			}
+
+			return listResult;
 		}
 
 		public void Listen(object obj, string cmd)

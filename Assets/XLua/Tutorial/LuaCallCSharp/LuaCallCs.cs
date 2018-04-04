@@ -106,6 +106,14 @@ namespace Tutorial
             }
         }
 
+		public static  void VariableParamsFunc2(params string[] strs)
+		{
+			foreach (var str in strs)
+			{
+				UnityEngine.Debug.Log("VariableParamsFunc2:" + str);
+			}
+		}
+
         public TestEnum EnumTestFunc(TestEnum e)
         {
             Debug.Log("EnumTestFunc: e=" + e);
@@ -234,6 +242,8 @@ public class LuaCallCs : MonoBehaviour {
 
            --可变参数
            testobj:VariableParamsFunc(5, 'hello', 'john')
+
+		   DrivenClass.VariableParamsFunc2('aaa', 'bbb')
 
            --Extension methods
            print(testobj:GetSomeData()) 

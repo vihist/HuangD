@@ -63,65 +63,60 @@ public class StreamManager
         luaenv = new LuaEnv();
 		luaenv.DoString(script);
 
-        LoadName ();
+      	LoadName ();
 		LoadEvent ();
 	}
 
 	private void LoadName()
 	{
-		Action<string, ItfPersonName> actionPerson = AnaylizePersonName;
-		luaenv.Global.ForEach(actionPerson);
-
-		Action<string, ItfYearName> actionYear = AnaylizeYearName;
-		luaenv.Global.ForEach(actionYear);
-
-		Action<string, string> actionDynasty = AnaylizeDynastyName;
-		luaenv.Global.ForEach(actionDynasty);
+		
+		AnaylizePersonName ();
+		AnaylizeYearName ();
+		AnaylizeDynastyName ();
 	}
 
 	private void LoadEvent()
 	{
-        Action<string, ItfEvent> action = AnaylizeEvent;
-        luaenv.Global.ForEach(action);
+		foreach (string key in luaenv.Global.GetKeys<string> ())
+		{
+			if (!key.Contains ("EVENT_")) 
+			{
+				continue;
+			}
+			Debug.Log ("anaylize " + key);
+
+			ItfEvent value = luaenv.Global.Get<string, ItfEvent> (key);
+			eventDictionary.Add (key, value);
+		}
     }
 
-	private void AnaylizeEvent(string name, ItfEvent value)
+	private void AnaylizePersonName()
 	{
-		if (name.Contains ("EVENT_")) 
-		{
-			Debug.Log ("anaylize event: " + name);
-			eventDictionary.Add (name, value);
-		}
+		Debug.Log ("anaylize person_name");
+
+		ItfPersonName value = luaenv.Global.Get<string, ItfPersonName> ("person_name");
+
+		personName.family.AddRange (value.family.Split (','));
+		personName.given.AddRange (value.given.Split (','));
+		personName.givenfemale.AddRange (value.givenfemale.Split (','));
 	}
 
-	private void AnaylizePersonName(string name, ItfPersonName value)
+	private void AnaylizeYearName()
 	{
-		if (name.Contains ("person_name")) 
-		{
-			Debug.Log ("anaylize person name: " + name);
-			personName.family.AddRange (value.family.Split (','));
-			personName.given.AddRange (value.given.Split (','));
-			personName.givenfemale.AddRange (value.givenfemale.Split (','));
-		}
+		Debug.Log ("anaylize year_name");
+
+		ItfYearName value = luaenv.Global.Get<string, ItfYearName> ("year_name");
+
+		yearName.first.AddRange (value.first.Split (','));
+		yearName.second.AddRange (value.second.Split (','));
 	}
 
-	private void AnaylizeYearName(string name, ItfYearName value)
+	private void AnaylizeDynastyName()
 	{
-		if (name.Contains ("year_name")) 
-		{
-			Debug.Log ("anaylize year name: " + name);
-			yearName.first.AddRange (value.first.Split (','));
-			yearName.second.AddRange (value.second.Split (','));
-		}
-	}
+		Debug.Log ("anaylize dynasty_name");
 
-	private void AnaylizeDynastyName(string name, string value)
-	{
-		if (name.Contains ("dynasty_name")) 
-		{
-			Debug.Log ("anaylize period name: " + name);
-			dynastyName.names.AddRange (value.Split (','));
-		}
+		string value = luaenv.Global.Get<string, string> ("dynasty_name");
+		dynastyName.names.AddRange (value.Split (','));
 	}
 
 	public  static DynastyName dynastyName = new DynastyName();
@@ -136,6 +131,9 @@ public class StreamManager
 	private LuaEnv luaenv;
 
 	string script = @"
+		Inst = CS.MyGame.Inst
+		Selector = CS.MyGame.Selector
+
 		function listToTable(clrlist)
 		    local t = {}
 		    local it = clrlist:GetEnumerator()
@@ -176,7 +174,6 @@ public class StreamManager
 		for  i=1,#array do
 			loadmod(""mod""..array[i])
 		end
-
     ";
 }
 
