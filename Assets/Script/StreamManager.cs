@@ -131,9 +131,6 @@ public class StreamManager
 	private LuaEnv luaenv;
 
 	string script = @"
-		Inst = CS.MyGame.Inst
-		Selector = CS.MyGame.Selector
-
 		function listToTable(clrlist)
 		    local t = {}
 		    local it = clrlist:GetEnumerator()
@@ -141,6 +138,24 @@ public class StreamManager
 		      t[#t+1] = it.Current
 		    end
 		    return t
+		end
+
+	    function GetPerson(name)
+            listToTable(CS.MyGame.Inst.GetPerson(name))
+	    end
+
+	    function GetFaction(name)
+		    listToTable(CS.MyGame.Inst.GetFaction(name))
+	    end
+
+		function requirefile(name)
+				print(""require ""..name)
+				require(name)
+		end
+
+		function requirefile(name)
+				print(""require ""..name)
+				require(name)
 		end
 
 		function requirefile(name)
@@ -174,6 +189,17 @@ public class StreamManager
 		for  i=1,#array do
 			loadmod(""mod""..array[i])
 		end
+
+        Selector = CS.MyGame.Selector
+        GMData={
+	        GetPerson = function(name)
+		        return listToTable(CS.MyGame.Inst:GetPerson(name))
+	        end,
+
+	        GetFaction = function(name)
+		        return listToTable(CS.MyGame.Inst:GetFaction(name))
+	        end
+        }
     ";
 }
 

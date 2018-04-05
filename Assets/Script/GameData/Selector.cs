@@ -11,41 +11,64 @@ public partial class MyGame
 	[LuaCallCSharp]
 	public class Selector
 	{
-		public static BySelector ByName(params string[] key)
+        private Selector(){ }
+
+        public  static BySelector ByPerson(params string[] key)
 		{
 			return new BySelector ().ByPerson(key);
 		}
 
-		public static BySelector ByOffice(params string[] key)
+		public  static BySelector ByOffice(params string[] key)
 		{
 			return new BySelector ().ByOffice(key);
 		}
 
-		public static BySelector ByFaction(params string[] key)
+		public  static BySelector ByFaction(params string[] key)
 		{
 			return new BySelector ().ByFaction(key);
 		}
 
-		public static BySelector ByNameNOT(params string[] key)
+		public  static BySelector ByPersonNOT(params string[] key)
 		{
-			return new BySelector ().ByNameNOT(key);
+			return new BySelector ().ByPersonNOT(key);
 		}
 
-		public static BySelector ByOfficeNOT(params string[] key)
+		public  static BySelector ByOfficeNOT(params string[] key)
 		{
 			return new BySelector ().ByOfficeNOT(key);
 		}
 
-		public static BySelector ByFactionNOT(params string[] key)
+		public  static BySelector ByFactionNOT(params string[] key)
 		{
 			return new BySelector ().ByFactionNOT(key);
 		}
-	}
+    }
 
 	[LuaCallCSharp]
 	public class BySelector
 	{
-		public BySelector ByPerson(params string[] key)
+        public BySelector()
+        {
+            ByPerson = this._ByPerson;
+            ByOffice = this._ByOffice;
+            ByFaction = this._ByFaction;
+
+            ByPersonNOT = this._ByPersonNOT;
+            ByOfficeNOT = this._ByOfficeNOT;
+            ByFactionNOT = this._ByFactionNOT;
+        }
+
+        public delegate BySelector DelegateBySelector(params string[] y);
+
+        public DelegateBySelector ByPerson;
+        public DelegateBySelector ByOffice;
+        public DelegateBySelector ByFaction;
+
+        public DelegateBySelector ByPersonNOT;
+        public DelegateBySelector ByOfficeNOT;
+        public DelegateBySelector ByFactionNOT;
+
+        public BySelector _ByPerson(params string[] key)
 		{
             if(ByPersonElem.EqualList.Count != 0)
             {
@@ -56,7 +79,7 @@ public partial class MyGame
 			return this;
 		}
 
-		public BySelector ByOffice(params string[] key)
+		public BySelector _ByOffice(params string[] key)
 		{
             if (ByOfficeElem.EqualList.Count != 0)
             {
@@ -67,7 +90,7 @@ public partial class MyGame
 			return this;
 		}
 
-		public BySelector ByFaction(params string[] key)
+		public BySelector _ByFaction(params string[] key)
 		{
             if (ByFactionElem.EqualList.Count != 0)
             {
@@ -78,7 +101,7 @@ public partial class MyGame
 			return this;
 		}
 
-		public BySelector ByNameNOT(params string[] key)
+		public BySelector _ByPersonNOT(params string[] key)
 		{
             if (ByPersonElem.UnequalList.Count != 0)
             {
@@ -90,7 +113,7 @@ public partial class MyGame
 			return this;
 		}
 
-		public BySelector ByOfficeNOT(params string[] key)
+		public BySelector _ByOfficeNOT(params string[] key)
 		{
             if (ByOfficeElem.UnequalList.Count != 0)
             {
@@ -102,7 +125,7 @@ public partial class MyGame
 			return this;
 		}
 
-		public BySelector ByFactionNOT(params string[] key)
+		public BySelector _ByFactionNOT(params string[] key)
 		{
             if (ByFactionElem.UnequalList.Count != 0)
             {

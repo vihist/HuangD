@@ -7,7 +7,7 @@ EVENT_003={
 	end,
 	
 	Initlize = function(self, param)
-		local FactionJQ = listToTable(Inst:GetFaction(Selector.ByOffice('JQ1')))
+		local FactionJQ = GMData.GetFaction(Selector.ByOffice('JQ1'))
 		if(next(FactionJQ) == nil) then
 			print('FactionJQ null')
 			return
@@ -15,13 +15,13 @@ EVENT_003={
 		
 		local JQ1faction = FactionJQ[1].name
 		
-		local preferPerson = listToTable(Inst:GetPerson(Selector.ByOffice('SG1','SG2','SG3'):ByFactionNOT(JQ1faction)))
+		local preferPerson = GMData.GetPerson(Selector.ByOffice('SG1','SG2','SG3').ByFactionNOT(JQ1faction))
 		if(next(preferPerson) ~= nil) then
 			print('not same faction'..preferPerson[1].name)
 			return
 		end
 		
-		local preferPerson = listToTable(Inst:GetPerson(Selector.ByOffice('SG1','SG2','SG3')))
+		local preferPerson = GMData.GetPerson(Selector.ByOffice('SG1','SG2','SG3'))
 		if(next(preferPerson) ~= nil) then
 			print('same faction'..preferPerson[#preferPerson].name)
 			return

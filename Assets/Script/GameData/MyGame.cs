@@ -113,7 +113,7 @@ public partial class MyGame
                 listPersonName.Add(p.name);
             }
 
-            BySelector selectbyPerson = Selector.ByName(listPersonName.ToArray());
+            BySelector selectbyPerson = Selector.ByPerson(listPersonName.ToArray());
 
             lstResult = relFaction2Person.GetFactionBySelector(selectbyPerson.persons, lstResult);
         }
