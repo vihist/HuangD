@@ -28,7 +28,7 @@ public partial class MyGame
 
         yearName = strYearName;
 		dynastyName = strDynastyName;
-        date = new GameDateTime();
+        date = new GameTime();
 
 		officeManager = new OfficeManager (typeof(ENUM_OFFICE));
 		femaleOfficeManager = new OfficeManager (typeof(ENUM_OFFICE_FEMALE));
@@ -207,6 +207,6 @@ public partial class MyGame
 	public FactionManager factionManager;
 
 	public string yearName;
-	public GameDateTime date;
+	public GameTime date;
 }
 
