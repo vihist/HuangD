@@ -8,6 +8,7 @@ using UnityEngine;
 using XLua;
 
 using Tools;
+using System.Linq;
 
 [LuaCallCSharp, Serializable]
 public partial class MyGame
@@ -52,152 +53,81 @@ public partial class MyGame
 		
 	public Person[] GetPerson(BySelector selecor)
 	{
-		List<Person> results = null;
-
 		if (selecor.empty)
 		{
 			throw new ArgumentException ("seletor is empty!");
 		}
-			
-		List<Person> o_persons = null;
-		List<Person> f_persons = null;
-		List<Person> p_persons = null;
 
-		if(!selecor.offices.empty)
-		{
-			o_persons = relOffice2Person.GetPerson (selecor.offices);
-		}
+        Debug.Log(String.Format("GetPerson {0}", selecor.ToString()));
 
-		if(!selecor.factions.empty)
-		{
-			f_persons = relFaction2Person.GetPerson (selecor.factions);
-		}
+        List<Person> lstResult = null;
+        if (!selecor.persons.empty)
+        {
+            lstResult = personManager.GetPersonBySelector(selecor.persons);
+        }
+        if (!selecor.offices.empty)
+        {
+            lstResult = relOffice2Person.GetPersonBySelector(selecor.offices, lstResult);
+        }
+        if (!selecor.factions.empty)
+        {
+            lstResult = relFaction2Person.GetPersonBySelector(selecor.factions, lstResult);
+        }
 
-		if(!selecor.persons.empty)
-		{
-			p_persons = personManager.GetByName (selecor.persons);
-		}
-			
+        if (lstResult == null)
+        {
+            lstResult = new List<Person>();
+        }
 
-		if(o_persons != null)
-		{
-			results = o_persons;
-		}
-		if(f_persons != null)
-		{
-			if (results == null) 
-			{
-				results = f_persons;
-			} 
-			else 
-			{
-				for (int i = 0; i < results.Count; i++) 
-				{
-					if (f_persons.Find (x => x.name == results [i].name) == null) 
-					{
-						results.RemoveAt (i);
-					}
-				}
-			}
-		}
-		if(p_persons != null)
-		{
-			if (results == null) 
-			{
-				results = p_persons;
-			} 
-			else 
-			{
-				for (int i = 0; i < results.Count; i++) 
-				{
-					if (p_persons.Find (x => x.name == results [i].name) == null) 
-					{
-						results.RemoveAt (i);
-					}
-				}
-			}
-		}
+        var listDebug = from o in lstResult select o.name;
+        Debug.Log(String.Format("GetPerson result:{0}", string.Join(",", listDebug.ToArray())));
 
-		return results.ToArray ();
+        return lstResult.ToArray ();
 	}
 
 	public Faction[] GetFaction(BySelector selecor)
 	{
-		List<Faction> results = null;
+        if (selecor.empty)
+        {
+            throw new ArgumentException("seletor is empty!");
+        }
 
-//		if (selecor.empty)
-//		{
-//			throw new ArgumentException ("seletor is empty!");
-//		}
-//
-//		List<Faction> o_factions = null;
-//		List<Faction> f_factions = null;
-//		List<Faction> p_factions = null;
-//
-//		if(selecor.offices.Length != 0)
-//		{
-//			List<Person>  lstPerson = relOffice2Person.GetPerson (selecor.offices);
-//			o_factions = new List<Faction> ();
-//
-//			foreach (Person p in lstPerson) 
-//			{
-//				o_factions.Add (relFaction2Person.GetFaction (p));
-//			}
-//		}
-//
-//		if(selecor.factions.Length != 0)
-//		{
-//			f_factions = factionManager.GetByName (selecor.factions);
-//		}
-//
-//		if(selecor.persons.Length != 0)
-//		{
-//
-//			p_factions = relFaction2Person.GetFaction (selecor.persons);
-//		}
-//
-//
-//		if(o_factions != null)
-//		{
-//			results = o_factions;
-//		}
-//		if(f_factions != null)
-//		{
-//			if (results == null) 
-//			{
-//				results = f_factions;
-//			} 
-//			else 
-//			{
-//				for (int i = 0; i < results.Count; i++) 
-//				{
-//					if (f_factions.Find (x => x.name == results [i].name) == null) 
-//					{
-//						results.RemoveAt (i);
-//					}
-//				}
-//			}
-//		}
-//		if(p_factions != null)
-//		{
-//			if (results == null) 
-//			{
-//				results = p_factions;
-//			} 
-//			else 
-//			{
-//				for (int i = 0; i < results.Count; i++) 
-//				{
-//					if (p_factions.Find (x => x.name == results [i].name) == null) 
-//					{
-//						results.RemoveAt (i);
-//					}
-//				}
-//			}
-//		}
+        Debug.Log(String.Format("GetFaction {0}", selecor.ToString()));
 
-		return results.ToArray ();
-	}
+        List<Faction> lstResult = null;
+        if (!selecor.factions.empty)
+        {
+            lstResult = factionManager.factionBySelector(selecor.persons);
+        }
+        if (!selecor.persons.empty)
+        {
+            lstResult = relFaction2Person.GetFactionBySelector(selecor.persons, lstResult);
+        }
+        if (!selecor.offices.empty)
+        {
+            List<Person>  listPerson = relOffice2Person.GetPersonBySelector(selecor.offices, null);
+
+            List<string> listPersonName = new List<string>();
+            foreach(Person p in listPerson)
+            {
+                listPersonName.Add(p.name);
+            }
+
+            BySelector selectbyPerson = Selector.ByName(listPersonName.ToArray());
+
+            lstResult = relFaction2Person.GetFactionBySelector(selectbyPerson.persons, lstResult);
+        }
+
+        if (lstResult == null)
+        {
+            lstResult = new List<Faction>();
+        }
+
+        var listDebug = from o in lstResult select o.name;
+        Debug.Log(String.Format("GetFaction result:{0}", string.Join(",", listDebug.ToArray())));
+
+        return lstResult.ToArray();
+    }
 
     private MyGame()
     {

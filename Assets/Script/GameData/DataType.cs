@@ -10,6 +10,7 @@ using UnityEngine;
 using XLua;
 
 using Mono;
+using System.Linq;
 
 public partial class MyGame
 {
@@ -233,6 +234,11 @@ public partial class MyGame
 			}
 		}
 
+        public override string ToString()
+        {
+            return name;
+        }
+
 		[SerializeField]
 		string _name;
 	}
@@ -269,7 +275,7 @@ public partial class MyGame
 			return null;
 		}
 
-		public List<Faction> GetByName(string[] names)
+		public Faction[] GetByName(string[] names)
 		{
 			List<Faction> lstResult = new List<Faction> ();
 			foreach(string name in names)
@@ -283,7 +289,7 @@ public partial class MyGame
 				lstResult.Add (o);
 			}
 
-			return lstResult;
+			return lstResult.ToArray();
 		}
 
 		public int Count
@@ -310,7 +316,14 @@ public partial class MyGame
 			return lstFaction.GetRange (start, end - start).ToArray ();
 		}
 
-		[SerializeField]
+        internal List<Faction> factionBySelector(SelectElem Selector)
+        {
+            List<Faction> lstResult = lstFaction.Where(Selector.Complie<Faction>()).ToList();
+
+            return lstResult;
+        }
+
+        [SerializeField]
 		private List<Faction> lstFaction = new List<Faction> ();
 	}
 
@@ -398,47 +411,11 @@ public partial class MyGame
 			return lstPerson.GetRange (start, end - start).ToArray ();
 		}
 
-		public List<Person> GetByPersonSelector(SelectElem personSelect)
+		public List<Person> GetPersonBySelector(SelectElem Selector)
 		{
-			List<Person> lstResult = new List<Person> ();
+            List<Person> lstResult = lstPerson.Where(Selector.Complie<Person>()).ToList();
 
-			foreach (string name in personSelect.EqualList)
-			{
-				if (lstResult.Exists (x => x.name == name)) 
-				{
-					continue;
-				}
-
-				Person p = GetByName (name);
-				if (p == null)
-				{
-					continue;
-				}
-
-				lstResult.Add (p);
-			}
-
-			var parameter  = Expression.Parameter(typeof(Person), "p");
-			var memberName = Expression.PropertyOrField(parameter, "name"); 
-			var expr = Expression.Equal(Expression.Constant(1), Expression.Constant(1));
-			foreach (string name in personSelect.UnequalList) 
-			{
-				var constant = Expression.Constant(name); 
-				expr.And (expr, Expression.NotEqual (memberName, constant));
-			}
-
-			var lambda=Expression.Lambda<Func<Person,Boolean>>(expr, parameter);
-
-			List<Person> temp = lstPerson.FindAll (lambda.Compile());
-			foreach (Person p in temp)
-			{
-				if (lstResult.Exists (x => x.name == p.name)) 
-				{
-					continue;
-				}
-
-				lstResult.Add (p);
-			}
+            return lstResult;
 		}
 
 		public Person GetByName(string name)

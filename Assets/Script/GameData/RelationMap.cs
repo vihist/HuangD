@@ -74,50 +74,21 @@ partial class MyGame
 			return listResult;
 		}
 
-		public List<Person> GetPerson(SelectElem[] offices)
+		public List<Person> GetPersonBySelector(SelectElem Selector, List<Person> ListPerson)
 		{
-			List<Person> listResult = new List<Person> ();
+            Office[] Offices = null;
+            if (ListPerson == null)
+            {
+                Offices = Inst.officeManager.GetByName(Inst.DictOffce2Person.Keys.ToArray());
+            }
+            else
+            {
+                Offices = GetOffice(ListPerson.ToArray());
+            }
 
-//			IEnumerable<IGrouping<bool, SelectElem>> officeGroup = offices.GroupBy(s => s.isNOT);
-//			foreach(IGrouping<bool, SelectElem> groupSelector in officeGroup)
-//			{
-//				List<SelectElem> lstSelect = groupSelector.ToList ();
-//				if (!groupSelector.Key) 
-//				{
-//					foreach (SelectElem elem in lstSelect) 
-//					{
-//						Person p = GetPerson (elem.value);
-//						if (p == null) 
-//						{
-//							continue;
-//						}
-//
-//						listResult.Add (p);
-//					}
-//				} 
-//				else 
-//				{
-//					
-//				}
-//			}
-//
-//			foreach (SelectElem o in offices) 
-//			{
-//				if (!o.isNOT) {
-//					Person p = GetPerson (o);
-//					if (p == null) {
-//						continue;
-//					}
-//
-//					listResult.Add (p);
-//				} 
-//				else 
-//				{
-//					
-//				}
-//			}
+            List<Office> SelectOffices = Offices.Where(Selector.Complie<Office>()).ToList();
 
-			return listResult;
+            return GetPerson(SelectOffices.ToArray());
 		}
 
 		public Office GetOffice(Person p)
@@ -144,7 +115,23 @@ partial class MyGame
 			return office;
 		}
 
-		public void Listen(object obj, string cmd)
+        public Office[] GetOffice(Person[] Persons)
+        {
+            List<Office> listResult = new List<Office>();
+            foreach(Person p in Persons)
+            {
+                Office o = GetOffice(p);
+                if(o != null)
+                {
+                    listResult.Add(o);
+                }
+            }
+
+            return listResult.ToArray();
+
+        }
+
+        public void Listen(object obj, string cmd)
 		{
 			switch (cmd) 
 			{
@@ -188,7 +175,7 @@ partial class MyGame
 			return Inst.personManager.GetByName (personNames).ToArray();
 		}
 
-		public List<Person> GetPerson(Faction[] factions)
+		public Person[] GetPerson(Faction[] factions)
 		{
 			List<Person> listResult = new List<Person> ();
 			foreach (Faction o in factions) 
@@ -198,20 +185,7 @@ partial class MyGame
 				listResult.AddRange (p);
 			}
 
-			return listResult;
-		}
-
-		public List<Person> GetPerson(string[] factions)
-		{
-			List<Person> listResult = new List<Person> ();
-			foreach (string o in factions) 
-			{
-				Person[] p = GetPerson (o);
-
-				listResult.AddRange (p);
-			}
-
-			return listResult;
+			return listResult.ToArray();
 		}
 
 		public Faction GetFaction(Person p)
@@ -232,15 +206,15 @@ partial class MyGame
 			return null;
 		}
 
-		public List<Faction> GetFaction(string[] pnames)
+		public Faction[] GetFaction(Person[] Persons)
 		{
 			List<string> listFactionName = new List<string> ();
 			
 			foreach (KeyValuePair<string, PersonNameList> kvp in Inst.DictFaction2Person)
 			{
-				foreach (string name in pnames)
+				foreach (Person p in Persons)
 				{
-					if (kvp.Value.ToList().Contains(name))
+					if (kvp.Value.ToList().Contains(p.name))
 					{ 
 						if (!listFactionName.Contains (kvp.Key)) 
 						{
@@ -250,20 +224,69 @@ partial class MyGame
 				}
 			}
 
-			List<Faction> listResult = new List<Faction> ();
-			foreach(string name in listFactionName)
-			{
-				Faction faction = Inst.factionManager.GetByName (name);
-				if (faction != null) 
-				{
-					listResult.Add (faction);
-				}
-			}
-
-			return listResult;
+            return Inst.factionManager.GetByName(listFactionName.ToArray());
 		}
 
-		public void Listen(object obj, string cmd)
+        public List<Person> GetPersonBySelector(SelectElem Selector, List<Person> ListPerson)
+        {
+            if (ListPerson == null)
+            {
+                Faction[] Factions = Inst.factionManager.GetByName(Inst.DictFaction2Person.Keys.ToArray());
+
+                Faction[] SelectFactions = Factions.Where(Selector.Complie<Faction>()).ToList().ToArray();
+                return GetPerson(SelectFactions).ToList();
+            }
+            else
+            {
+                for(int i=0; i< ListPerson.Count; i++)
+                {
+                    if(!Selector.Complie<Faction>().Invoke(GetFaction(ListPerson[i])))
+                    {
+                        ListPerson.RemoveAt(i);
+                    }
+                }
+
+                return ListPerson;
+            }
+        }
+
+        public List<Faction> GetFactionBySelector(SelectElem Selector, List<Faction> ListFaction)
+        {
+            if (ListFaction == null)
+            {
+                List<string> listPerson = new List<string>();
+                foreach(PersonNameList list in Inst.DictFaction2Person.Values)
+                {
+                    listPerson.AddRange(list.ToList());
+                }
+
+                Person[] Persons = Inst.personManager.GetByName(listPerson.ToArray()).ToArray();
+
+                Person[] SelectPersons = Persons.Where(Selector.Complie<Person>()).ToList().ToArray();
+
+                return GetFaction(SelectPersons).ToList();
+            }
+            else
+            {
+                for (int i = 0; i < ListFaction.Count; i++)
+                {
+                    Person[] Persons = GetPerson(ListFaction[i]);
+
+                    foreach(Person p in Persons)
+                    {
+                       if(!Selector.Complie<Person>().Invoke(p))
+                        {
+                            ListFaction.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+
+                return ListFaction;
+            }
+        }
+
+        public void Listen(object obj, string cmd)
 		{
 			switch (cmd) 
 			{
