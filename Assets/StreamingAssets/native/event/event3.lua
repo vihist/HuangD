@@ -17,13 +17,13 @@ EVENT_003={
 		
 		local preferPerson = listToTable(Inst:GetPerson(Selector.ByOffice('SG1','SG2','SG3'):ByFactionNOT(JQ1faction)))
 		if(next(preferPerson) ~= nil) then
-			print(preferPerson[1].name)
+			print('not same faction'..preferPerson[1].name)
 			return
 		end
 		
 		local preferPerson = listToTable(Inst:GetPerson(Selector.ByOffice('SG1','SG2','SG3')))
 		if(next(preferPerson) ~= nil) then
-			print(preferPerson[-1].name)
+			print('same faction'..preferPerson[#preferPerson].name)
 			return
 		end
 	end,

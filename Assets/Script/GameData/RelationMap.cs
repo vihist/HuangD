@@ -238,13 +238,9 @@ partial class MyGame
             }
             else
             {
-                for(int i=0; i< ListPerson.Count; i++)
-                {
-                    if(!Selector.Complie<Faction>().Invoke(GetFaction(ListPerson[i])))
-                    {
-                        ListPerson.RemoveAt(i);
-                    }
-                }
+                ListPerson.RemoveAll(delegate(Person p){
+                    return !Selector.Complie<Faction>().Invoke(GetFaction(p));
+                    });
 
                 return ListPerson;
             }
