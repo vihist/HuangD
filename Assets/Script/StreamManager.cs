@@ -221,12 +221,8 @@ public interface ItfPersonName
 [CSharpCallLua]
 public interface ItfOption
 {
-	string op1 { get; }
-	string op2 { get; }
-	string op3 { get; }
-	string op4 { get; }
-	string op5 { get; }
-	string process(string op, out string result);
+	string desc ();
+	string process(out string result);
 }
 
 [CSharpCallLua]
@@ -236,5 +232,9 @@ public interface ItfEvent
 	string desc { get; }
 	bool percondition () ;
 	void Initlize(string param);
-	ItfOption option { get;}
+	ItfOption option1 { get;}
+	ItfOption option2 { get;}
+	ItfOption option3 { get;}
+	ItfOption option4 { get;}
+	ItfOption option5 { get; }
 }

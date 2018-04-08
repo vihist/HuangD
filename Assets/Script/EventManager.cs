@@ -10,7 +10,7 @@ public class GMEvent
 		this.itf = itf;
 		this.param = param;
 
-		optionList = new List<string> ();
+		optionList = new List<ItfOption> ();
 	}
 
 	public string title
@@ -33,7 +33,13 @@ public class GMEvent
     {
         get
         {
-			return optionList.ToArray ();
+			List<string> result = new List<string> ();
+			foreach (ItfOption option in optionList) 
+			{
+				result.Add (option.desc());
+			}
+
+			return result.ToArray ();
         }
     }
     
@@ -49,36 +55,50 @@ public class GMEvent
 	{
 			itf.Initlize (param);
 
-			if (itf.option.op1 != null)
+			if (itf.option1 != null)
 			{
-				optionList.Add (itf.option.op1);
+				optionList.Add (itf.option1);
 			}
-			if (itf.option.op2 != null)
+			if (itf.option2 != null)
 			{
-				optionList.Add (itf.option.op2);
+				optionList.Add (itf.option2);
 			}
-			if (itf.option.op3 != null)
+			if (itf.option3 != null)
 			{
-				optionList.Add (itf.option.op3);
+				optionList.Add (itf.option3);
 			}
-			if (itf.option.op4 != null)
+			if (itf.option4 != null)
 			{
-				optionList.Add (itf.option.op4);
+				optionList.Add (itf.option4);
 			}
-			if (itf.option.op5 != null)
+			if (itf.option5 != null)
 			{
-				optionList.Add (itf.option.op5);
+				optionList.Add (itf.option5);
 			}
 	}
 
 	public string SelectOption(string op, out string ret)
 	{
 		_isChecked = true;
-		return itf.option.process (op, out ret);
+		switch (op) 
+		{
+		case "op1":
+			return optionList [0].process (out ret);
+		case "op2":
+			return optionList [1].process (out ret);
+		case "op3":
+			return optionList [2].process (out ret);
+		case "op4":
+			return optionList [3].process (out ret);
+		case "op5":
+			return optionList [4].process (out ret);
+		default:
+			throw new ArgumentOutOfRangeException();
+		}
 	}
 
 	private ItfEvent itf;
-	private List<string> optionList;
+	private List<ItfOption> optionList;
 	private bool _isChecked;
 	private string param;
 }
