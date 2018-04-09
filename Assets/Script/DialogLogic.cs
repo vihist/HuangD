@@ -24,7 +24,7 @@ public class DialogLogic : MonoBehaviour
 
 	public delegate string DelegateProcess (string op, out string nextParam);
 
-	public static GameObject newDialogInstace(string title, string content, string[] options, DelegateProcess delegateProcess)
+	public static GameObject newDialogInstace(string title, string content, KeyValuePair<bool, string>[] options, DelegateProcess delegateProcess)
 	{
 		GameObject UIRoot = GameObject.Find("Canvas").gameObject;
 		GameObject dialog = Instantiate(Resources.Load(string.Format("Prefabs/Dialog/Dialog_{0}Btn", options.Length)), UIRoot.transform) as GameObject;
@@ -38,8 +38,14 @@ public class DialogLogic : MonoBehaviour
 
         for(int i=0; i<options.Length; i++)
         {
-            Text txop = dialog.transform.Find(string.Format("option{0}/Text", i+1)).GetComponent<Text>();
-            txop.text = options[i];
+			Button optionTran = dialog.transform.Find (string.Format ("option{0}", i + 1)).GetComponent<Button> ();
+			if (!options [i].Key) 
+			{
+				optionTran.enabled = false;
+			}
+
+			Text txop = optionTran.transform.Find("Text").GetComponent<Text>();
+			txop.text = options[i].Value;
         }
 
 		dialog.GetComponent<DialogLogic> ().delegateProcess = delegateProcess;

@@ -52,8 +52,8 @@ class ChaoChenUI
 
 		officeName = tran.Find ("Text").GetComponent<Text> ();
 		personName = tran.Find ("value").GetComponent<Text> ();
-		personScore = tran.Find("score/value").GetComponent<Text> ();
-		factionName = tran.Find("faction/value").GetComponent<Text> ();
+		personScore = tran.Find("score");
+		factionName = tran.Find("faction");
 
 		office = MyGame.Inst.officeManager.GetByName (UIKey);
 		officeName.text = office.name;
@@ -68,22 +68,27 @@ class ChaoChenUI
 		MyGame.Person p  = MyGame.Inst.relOffice2Person.GetPerson (office);
 		if (p == null) 
 		{
+			personName.text = "--";
+			personScore.gameObject.SetActive (false);
+			factionName.gameObject.SetActive (false);
+				
 			return;
 		}
 
 		MyGame.Faction f = MyGame.Inst.relFaction2Person. GetFaction(p);
 
 		personName.text = p.name;
-		personScore.text = p.score.ToString();
-		factionName.text = f.name;
+
+		personScore.Find ("value").GetComponent<Text> ().text = p.score.ToString();
+		factionName.Find ("value").GetComponent<Text> ().text = f.name;
 	}
 
 	string UIKey;
 
 	Text officeName;
 	Text personName;
-	Text personScore;
-	Text factionName;
+	Transform personScore;
+	Transform factionName;
 
 	MyGame.Office office;
 }

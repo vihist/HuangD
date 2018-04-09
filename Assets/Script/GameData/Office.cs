@@ -9,7 +9,6 @@ using UnityEngine;
 
 using XLua;
 
-using Mono;
 using System.Linq;
 
 public partial class MyGame

@@ -200,6 +200,8 @@ public class StreamManager
 		        return listToTable(CS.MyGame.Inst:GetFaction(name))
 	        end
         }
+
+		Probability = CS.Tools.Probability
     ";
 }
 
@@ -221,7 +223,7 @@ public interface ItfPersonName
 [CSharpCallLua]
 public interface ItfOption
 {
-	string desc ();
+	object desc ();
 	string process(out string result);
 }
 

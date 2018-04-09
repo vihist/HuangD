@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 public class GMEvent
 {
@@ -29,14 +30,35 @@ public class GMEvent
 		}
 	}
 
-    public string[] options
+	public KeyValuePair<bool, string>[] options
     {
         get
         {
-			List<string> result = new List<string> ();
+			List<KeyValuePair<bool, string>> result = new List<KeyValuePair<bool, string>> ();
 			foreach (ItfOption option in optionList) 
 			{
-				result.Add (option.desc());
+				object rslt = option.desc ();
+
+				if (rslt.GetType () == typeof(string)) 
+				{
+					result.Add (new KeyValuePair<bool, string> (true, (string)rslt));
+				} 
+				else 
+				{
+					List<object> list = ((XLua.LuaTable)rslt).Cast<List<object>>();
+					if (list.Count == 1) 
+					{
+						result.Add (new KeyValuePair<bool, string> (true, (string)list [0]));
+					} 
+					else if (list.Count == 2) 
+					{
+						result.Add (new KeyValuePair<bool, string> ((bool)list [1], (string)list [0]));
+					} 
+					else 
+					{
+						throw new ArgumentOutOfRangeException ();
+					}
+				}
 			}
 
 			return result.ToArray ();
