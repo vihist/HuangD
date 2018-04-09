@@ -144,7 +144,7 @@ EVENT_EMP_HEATH_DEC={
 	end,
 
 	Initlize = function(self, param)
-		desc=string.format(desc, param)
+		desc=string.format(self.desc, param)
 	end,
 
 	option1={
