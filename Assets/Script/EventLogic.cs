@@ -27,31 +27,25 @@ public class EventLogic : MonoBehaviour
 	
     private IEnumerator OnTimer()
 	{
-		if(eventManager.GetEventCout () == 0)
+		float costtime = 0.0f;
+		foreach(GMEvent eventobj in eventManager.GetEvent ())
 		{
-			yield return new WaitForSeconds (m_fWaitTime);
-			eventManager.makeEvent ();
-		}
-
-		string param = null;
-		for (int i = 0; i < eventManager.EventList.Count; i++) 
-		{
-			yield return new WaitForSeconds (m_fWaitTime/eventManager.GetEventCout ());
-
-			GMEvent eventobj = eventManager.EventList [i];
+			yield return new WaitForSeconds(0.5f);
 
 			dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options, eventobj.SelectOption);
 
 			yield return new WaitUntil (isChecked);
 
 			string key = dialog.GetComponent<DialogLogic> ().result;
-			param = dialog.GetComponent<DialogLogic> ().nexparam;
+			string param = dialog.GetComponent<DialogLogic> ().nexparam;
 			eventManager.Insert (key, param);
 
 			Destroy (dialog);
+
+			costtime += 0.1f;
 		}
 
-		eventManager.ClearEvent ();
+		yield return new WaitForSeconds(m_fWaitTime-costtime);
 
 		MyGame.Inst.date.Increase ();
 		StartCoroutine(OnTimer());

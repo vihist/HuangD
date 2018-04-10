@@ -1,6 +1,7 @@
 EVENT_TIANX_YHSX={
 	title='EVENT_TIANX_YHSX_title',
 	desc='EVENT_TIANX_YHSX_desc',
+	jq1='',
 	suggest='',
 
 	percondition = function(self)
@@ -9,6 +10,7 @@ EVENT_TIANX_YHSX={
 
 	Initlize = function(self, param)
 	    suggest=''
+        jq1=''
 
 	    local personJQ1 = GMData.GetPerson(Selector.ByOffice('JQ1'))
 	    if(next(personJQ1) == nil) then
@@ -16,6 +18,7 @@ EVENT_TIANX_YHSX={
         	return
 	    end
 
+        self.jq1 = personJQ1.name
 	    self.suggest = self.GetSuggest(self, param)
 	    if(self.suggest == '') then
 	        print('Suggest null')
@@ -65,7 +68,7 @@ EVENT_TIANX_YHSX={
 		local FactionJQ = GMData.GetFaction(Selector.ByOffice('JQ1'))
 		if(next(FactionJQ) == nil) then
 			print('FactionJQ null')
-			return
+			return ''
 		end
 
 		local JQ1faction = FactionJQ[1].name
@@ -88,6 +91,7 @@ EVENT_SG_SUICDIE={
 	title='EVENT_SG_SUICDIE',
 	desc='EVENT_SG_SUICDIE%s__',
 	personname='',
+
 	percondition = function(self)
 		return false
 	end,

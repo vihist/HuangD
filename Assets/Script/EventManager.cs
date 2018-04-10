@@ -127,30 +127,32 @@ public class GMEvent
 
 public class EventManager
 {
-	public EventManager()
-	{
-		eventList = new List<GMEvent> ();
-	}
-
 	public IEnumerable<GMEvent> GetEvent()
 	{  
-		if(eventList.Count == 0)
+		foreach (ItfEvent ie in StreamManager.eventDictionary.Values) 
 		{
-			makeEvent ();
-		}
+			if (!ie.percondition())
+			{
+				continue;
+			}
 
-		foreach (GMEvent e in eventList)
-		{
-			yield return e;
+			GMEvent eventobj = new GMEvent (ie, null);
+			eventobj.Initlize ();
+			yield return eventobj;
+
+			if (nextEvent == null)
+			{
+				continue;
+			}
+
+			nextEvent.Initlize ();
+			yield return nextEvent;
+
+			nextEvent = null;
 		}
 
 		yield break;
 	}  
-
-	public int GetEventCout()
-	{
-		return eventList.Count;
-	}
 
 	public void Insert(string key, string param)
 	{
@@ -159,44 +161,8 @@ public class EventManager
 			return;
 		}
 
-		int index=eventList.FindIndex(a=>!a.isChecked);
-		if (index == -1) 
-		{
-			index = eventList.Count;
-		}
-
-		GMEvent eventobj = new GMEvent (StreamManager.eventDictionary [key], param);
-		eventobj.Initlize ();
-
-		eventList.Insert (index, eventobj);
+		nextEvent = new GMEvent (StreamManager.eventDictionary [key], param);
 	}
 
-	public List<GMEvent> EventList
-	{
-		get 
-		{
-			return eventList;
-		}
-	}
-
-	public void makeEvent ()
-	{
-		foreach (ItfEvent ie in StreamManager.eventDictionary.Values) 
-		{
-			if (ie.percondition ()) 
-			{
-				GMEvent eventobj = new GMEvent (ie, null);
-				eventobj.Initlize ();
-
-				eventList.Add (eventobj);
-			}
-		}
-	}
-
-	public void ClearEvent()
-	{
-		eventList.Clear ();
-	}
-
-	private List<GMEvent> eventList;
+	private GMEvent nextEvent = null;
 }
