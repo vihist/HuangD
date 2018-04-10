@@ -12,6 +12,8 @@ public class GMEvent
 		this.param = param;
 
 		optionList = new List<ItfOption> ();
+
+        Debug.Log("Event Start:" + itf.title);
 	}
 
 	public string title
@@ -160,7 +162,7 @@ public class EventManager
 		{
 			return;
 		}
-
+            
 		nextEvent = new GMEvent (StreamManager.eventDictionary [key], param);
 	}
 

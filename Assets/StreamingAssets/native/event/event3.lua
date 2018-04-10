@@ -3,7 +3,13 @@ EVENT_TIANX_YHSX={
 	desc='EVENT_TIANX_YHSX_desc',
 
 	percondition = function(self)
+		if(GMData.Flag.Get('TX_YHSX') ~= nil) then
+	        return false
+	    end
 		return true
+	end,
+
+	Initlize = function(self, param)
 	end,
 
     option1={
@@ -11,26 +17,29 @@ EVENT_TIANX_YHSX={
             return 'op1_test'
         end,
         process = function(self)
-            GM.SetFlag('TX_YHSX', '')
+            GMData.Flag.Set('TX_YHSX', '')
             return 'EVENT_STAB_DEC', 1
         end
     }
 }
 
 EVENT_TIANX_YHSX_END={
-	title='EVENT_TIANX_YHSX_title',
-	desc='EVENT_TIANX_YHSX_desc',
+	title='EVENT_TIANX_YHSX_END_title',
+	desc='EVENT_TIANX_YHSX_END_desc',
 
 	percondition = function(self)
-	    if(not(GM.IsFlagExit('TX_YHSX'))) then
+	    if(GMData.Flag.Get('TX_YHSX') == nil) then
 	        return false
 	    end
 
 	    if(Probability.IsProbOccur(0.05)) then
 	        return true
-	    esle
+	    else
 	        return false
 	    end
+	end,
+
+	Initlize = function(self, param)
 	end,
 
     option1={
@@ -38,29 +47,29 @@ EVENT_TIANX_YHSX_END={
             return 'op1_test'
         end,
         process = function(self)
-            GM.ClearFlag('TX_YHSX')
+            GMData.Flag.Clear('TX_YHSX')
         end
     }
 }
 
 EVENT_STAB_DEC = {
-	title='EVENT_TIANX_YHSX_title',
-	desc='EVENT_TIANX_YHSX_desc',
+	title='EVENT_STAB_DEC_title',
+	desc='EVENT_STAB_DEC_desc',
 
     value=0,
 
 	percondition = function(self)
-	    local flagValue = GM.GetFlag('TX_YHSX')
+	    local flagValue = GMData.Flag.Get('TX_YHSX')
 	    if(flagValue == nil) then
 	        return false
 	    end
 
-	    local value = 0.02
-	    if(flagValue == 'Stab')
-	        value = value + 0.1
+	    local prob = 0.02
+	    if(flagValue == 'Stab') then
+	        prob = prob + 0.1
 	    end
 
-        if(Probability.IsProbOccur(value)) then
+        if(Probability.IsProbOccur(prob)) then
             return true
 	    end
 
@@ -68,7 +77,7 @@ EVENT_STAB_DEC = {
 	end,
 
 	Initlize = function(self, param)
-	    value=param
+	    self.value=param
 	end,
 
     option1={
@@ -76,14 +85,14 @@ EVENT_STAB_DEC = {
             return 'op1_test'
         end,
         process = function(self)
-            GM.Stability.Dec(value);
+            GMData.Stability.Dec(EVENT_STAB_DEC.value)
         end
     }
 }
 
 EVENT_STAB_INC = {
-	title='EVENT_TIANX_YHSX_title',
-	desc='EVENT_TIANX_YHSX_desc',
+	title='EVENT_STAB_INC_title',
+	desc='EVENT_STAB_INC_desc',
 
     value=0,
 
@@ -92,7 +101,7 @@ EVENT_STAB_INC = {
 	end,
 
 	Initlize = function(self, param)
-	    value=param
+	    self.value=param
 	end,
 
     option1={
@@ -100,7 +109,7 @@ EVENT_STAB_INC = {
             return 'op1_test'
         end,
         process = function(self)
-            GM.Stability.Inc(value);
+            GMData.Stability.Inc(EVENT_STAB_DEC.value);
         end
     }
 }
@@ -112,13 +121,13 @@ EVENT_TIANX_YHSX_JQ1={
     suggest='',
 
 	percondition = function(self)
-	    local flagValue = GM.GetFlag('TX_YHSX')
+	    local flagValue = GMData.Flag.Get('TX_YHSX')
 	    if(flagValue == nil or flagValue ~= '') then
 	        return false
 	    end
 
 	    local personJQ1 = GMData.GetPerson(Selector.ByOffice('JQ1'))
-        if(next(personJQ1) ~= nil) then
+        if(next(personJQ1) == nil) then
             return false
         end
 
@@ -135,7 +144,7 @@ EVENT_TIANX_YHSX_JQ1={
            return 'op1_test'
         end,
         process = function(self)
-            GM.SetFlag('TX_YHSX', 'Stab')
+            GMData.Flag.Set('TX_YHSX', 'Stab')
         end
     },
 
@@ -149,7 +158,7 @@ EVENT_TIANX_YHSX_JQ1={
         end,
 
         process = function(self)
-            GM.SetFlag('TX_YHSX', suggest)
+            GMData.Flag.Set('TX_YHSX', EVENT_TIANX_YHSX_JQ1.suggest)
         end
     },
 
@@ -158,7 +167,7 @@ EVENT_TIANX_YHSX_JQ1={
             return 'op3_test'
         end,
         process = function(self)
-            GM.SetFlag('TX_YHSX', 'Self')
+            GMData.Flag.Set('TX_YHSX', 'Self')
         end
     },
 
@@ -192,7 +201,7 @@ EVENT_EMP_HEATH_DEC={
 	percondition = function(self)
 	    local value = 0.001
 
-	    if( GM.GetFlag('TX_YHSX') == 'Self')
+	    if( GMData.Flag.Get('TX_YHSX') == 'Self') then
 	        value = value + 0.1
 	    end
 
@@ -213,7 +222,7 @@ EVENT_EMP_HEATH_DEC={
         end,
 
 		process = function(self, op)
-			GM.empHeath.Dec(1)
+			GMData.empHeath.Dec(1)
 		end
 	}
 }
@@ -242,7 +251,7 @@ EVENT_EMP_HEATH_INC={
         end,
 
 		process = function(self, op)
-			GM.empHeath.Inc(1)
+			GMData.empHeath.Inc(1)
 		end
 	}
 }

@@ -49,13 +49,13 @@ public class DialogLogic : MonoBehaviour
         }
 
 		dialog.GetComponent<DialogLogic> ().delegateProcess = delegateProcess;
-
+        dialog.GetComponent<DialogLogic> ().title = title;
         return dialog;
 	}
 
     public void OnEventButton(Button btn)
     {
-        Debug.Log("OnEventButton:" + btn.name);
+        Debug.Log("Event:" + title + ", OnButton:" + btn.name);
         
 		string name = btn.name.Replace ("option", "op");
 
@@ -83,6 +83,7 @@ public class DialogLogic : MonoBehaviour
 	}
 
 	private DelegateProcess delegateProcess;
+    private string title;
 	private string _result;
 	private string _nexparam;
 }

@@ -39,6 +39,7 @@ public partial class MyGame
 		personManager.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
 
 		femalePersonManager = new PersonManager (femaleOfficeManager.Count, false);
+        DictFlag = new Dictionary<string, string>();
 
 		Person.ListListener.Add (relOffice2Person.Listen);
 		Person.ListListener.Add (relFaction2Person.Listen);
@@ -129,6 +130,26 @@ public partial class MyGame
         return lstResult.ToArray();
     }
 
+    public void   SetFlag(string key, string value)
+    {
+        DictFlag[key] = value;
+    }
+
+    public string GetFlag(string key)
+    {
+        if (!DictFlag.ContainsKey(key))
+        {
+            return null;
+        }
+
+        return DictFlag[key];
+    }
+
+    public void ClearFlag(string key)
+    {
+        DictFlag.Remove(key);
+    }
+
     private MyGame()
     {
     }
@@ -208,5 +229,7 @@ public partial class MyGame
 
 	public string yearName;
 	public GameTime date;
+
+    private Dictionary<string, string> DictFlag;
 }
 

@@ -88,6 +88,8 @@ public class StreamManager
 			ItfEvent value = luaenv.Global.Get<string, ItfEvent> (key);
 			eventDictionary.Add (key, value);
 		}
+
+        Debug.Log("Load event cout:" + eventDictionary.Count.ToString());
     }
 
 	private void AnaylizePersonName()
@@ -198,7 +200,45 @@ public class StreamManager
 
 	        GetFaction = function(name)
 		        return listToTable(CS.MyGame.Inst:GetFaction(name))
-	        end
+	        end,
+            
+            Flag = {
+                Get = function(key)
+                    return CS.MyGame.Inst:GetFlag(key)
+                end,
+                
+                Set = function(key, value)
+                    CS.MyGame.Inst:SetFlag(key, value)
+                end,
+                
+                Clear = function(key)
+                     CS.MyGame.Inst:ClearFlag(key)
+                end
+            },
+            
+            Stability = {
+                Dec = function(value)
+                    if(value == nil) then
+                        value = 1
+                    end
+
+                    CS.MyGame.Inst.Stability = CS.MyGame.Inst.Stability - value
+                    return CS.MyGame.Inst.Stability
+                end,
+
+                Inc = function(value)
+                  if(value == nil) then
+                        value = 1
+                    end
+
+                    CS.MyGame.Inst.Stability = CS.MyGame.Inst.Stability + value
+                    return CS.MyGame.Inst.Stability
+                end,
+
+                Value = function()
+                    return CS.MyGame.Inst.GetStability()
+                end
+            }
         }
 
 		Probability = CS.Tools.Probability
