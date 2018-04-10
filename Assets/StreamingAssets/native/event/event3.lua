@@ -1,29 +1,133 @@
 EVENT_TIANX_YHSX={
 	title='EVENT_TIANX_YHSX_title',
 	desc='EVENT_TIANX_YHSX_desc',
-	jq1='',
-	suggest='',
 
 	percondition = function(self)
 		return true
 	end,
 
+    option1={
+        desc = function()
+            return 'op1_test'
+        end,
+        process = function(self)
+            GM.SetFlag('TX_YHSX', '')
+            return 'EVENT_STAB_DEC', 1
+        end
+    }
+}
+
+EVENT_TIANX_YHSX_END={
+	title='EVENT_TIANX_YHSX_title',
+	desc='EVENT_TIANX_YHSX_desc',
+
+	percondition = function(self)
+	    if(not(GM.IsFlagExit('TX_YHSX'))) then
+	        return false
+	    end
+
+	    if(Probability.IsProbOccur(0.05)) then
+	        return true
+	    esle
+	        return false
+	    end
+	end,
+
+    option1={
+        desc = function()
+            return 'op1_test'
+        end,
+        process = function(self)
+            GM.ClearFlag('TX_YHSX')
+        end
+    }
+}
+
+EVENT_STAB_DEC = {
+	title='EVENT_TIANX_YHSX_title',
+	desc='EVENT_TIANX_YHSX_desc',
+
+    value=0,
+
+	percondition = function(self)
+	    local flagValue = GM.GetFlag('TX_YHSX')
+	    if(flagValue == nil) then
+	        return false
+	    end
+
+	    local value = 0.02
+	    if(flagValue == 'Stab')
+	        value = value + 0.1
+	    end
+
+        if(Probability.IsProbOccur(value)) then
+            return true
+	    end
+
+		return false
+	end,
+
 	Initlize = function(self, param)
-	    suggest=''
-        jq1=''
+	    value=param
+	end,
+
+    option1={
+        desc = function()
+            return 'op1_test'
+        end,
+        process = function(self)
+            GM.Stability.Dec(value);
+        end
+    }
+}
+
+EVENT_STAB_INC = {
+	title='EVENT_TIANX_YHSX_title',
+	desc='EVENT_TIANX_YHSX_desc',
+
+    value=0,
+
+	percondition = function(self)
+		return false
+	end,
+
+	Initlize = function(self, param)
+	    value=param
+	end,
+
+    option1={
+        desc = function()
+            return 'op1_test'
+        end,
+        process = function(self)
+            GM.Stability.Inc(value);
+        end
+    }
+}
+
+EVENT_TIANX_YHSX_JQ1={
+	title='EVENT_TIANX_YHSX_JQ1_title',
+	desc='EVENT_TIANX_YHSX_JQ1_desc',
+
+    suggest='',
+
+	percondition = function(self)
+	    local flagValue = GM.GetFlag('TX_YHSX')
+	    if(flagValue == nil or flagValue ~= '') then
+	        return false
+	    end
 
 	    local personJQ1 = GMData.GetPerson(Selector.ByOffice('JQ1'))
-	    if(next(personJQ1) == nil) then
-	    	print('FactionJQ null')
-        	return
-	    end
+        if(next(personJQ1) ~= nil) then
+            return false
+        end
 
-        self.jq1 = personJQ1.name
+        return true
+	end,
+
+	Initlize = function(self, param)
+	    self.suggest = ''
 	    self.suggest = self.GetSuggest(self, param)
-	    if(self.suggest == '') then
-	        print('Suggest null')
-	    end
-
 	end,
 
     option1={
@@ -31,25 +135,21 @@ EVENT_TIANX_YHSX={
            return 'op1_test'
         end,
         process = function(self)
-           print(' do '..self.desc())
+            GM.SetFlag('TX_YHSX', 'Stab')
         end
     },
 
     option2={
         desc = function(self)
-            if(EVENT_TIANX_YHSX.suggest ~= '') then
-                return {string.format('op2_test%s', EVENT_TIANX_YHSX.suggest), true}
+            if(EVENT_TIANX_YHSX_JQ1.suggest ~= '') then
+                return {string.format('op2_test%s', EVENT_TIANX_YHSX_JQ1.suggest), true}
             else
                 return {'suggest is null', false}
             end
         end,
 
         process = function(self)
-            --if(Probability.IsProbOccur(0.5)) then
-			    return 'EVENT_SG_SUICDIE', EVENT_TIANX_YHSX.suggest
-			--else
-				--return 'EVENT_SG_ILL_RESIGN', EVENT_TIANX_YHSX.suggest
-		    --end
+            GM.SetFlag('TX_YHSX', suggest)
         end
     },
 
@@ -58,9 +158,7 @@ EVENT_TIANX_YHSX={
             return 'op3_test'
         end,
         process = function(self)
-            if(Probability.IsProbOccur(0.5)) then
-            	return 'EVENT_EMP_HEATH_DEC'
-            end
+            GM.SetFlag('TX_YHSX', 'Self')
         end
     },
 
@@ -87,63 +185,21 @@ EVENT_TIANX_YHSX={
 	end
 }
 
-EVENT_SG_SUICDIE={
-	title='EVENT_SG_SUICDIE',
-	desc='EVENT_SG_SUICDIE%s__',
-	personname='',
-
-	percondition = function(self)
-		return false
-	end,
-
-	Initlize = function(self, param)
-	    print('param'..param)
-		self.personname = param
-		self.desc=string.format(self.desc, param)
-		print(self.desc)
-	end,
-
-	option1={
-		desc = function()
-		    return 'op1_test'
-		end,
-		process = function(self, op)
-			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_SUICDIE.personname))
-			person[1]:Die()
-		end
-	}
-}
-
-EVENT_SG_ILL_RESIGN={
-	title='EVENT_SG_ILL_RESIGN',
-	desc='EVENT_SG_ILL_RESIGN%s__',
-	personname='',
-
-	percondition = function(self)
-		return false
-	end,
-
-	Initlize = function(self, param)
-		self.personname=param
-		self.desc=string.format(self.desc, param)
-	end,
-
-	option1={
-		desc = function()
-            return 'op1_test'
-        end,
-		process = function(self, op)
-			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_ILL_RESIGN.personname))
-			person:Die()
-		end
-	}
-}
-
 EVENT_EMP_HEATH_DEC={
 	title='EMP_HEATH_DEC',
 	desc='EMP_HEATH_DEC',
 
 	percondition = function(self)
+	    local value = 0.001
+
+	    if( GM.GetFlag('TX_YHSX') == 'Self')
+	        value = value + 0.1
+	    end
+
+        if(Probability.IsProbOccur(value)) then
+            return true
+        end
+
 		return false
 	end,
 
@@ -157,8 +213,36 @@ EVENT_EMP_HEATH_DEC={
         end,
 
 		process = function(self, op)
-			Inst.empHeath=Inst.empHeath-1
+			GM.empHeath.Dec(1)
 		end
 	}
 }
 
+EVENT_EMP_HEATH_INC={
+	title='EMP_HEATH_INC',
+	desc='EMP_HEATH_INC',
+
+	percondition = function(self)
+	    local value = 0.001
+
+        if(Probability.IsProbOccur(value)) then
+            return true
+        end
+
+		return false
+	end,
+
+	Initlize = function(self, param)
+		desc=string.format(self.desc, param)
+	end,
+
+	option1={
+		desc = function()
+            return 'op1_test'
+        end,
+
+		process = function(self, op)
+			GM.empHeath.Inc(1)
+		end
+	}
+}
