@@ -9,9 +9,6 @@ EVENT_TIANX_YHSX={
 		return true
 	end,
 
-	Initlize = function(self, param)
-	end,
-
     option1={
         desc = function()
             return 'op1_test'
@@ -37,9 +34,6 @@ EVENT_TIANX_YHSX_END={
 	    else
 	        return false
 	    end
-	end,
-
-	Initlize = function(self, param)
 	end,
 
     option1={
@@ -76,7 +70,7 @@ EVENT_STAB_DEC = {
 		return false
 	end,
 
-	Initlize = function(self, param)
+	initialize = function(self, param)
 	    self.value=param
 	end,
 
@@ -100,7 +94,7 @@ EVENT_STAB_INC = {
 		return false
 	end,
 
-	Initlize = function(self, param)
+	initialize = function(self, param)
 	    self.value=param
 	end,
 
@@ -127,14 +121,14 @@ EVENT_TIANX_YHSX_JQ1={
 	    end
 
 	    local personJQ1 = GMData.GetPerson(Selector.ByOffice('JQ1'))
-        if(next(personJQ1) == nil) then
+        if(personJQ1 == nil) then
             return false
         end
 
         return true
 	end,
 
-	Initlize = function(self, param)
+	initialize = function(self, param)
 	    self.suggest = ''
 	    self.suggest = self.GetSuggest(self, param)
 	end,
@@ -173,20 +167,20 @@ EVENT_TIANX_YHSX_JQ1={
 
     GetSuggest = function(self, param)
 		local FactionJQ = GMData.GetFaction(Selector.ByOffice('JQ1'))
-		if(next(FactionJQ) == nil) then
+		if(FactionJQ == nil) then
 			print('FactionJQ null')
 			return ''
 		end
 
-		local JQ1faction = FactionJQ[1].name
+		local JQ1faction = FactionJQ.name
 
 		local preferPerson = GMData.GetPerson(Selector.ByOffice('SG1','SG2','SG3').ByFactionNOT(JQ1faction))
-		if(next(preferPerson) ~= nil) then
-			return preferPerson[1].name
+		if(preferPerson ~= nil) then
+			return preferPerson.name
 		end
 
-		local preferPerson = GMData.GetPerson(Selector.ByOffice('SG1','SG2','SG3'))
-		if(next(preferPerson) ~= nil) then
+		local preferPerson = GMData.GetPersonArray(Selector.ByOffice('SG1','SG2','SG3'))
+		if(preferPerson[1] ~= nil) then
 			return preferPerson[#preferPerson].name
 		end
 
@@ -212,7 +206,7 @@ EVENT_EMP_HEATH_DEC={
 		return false
 	end,
 
-	Initlize = function(self, param)
+	initialize = function(self, param)
 		desc=string.format(self.desc, param)
 	end,
 
@@ -241,7 +235,7 @@ EVENT_EMP_HEATH_INC={
 		return false
 	end,
 
-	Initlize = function(self, param)
+	initialize = function(self, param)
 		desc=string.format(self.desc, param)
 	end,
 
@@ -252,6 +246,176 @@ EVENT_EMP_HEATH_INC={
 
 		process = function(self, op)
 			GMData.empHeath.Inc(1)
+		end
+	}
+}
+
+EVENT_SG_ILL_RESIGN={
+	title='EVENT_SG_ILL_RESIGN',
+	desc='EVENT_SG_ILL_RESIGN%s__',
+	personname='',
+
+	percondition = function(self)
+	    self.personname = ''
+
+        local prob = 0
+        local suggest =  GMData.Flag.Get('TX_YHSX')
+        if(suggest == nil) then
+
+        else
+            local person = GMData.GetPerson(Selector.ByPerson(suggest))
+            if( person ~= nil ) then
+                self.personname = person.name
+                prob = prob + 0.1
+            end
+        end
+
+        if(Probability.IsProbOccur(prob)) then
+
+            return true
+        end
+
+		return false
+	end,
+
+	initialize = function(self, param)
+		self.desc=string.format(self.desc, param)
+	end,
+
+	option1={
+		desc = function()
+            return 'op1_test'
+        end,
+		process = function(self, op)
+		    print(EVENT_SG_ILL_RESIGN.personname)
+			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_ILL_RESIGN.personname ))
+			person:Die()
+			GMData.Flag.Set('TX_YHSX', 'DIE')
+		end
+	}
+}
+
+EVENT_SG_SUICDIE={
+	title='EVENT_SG_SUICDIE',
+	desc='EVENT_SG_SUICDIE%s__',
+	personname='',
+
+	percondition = function(self)
+	    personname=''
+
+        local prob = 0
+        local suggest =  GMData.Flag.Get('TX_YHSX')
+        if(suggest == nil) then
+
+        else
+            local person = GMData.GetPerson(Selector.ByPerson(suggest))
+            if( person ~= nil ) then
+                self.personname = person.name
+                prob = prob + 0.1
+            end
+        end
+
+        if(Probability.IsProbOccur(prob)) then
+            return true
+        end
+
+		return false
+	end,
+
+	option1={
+		desc = function()
+            return 'op1_test'
+        end,
+		process = function(self, op)
+		    print(EVENT_SG_ILL_RESIGN.personname)
+			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_ILL_RESIGN.personname ))
+			person:Die()
+			GMData.Flag.Set('TX_YHSX', 'DIE')
+			return 'EVENT_STAB_DEC', 1
+		end
+	}
+}
+
+EVENT_SG_EMPTY={
+	title='EVENT_SG_EMPTY',
+	desc='EVENT_SG_EMPTY%s__',
+
+	officename='',
+
+    suggest1='',
+    suggest2='',
+    suggest3='',
+
+	percondition = function(self)
+	    self.officename=''
+	    self.suggest1=''
+        self.suggest2=''
+        self.suggest3=''
+
+	    array = {'SG1', 'SG2', 'SG3'}
+        for  i=1,#array do
+			local person = GMData.GetPerson(Selector.ByOffice(array[i]))
+            if( person == nil ) then
+                self.officename = array[i]
+                return true
+            end
+		end
+
+		return false
+	end,
+
+
+	initialize = function(self, param)
+		local personsSHI = GMData.GetPersonArray(Selector.ByOffice('SQX').ByFaction('SHI'))
+		table.sort(personsSHI, function(a, b)
+		    return a.score > b.score
+		end)
+
+        local tableSelect = {personsSHI[1], personsSHI[2]}
+
+        local personsXun = GMData.GetPersonArray(Selector.ByOffice('SQX').ByFaction('XUN'))
+		table.sort(personsXun, function(a, b)
+		    return a.score > b.score
+		end)
+
+		table.insert(tableSelect, personsXun[1])
+        table.insert(tableSelect, personsXun[2])
+
+        table.removeElem(tableSelect, nil)
+
+		table.sort(tableSelect, function(a, b)
+		    return a.score > b.score
+		end)
+
+        self.suggest1 = tableSelect[1].name
+        self.suggest2 = tableSelect[2].name
+        self.suggest3 = tableSelect[3].name
+	end,
+
+	option1={
+		desc = function()
+            return 'op1_test'..EVENT_SG_EMPTY.suggest1
+        end,
+		process = function(self, op)
+		     GMData.Appoint(EVENT_SG_EMPTY.suggest1, EVENT_SG_EMPTY.officename)
+		end
+	},
+
+	option2={
+		desc = function()
+            return 'op1_test'..EVENT_SG_EMPTY.suggest2
+        end,
+		process = function(self, op)
+		    GMData.Appoint(EVENT_SG_EMPTY.suggest2, EVENT_SG_EMPTY.officename)
+		end
+	},
+
+	option3={
+		desc = function()
+            return 'op1_test'..EVENT_SG_EMPTY.suggest3
+        end,
+		process = function(self, op)
+		    GMData.Appoint(EVENT_SG_EMPTY.suggest3, EVENT_SG_EMPTY.officename)
 		end
 	}
 }

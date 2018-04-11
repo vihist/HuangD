@@ -77,7 +77,7 @@ public class GMEvent
 
 	public void Initlize()
 	{
-			itf.Initlize (param);
+			itf.initialize (param);
 
 			if (itf.option1 != null)
 			{

@@ -86,6 +86,12 @@ public partial class MyGame
                 throw new ArgumentException("by office seletor already have value!");
             }
 
+            if (key[0] == "JQX")
+            {
+                ByOfficeElem.EqualList.AddRange(new List<string>{"JQX1", "JQX2", "JQX3", "JQX4", "JQX5", "JQX6", "JQX7", "JQX8", "JQX9"});
+                return this;
+            }
+
 			ByOfficeElem.EqualList.AddRange(key);
 			return this;
 		}

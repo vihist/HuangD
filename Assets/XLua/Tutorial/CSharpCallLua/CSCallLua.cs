@@ -25,6 +25,10 @@ public class CSCallLua : MonoBehaviour {
            add = function(self, a, b) 
               print('d.add called')
               return a + b 
+           end,
+           test = function(self, a)
+              self.f1=0
+              return 100
            end
         }
 
@@ -48,13 +52,17 @@ public class CSCallLua : MonoBehaviour {
         public int f1;
         public int f2;
     }
-    
+
+    [CSharpCallLua]
+    public delegate int TDelegate(int a);
+
     [CSharpCallLua]
     public interface ItfD
     {
         int f1 { get; set; }
         int f2 { get; set; }
         int add(int a, int b);
+        TDelegate test2{ get; set;}
     }
 
     [CSharpCallLua]
@@ -85,12 +93,11 @@ public class CSCallLua : MonoBehaviour {
 
         ItfD d3 = luaenv.Global.Get<ItfD>("d"); //映射到interface实例，by ref，这个要求interface加到生成列表，否则会返回null，建议用法
         d3.f2 = 1000;
+
         Debug.Log("_G.d = {f1=" + d3.f1 + ", f2=" + d3.f2 + "}");
-        Debug.Log("_G.d:add(1, 2)=" + d3.add(1, 2));
 
         LuaTable d4 = luaenv.Global.Get<LuaTable>("d");//映射到LuaTable，by ref
         Debug.Log("_G.d = {f1=" + d4.Get<int>("f1") + ", f2=" + d4.Get<int>("f2") + "}");
-
 
         Action e = luaenv.Global.Get<Action>("e");//映射到一个delgate，要求delegate加到生成列表，否则返回null，建议用法
         e();

@@ -12,10 +12,20 @@ namespace Tools
 	{
         public static bool IsProbOccur(double prob)
         {
-            int prb = (int)(prob * 10000);
+            if (Math.Abs(prob) < Double.Epsilon)
+            {
+                return false;
+            }
+
+            if (Math.Abs(prob-1.0D) < Double.Epsilon)
+            {
+                return false;
+            }
+
+            int prb = (int)(prob * 1000);
 
             System.Random ra = new System.Random(GetRandomSeed());
-            int result = ra.Next(1, 10000);
+            int result = ra.Next(1, 1000);
             if (result <= prb)
             {
                 return true;

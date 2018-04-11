@@ -192,16 +192,45 @@ public class StreamManager
 			loadmod(""mod""..array[i])
 		end
 
+        event_metatable = {
+            initialize = function(self, param)
+            end
+        }
+
+        for k,v in pairs(_G) do
+            if type(v) == ""table"" and string.find(k, ""EVENT_"") ~= nil then
+                setmetatable(v, { __index = event_metatable })
+            end
+        end
+
+        table.removeElem = function(dataTabel, elem)
+            for i =1, #dataTabel do
+                if dataTabel[i] == elem then  
+                    table.remove(dataTabel, i)  
+                end  
+            end 
+        end
+
         Selector = CS.MyGame.Selector
         GMData={
-	        GetPerson = function(name)
+	        GetPersonArray = function(name)
 		        return listToTable(CS.MyGame.Inst:GetPerson(name))
 	        end,
 
-	        GetFaction = function(name)
+	        GetFactionArray = function(name)
 		        return listToTable(CS.MyGame.Inst:GetFaction(name))
 	        end,
             
+            GetPerson = function(name)
+                local persons = listToTable(CS.MyGame.Inst:GetPerson(name))
+                return persons[1]
+            end,
+
+            GetFaction = function(name)
+                local factions = listToTable(CS.MyGame.Inst:GetFaction(name))
+                return factions[1]
+            end,
+
             Flag = {
                 Get = function(key)
                     return CS.MyGame.Inst:GetFlag(key)
@@ -273,7 +302,7 @@ public interface ItfEvent
 	string title { get; }
 	string desc { get; }
 	bool percondition () ;
-	void Initlize(string param);
+	void initialize(string param);
 	ItfOption option1 { get;}
 	ItfOption option2 { get;}
 	ItfOption option3 { get;}
