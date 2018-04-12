@@ -194,6 +194,8 @@ public class StreamManager
 
         event_metatable = {
             initialize = function(self, param)
+            end,
+            historyrecord = function(self)
             end
         }
 
@@ -208,6 +210,12 @@ public class StreamManager
                 if dataTabel[i] == elem then  
                     table.remove(dataTabel, i)  
                 end  
+            end 
+        end
+
+        table.insertRange = function(destTable, srcTable, len)
+            for i =1, math.min(len, #srcTable) do
+                table.insert(destTable, srcTable[i])  
             end 
         end
 
@@ -230,6 +238,10 @@ public class StreamManager
                 local factions = listToTable(CS.MyGame.Inst:GetFaction(name))
                 return factions[1]
             end,
+            
+            Appoint = function(person, office)
+                CS.MyGame.Inst:Appoint(person, office)
+            end,
 
             Flag = {
                 Get = function(key)
@@ -245,6 +257,36 @@ public class StreamManager
                 end
             },
             
+            Emp = {
+                Heath = {
+                    Dec = function(value)
+                        if(value == nil) then
+                            value = 1
+                        end
+
+                        CS.MyGame.Inst.empHeath = CS.MyGame.Inst.empHeath - value
+                        return CS.MyGame.Inst.empHeath
+                    end,
+
+                    Inc = function(value)
+                      if(value == nil) then
+                            value = 1
+                        end
+
+                        CS.MyGame.Inst.empHeath = CS.MyGame.Inst.empHeath + value
+                        return CS.MyGame.Inst.empHeath
+                    end,
+
+                    Value = function()
+                        return CS.MyGame.Inst.empHeath
+                    end
+                },
+
+                Die = function()
+                    CS.MyGame.Inst.empDieFlag = true
+                end
+            },
+
             Stability = {
                 Dec = function(value)
                     if(value == nil) then
@@ -303,6 +345,7 @@ public interface ItfEvent
 	string desc { get; }
 	bool percondition () ;
 	void initialize(string param);
+    string historyrecord();
 	ItfOption option1 { get;}
 	ItfOption option2 { get;}
 	ItfOption option3 { get;}

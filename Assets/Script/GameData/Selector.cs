@@ -88,7 +88,7 @@ public partial class MyGame
 
             if (key[0] == "JQX")
             {
-                ByOfficeElem.EqualList.AddRange(new List<string>{"JQX1", "JQX2", "JQX3", "JQX4", "JQX5", "JQX6", "JQX7", "JQX8", "JQX9"});
+                ByOfficeElem.EqualList.AddRange(new List<string>{"JQ1", "JQ2", "JQ3", "JQ4", "JQ5", "JQ6", "JQ7", "JQ8", "JQ9"});
                 return this;
             }
 

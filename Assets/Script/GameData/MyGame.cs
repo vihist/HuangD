@@ -18,6 +18,10 @@ public partial class MyGame
 
 	public void Initialize(string strEmpName, string strYearName, string strDynastyName)
     {
+        gameEnd = false;
+
+        historyRecord = "";
+
         empName  = strEmpName;
         empAge   = Probability.GetRandomNum (16, 40);
 		empHeath = Probability.GetRandomNum (5, 8);
@@ -39,7 +43,7 @@ public partial class MyGame
 		personManager.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
 
 		femalePersonManager = new PersonManager (femaleOfficeManager.Count, false);
-        DictFlag = new Dictionary<string, string>();
+        DictFlag = new StringSerialDictionary();
 
 		Person.ListListener.Add (relOffice2Person.Listen);
 		Person.ListListener.Add (relFaction2Person.Listen);
@@ -88,6 +92,11 @@ public partial class MyGame
 
 	public Faction[] GetFaction(BySelector selecor)
 	{
+        if (selecor == null)
+        {
+            return factionManager.GetRange(0, factionManager.Count);
+        }
+
         if (selecor.empty)
         {
             throw new ArgumentException("seletor is empty!");
@@ -150,6 +159,24 @@ public partial class MyGame
         DictFlag.Remove(key);
     }
 
+    public void Appoint(string person, string office)
+    {
+        Person p = personManager.GetByName(person);
+        if (p == null)
+        {
+            throw new ArgumentException("can not find person by name:" + person);
+        }
+
+        Office o = officeManager.GetByName(office);
+        if (o == null)
+        {
+            throw new ArgumentException("can not find office by name:" + office);
+        }
+
+        relOffice2Person.Set(p, o);
+
+    }
+
     private MyGame()
     {
     }
@@ -189,6 +216,21 @@ public partial class MyGame
 		}
 	}
 
+    public void HistoryRecord(string str)
+    {
+        if (str == "")
+        {
+            return;
+        }
+
+        historyRecord += "\n" + yearName + " " + date.ToString() + str; 
+    }
+
+    public string HistoryGet()
+    {
+        return historyRecord; 
+    }
+
 	private void InitRelationFemaleOffice2Person()
 	{
 		int iCount = femaleOfficeManager.Count;
@@ -209,10 +251,13 @@ public partial class MyGame
 		}
 	}
 
+
+
+    public bool   gameEnd;
+
 	public string empName;
 	public int    empAge;
 	public int    empHeath;
-
 
 	public string dynastyName;
     public int    Stability;
@@ -230,6 +275,10 @@ public partial class MyGame
 	public string yearName;
 	public GameTime date;
 
-    private Dictionary<string, string> DictFlag;
+    [SerializeField]
+    private StringSerialDictionary DictFlag;
+
+    [SerializeField]
+    private string historyRecord;
 }
 

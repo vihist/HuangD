@@ -1,6 +1,7 @@
 EVENT_TIANX_YHSX={
 	title='EVENT_TIANX_YHSX_title',
 	desc='EVENT_TIANX_YHSX_desc',
+	select_desc = '',
 
 	percondition = function(self)
 		if(GMData.Flag.Get('TX_YHSX') ~= nil) then
@@ -9,11 +10,17 @@ EVENT_TIANX_YHSX={
 		return true
 	end,
 
+	historyrecord = function(self)
+		return self.title..self.select_desc
+	end,
+
     option1={
         desc = function()
             return 'op1_test'
-        end,
-        process = function(self)
+		end,
+		
+		process = function(self)
+			EVENT_TIANX_YHSX.select_desc = 'op1_test'
             GMData.Flag.Set('TX_YHSX', '')
             return 'EVENT_STAB_DEC', 1
         end
@@ -34,6 +41,10 @@ EVENT_TIANX_YHSX_END={
 	    else
 	        return false
 	    end
+	end,
+
+	historyrecord = function(self)
+		return self.title
 	end,
 
     option1={
@@ -133,6 +144,10 @@ EVENT_TIANX_YHSX_JQ1={
 	    self.suggest = self.GetSuggest(self, param)
 	end,
 
+	historyrecord = function(self)
+		return self.title
+	end,
+
     option1={
         desc = function()
            return 'op1_test'
@@ -210,13 +225,17 @@ EVENT_EMP_HEATH_DEC={
 		desc=string.format(self.desc, param)
 	end,
 
+	historyrecord = function(self)
+		return self.title
+	end,
+
 	option1={
 		desc = function()
             return 'op1_test'
         end,
 
 		process = function(self, op)
-			GMData.empHeath.Dec(1)
+			GMData.Emp.Heath.Dec(1)
 		end
 	}
 }
@@ -245,7 +264,55 @@ EVENT_EMP_HEATH_INC={
         end,
 
 		process = function(self, op)
-			GMData.empHeath.Inc(1)
+			GMData.Emp.Heath.Inc(1)
+		end
+	}
+}
+
+EVENT_EMP_DIE={
+	title='EVENT_EMP_DIE',
+	desc='EVENT_EMP_DIE',
+
+	percondition = function(self)	
+		local heath = GMData.Emp.Heath.Value()
+
+		if (heath >= 5) then
+			return false;
+		end
+
+		if(heath == 0) then
+			return true
+		end
+
+		local prb = 0.0
+		if(heath == 4) then
+			prb = 0.001
+		elseif(heath == 3) then
+			prb = 0.01
+		elseif(heath == 2) then
+			prb = 0.05
+		elseif(heath == 1) then
+			prb = 0.1
+		end
+
+        if(Probability.IsProbOccur(prb)) then
+            return true
+        end
+
+		return false
+	end,
+
+	historyrecord = function(self)
+		return self.title
+	end,
+
+	option1={
+		desc = function()
+            return 'op1_test'
+        end,
+
+		process = function(self, op)
+			GMData.Emp.Die()
 		end
 	}
 }
@@ -280,6 +347,10 @@ EVENT_SG_ILL_RESIGN={
 
 	initialize = function(self, param)
 		self.desc=string.format(self.desc, param)
+	end,
+
+	historyrecord = function(self)
+		return self.title
 	end,
 
 	option1={
@@ -322,13 +393,17 @@ EVENT_SG_SUICDIE={
 		return false
 	end,
 
+	historyrecord = function(self)
+		return self.title
+	end,
+
 	option1={
 		desc = function()
             return 'op1_test'
         end,
 		process = function(self, op)
-		    print(EVENT_SG_ILL_RESIGN.personname)
-			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_ILL_RESIGN.personname ))
+		    print(EVENT_SG_SUICDIE.personname)
+			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_SUICDIE.personname ))
 			person:Die()
 			GMData.Flag.Set('TX_YHSX', 'DIE')
 			return 'EVENT_STAB_DEC', 1
@@ -364,24 +439,21 @@ EVENT_SG_EMPTY={
 		return false
 	end,
 
+	historyrecord = function(self)
+		return self.title
+	end,
 
 	initialize = function(self, param)
-		local personsSHI = GMData.GetPersonArray(Selector.ByOffice('SQX').ByFaction('SHI'))
-		table.sort(personsSHI, function(a, b)
-		    return a.score > b.score
-		end)
+		local tableSelect = {}
 
-        local tableSelect = {personsSHI[1], personsSHI[2]}
-
-        local personsXun = GMData.GetPersonArray(Selector.ByOffice('SQX').ByFaction('XUN'))
-		table.sort(personsXun, function(a, b)
-		    return a.score > b.score
-		end)
-
-		table.insert(tableSelect, personsXun[1])
-        table.insert(tableSelect, personsXun[2])
-
-        table.removeElem(tableSelect, nil)
+		local factions = GMData.GetFactionArray()
+		for i =1, #factions do
+			local persons = GMData.GetPersonArray(Selector.ByOffice('JQX').ByFaction(factions[i].name))
+			table.sort(persons, function(a, b)
+				return a.score > b.score
+			end)
+			table.insertRange(tableSelect, persons, 2)
+		end
 
 		table.sort(tableSelect, function(a, b)
 		    return a.score > b.score
@@ -403,7 +475,7 @@ EVENT_SG_EMPTY={
 
 	option2={
 		desc = function()
-            return 'op1_test'..EVENT_SG_EMPTY.suggest2
+            return 'op2_test'..EVENT_SG_EMPTY.suggest2
         end,
 		process = function(self, op)
 		    GMData.Appoint(EVENT_SG_EMPTY.suggest2, EVENT_SG_EMPTY.officename)
@@ -412,7 +484,7 @@ EVENT_SG_EMPTY={
 
 	option3={
 		desc = function()
-            return 'op1_test'..EVENT_SG_EMPTY.suggest3
+            return 'op3_test'..EVENT_SG_EMPTY.suggest3
         end,
 		process = function(self, op)
 		    GMData.Appoint(EVENT_SG_EMPTY.suggest3, EVENT_SG_EMPTY.officename)

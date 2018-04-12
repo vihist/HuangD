@@ -42,6 +42,12 @@ public class MainScene : MonoBehaviour
 	{
         onRefresh();
 		OnKeyBoard();
+
+        if (MyGame.Inst.gameEnd)
+        {
+            SceneManager.LoadSceneAsync("EndScene", LoadSceneMode.Single);
+        }
+
     }
 
     public void OnSelectScene(Toggle toggle)
@@ -72,6 +78,12 @@ public class MainScene : MonoBehaviour
 		GameFrame.GetInstance ().OnSave ();
 		panelCenter.SetActive (false);
 	}
+
+    public void OnExit()
+    {
+        panelCenter.SetActive (false);
+        MyGame.Inst.gameEnd = true;
+    }
 
     private void onRefresh()
     {

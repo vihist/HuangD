@@ -71,7 +71,6 @@ class ChaoChenUI
 			personName.text = "--";
 			personScore.gameObject.SetActive (false);
 			factionName.gameObject.SetActive (false);
-				
 			return;
 		}
 
@@ -81,6 +80,8 @@ class ChaoChenUI
 
 		personScore.Find ("value").GetComponent<Text> ().text = p.score.ToString();
 		factionName.Find ("value").GetComponent<Text> ().text = f.name;
+        personScore.gameObject.SetActive (true);
+        factionName.gameObject.SetActive (true);
 	}
 
 	string UIKey;

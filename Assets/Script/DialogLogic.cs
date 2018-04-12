@@ -23,8 +23,9 @@ public class DialogLogic : MonoBehaviour
 
 
 	public delegate string DelegateProcess (string op, out string nextParam);
+    public delegate string DelegateHistory ();
 
-	public static GameObject newDialogInstace(string title, string content, KeyValuePair<bool, string>[] options, DelegateProcess delegateProcess)
+    public static GameObject newDialogInstace(string title, string content, KeyValuePair<bool, string>[] options, DelegateProcess delegateProcess, DelegateHistory delegateHistory)
 	{
 		GameObject UIRoot = GameObject.Find("Canvas").gameObject;
 		GameObject dialog = Instantiate(Resources.Load(string.Format("Prefabs/Dialog/Dialog_{0}Btn", options.Length)), UIRoot.transform) as GameObject;
@@ -49,6 +50,7 @@ public class DialogLogic : MonoBehaviour
         }
 
 		dialog.GetComponent<DialogLogic> ().delegateProcess = delegateProcess;
+        dialog.GetComponent<DialogLogic> ().delegateHistory = delegateHistory;
         dialog.GetComponent<DialogLogic> ().title = title;
         return dialog;
 	}
@@ -64,6 +66,12 @@ public class DialogLogic : MonoBehaviour
 		{
 			_result = "";
 		}
+
+        _historyrecord = delegateHistory();
+        if (_historyrecord == null) 
+        {
+            _historyrecord = "";
+        }
     }
 
 	public string result
@@ -82,8 +90,19 @@ public class DialogLogic : MonoBehaviour
 		}
 	}
 
+    public string historyrecord
+    {
+        get
+        {
+            return _historyrecord;
+        }
+    }
+
 	private DelegateProcess delegateProcess;
+    private DelegateHistory delegateHistory;
+
     private string title;
 	private string _result;
 	private string _nexparam;
+    private string _historyrecord;
 }

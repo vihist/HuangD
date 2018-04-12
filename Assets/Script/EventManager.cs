@@ -121,6 +121,11 @@ public class GMEvent
 		}
 	}
 
+    public string Historyrecord()
+    {
+        return itf.historyrecord();
+    }
+
 	private ItfEvent itf;
 	private List<ItfOption> optionList;
 	private bool _isChecked;
@@ -133,6 +138,7 @@ public class EventManager
 	{  
 		foreach (ItfEvent ie in StreamManager.eventDictionary.Values) 
 		{
+            Debug.Log("percondition event"+ie.title);
 			if (!ie.percondition())
 			{
 				continue;

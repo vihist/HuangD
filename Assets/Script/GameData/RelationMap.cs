@@ -37,7 +37,21 @@ partial class MyGame
 
 		public void Set(Person p, Office o)
 		{
-			Inst.DictOffce2Person.Add (o.name, p.name);
+            string oldoffice = "";
+            foreach (KeyValuePair<string, string> of in Inst.DictOffce2Person) 
+            {
+                if (of.Value == p.name) 
+                {
+                    oldoffice = of.Key;
+                }
+            }
+
+            if (oldoffice != "")
+            {
+                Inst.DictOffce2Person[oldoffice] = "";
+            }
+
+			Inst.DictOffce2Person[o.name]=p.name;
 		}
 
 		public Person GetPerson(Office o)
