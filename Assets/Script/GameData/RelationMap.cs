@@ -119,20 +119,36 @@ partial class MyGame
 
             List<Person> SelectPerson = Persons.Where(Selector.Complie<Person>()).ToList();
 
-            return GetOffice(SelectPerson.ToArray());
+            List<Office> ret = GetOffice(SelectPerson.ToArray());
+
+            if (Selector.needNull)
+            {
+                string officeName = GetOffice("");
+
+                if(ListOffice != null && ListOffice.Find(x=>x.name == officeName) == null)
+                {
+                    return ret;
+                }
+
+
+                Office  office = Inst.officeManager.GetByName (officeName);
+                if (office == null) 
+                {
+                    office = Inst.femaleOfficeManager.GetByName (officeName);
+                }
+
+                if (office != null)
+                {
+                    ret.Add(office);
+                }
+            }
+
+            return ret;
         }
 
 		public Office GetOffice(Person p)
-		{
-			string officeName = "";
-			foreach (KeyValuePair<string, string> kvp in Inst.DictOffce2Person)
-			{
-				if (kvp.Value.Equals(p.name))
-				{ 
-					officeName = kvp.Key;
-				}
-			}
-
+        {
+            string officeName = GetOffice(p.name);
 			if (officeName == "") 
 			{
 				return null;
@@ -145,6 +161,19 @@ partial class MyGame
 			}
 			return office;
 		}
+
+        public string GetOffice(string p)
+        {
+            foreach (KeyValuePair<string, string> kvp in Inst.DictOffce2Person)
+            {
+                if (kvp.Value.Equals(p))
+                { 
+                    return kvp.Key;
+                }
+            }
+
+            return "";
+        }
 
         public List<Office> GetOffice(Person[] Persons)
         {

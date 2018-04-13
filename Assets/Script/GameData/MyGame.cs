@@ -155,7 +155,7 @@ public partial class MyGame
         }
         if (!selecor.persons.empty)
         {
-            lstResult = relOffice2Person.GetOfficeBySelector(selecor.offices, lstResult);
+            lstResult = relOffice2Person.GetOfficeBySelector(selecor.persons, lstResult);
         }
         if (!selecor.factions.empty)
         {

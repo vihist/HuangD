@@ -482,16 +482,20 @@ EVENT_JQ_EMPTY={
         self.suggest2=''
         self.suggest3=''
 
-	    array = {'SG1', 'SG2', 'SG3'}
-        for  i=1,#array do
-			local person = GMData.GetPerson(Selector.ByOffice(array[i]))
-            if( person == nil ) then
-                self.officename = array[i]
-                return true
-            end
+		local office = GMData.GetOffice(Selector.ByOffice('JQX').ByPerson(''))
+		if(office == nil) then			
+			return false
 		end
 
-		return false
+		print('EVENT_JQ_EMPTY*************************************'..office.name)
+
+		local person = GMData.GetPerson(Selector.ByOffice('SG1'))
+		if(person == nil) then			
+			return false
+		end
+
+		self.officename = office.name
+		return true
 	end,
 
 	historyrecord = function(self)
@@ -501,13 +505,21 @@ EVENT_JQ_EMPTY={
 	initialize = function(self, param)
 		local tableSelect = {}
 
+		local factionSG1 = GMData.GetFaction(Selector.ByOffice('SG1'))
+
 		local factions = GMData.GetFactionArray()
 		for i =1, #factions do
-			local persons = GMData.GetPersonArray(Selector.ByOffice('JQX').ByFaction(factions[i].name))
+			local persons = GMData.GetPersonArray(Selector.ByOffice('CSX').ByFaction(factions[i].name))
 			table.sort(persons, function(a, b)
 				return a.score > b.score
 			end)
-			table.insertRange(tableSelect, persons, 2)
+			
+			if(factionSG1.name == factions[i].name) then
+				table.insertRange(tableSelect, persons, 2)
+			else
+				table.insertRange(tableSelect, persons, 1)
+			end
+			
 		end
 
 		table.sort(tableSelect, function(a, b)
@@ -521,28 +533,28 @@ EVENT_JQ_EMPTY={
 
 	option1={
 		desc = function()
-            return 'op1_test'..EVENT_SG_EMPTY.suggest1
+            return 'op1_test'..EVENT_JQ_EMPTY.suggest1
         end,
 		process = function(self, op)
-		     GMData.Appoint(EVENT_SG_EMPTY.suggest1, EVENT_SG_EMPTY.officename)
+		     GMData.Appoint(EVENT_JQ_EMPTY.suggest1, EVENT_JQ_EMPTY.officename)
 		end
 	},
 
 	option2={
 		desc = function()
-            return 'op2_test'..EVENT_SG_EMPTY.suggest2
+            return 'op2_test'..EVENT_JQ_EMPTY.suggest2
         end,
 		process = function(self, op)
-		    GMData.Appoint(EVENT_SG_EMPTY.suggest2, EVENT_SG_EMPTY.officename)
+		    GMData.Appoint(EVENT_JQ_EMPTY.suggest2, EVENT_JQ_EMPTY.officename)
 		end
 	},
 
 	option3={
 		desc = function()
-            return 'op3_test'..EVENT_SG_EMPTY.suggest3
+            return 'op3_test'..EVENT_JQ_EMPTY.suggest3
         end,
 		process = function(self, op)
-		    GMData.Appoint(EVENT_SG_EMPTY.suggest3, EVENT_SG_EMPTY.officename)
+		    GMData.Appoint(EVENT_JQ_EMPTY.suggest3, EVENT_JQ_EMPTY.officename)
 		end
 	}
 }

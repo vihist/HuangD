@@ -76,6 +76,7 @@ public partial class MyGame
             }
 
 			ByPersonElem.EqualList.AddRange (key);
+
 			return this;
 		}
 
@@ -86,14 +87,26 @@ public partial class MyGame
                 throw new ArgumentException("by office seletor already have value!");
             }
 
-            if (key[0] == "JQX")
+            switch (key[0])
             {
-                ByOfficeElem.EqualList.AddRange(new List<string>{"JQ1", "JQ2", "JQ3", "JQ4", "JQ5", "JQ6", "JQ7", "JQ8", "JQ9"});
-                return this;
+                case "JQX":
+                    ByOfficeElem.EqualList.AddRange(new List<string>{"JQ1", "JQ2", "JQ3", "JQ4", "JQ5", "JQ6", "JQ7", "JQ8", "JQ9"});
+                    break;
+
+                case "CSX":
+                    ByOfficeElem.EqualList.AddRange(new List<string>{"CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "CS8", "CS9"});
+                    break;
+
+                case "SGX":
+                    ByOfficeElem.EqualList.AddRange(new List<string>{"SG1", "SG2", "SG3"});
+                    break;
+
+                default:
+                    ByOfficeElem.EqualList.AddRange(key);
+                    break;
             }
 
-			ByOfficeElem.EqualList.AddRange(key);
-			return this;
+            return this;
 		}
 
 		public BySelector _ByFaction(params string[] key)
@@ -194,6 +207,14 @@ public partial class MyGame
 				return (EqualList.Count == 0 && UnequalList.Count == 0);
 			}
 		}
+
+        public bool needNull
+        {
+            get 
+            {
+                return EqualList.Contains("");
+            }
+        }
 
         public Func<T, bool>  Complie<T>()
         {
