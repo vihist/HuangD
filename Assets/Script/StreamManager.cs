@@ -73,24 +73,25 @@ public class StreamManager
 		AnaylizePersonName ();
 		AnaylizeYearName ();
 		AnaylizeDynastyName ();
+
 	}
 
 	private void LoadEvent()
 	{
 		foreach (string key in luaenv.Global.GetKeys<string> ())
 		{
-			if (!key.Contains ("EVENT_")) 
+            if (key.StartsWith ("EVENT_")) 
 			{
-				continue;
-			}
-			Debug.Log ("anaylize " + key);
+                Debug.Log ("anaylize " + key);
 
-			ItfEvent value = luaenv.Global.Get<string, ItfEvent> (key);
-			eventDictionary.Add (key, value);
+                ItfEvent value = luaenv.Global.Get<string, ItfEvent> (key);
+                eventDictionary.Add (key, value);
+			}
 		}
 
         Debug.Log("Load event cout:" + eventDictionary.Count.ToString());
     }
+
 
 	private void AnaylizePersonName()
 	{
@@ -193,6 +194,15 @@ public class StreamManager
 		end
 
         event_metatable = {
+            KEY = '',
+            TITLE = '',
+            DESC = '',
+            desc = function(self)
+               return self.DESC
+            end,
+            title = function(self)
+               return self.TTILE
+             end,           
             initialize = function(self, param)
             end,
             historyrecord = function(self)
@@ -200,8 +210,11 @@ public class StreamManager
         }
 
         for k,v in pairs(_G) do
-            if type(v) == ""table"" and string.find(k, ""EVENT_"") ~= nil then
+            if type(v) == ""table"" and string.find(k, ""EVENT_"") == 1 then
                 setmetatable(v, { __index = event_metatable })
+                v.KEY = k
+                v.TTILE = _G['TEXT_'..k..'_title']
+                v.DESC = _G['TEXT_'..k..'_desc']
             end
         end
 
@@ -239,6 +252,11 @@ public class StreamManager
                 return factions[1]
             end,
             
+            GetOffice = function(name)
+                local offices = listToTable(CS.MyGame.Inst:GetOffice(name))
+                return offices[1]
+            end,
+
             Appoint = function(person, office)
                 CS.MyGame.Inst:Appoint(person, office)
             end,
@@ -341,8 +359,9 @@ public interface ItfOption
 [CSharpCallLua]
 public interface ItfEvent
 {
-	string title { get; }
-	string desc { get; }
+    string KEY { get;}
+    string title();
+    string desc();
 	bool percondition () ;
 	void initialize(string param);
     string historyrecord();

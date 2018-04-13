@@ -1,7 +1,11 @@
 EVENT_TIANX_YHSX={
-	title='EVENT_TIANX_YHSX_title',
-	desc='EVENT_TIANX_YHSX_desc',
 	select_desc = '',
+
+	desc = function(self)
+		local office = GMData.GetOffice(Selector.ByOffice('JQ1'))
+		local person = GMData.GetPerson(Selector.ByOffice('JQ1'))
+		return string.format(self.DESC, office.name, person.name)
+	end,
 
 	percondition = function(self)
 		if(GMData.Flag.Get('TX_YHSX') ~= nil) then
@@ -11,7 +15,7 @@ EVENT_TIANX_YHSX={
 	end,
 
 	historyrecord = function(self)
-		return self.title..self.select_desc
+		return self.TITLE..self.select_desc
 	end,
 
     option1={
@@ -28,9 +32,6 @@ EVENT_TIANX_YHSX={
 }
 
 EVENT_TIANX_YHSX_END={
-	title='EVENT_TIANX_YHSX_END_title',
-	desc='EVENT_TIANX_YHSX_END_desc',
-
 	percondition = function(self)
 	    if(GMData.Flag.Get('TX_YHSX') == nil) then
 	        return false
@@ -44,7 +45,7 @@ EVENT_TIANX_YHSX_END={
 	end,
 
 	historyrecord = function(self)
-		return self.title
+		return self.TITLE
 	end,
 
     option1={
@@ -58,8 +59,6 @@ EVENT_TIANX_YHSX_END={
 }
 
 EVENT_STAB_DEC = {
-	title='EVENT_STAB_DEC_title',
-	desc='EVENT_STAB_DEC_desc',
 
     value=0,
 
@@ -96,9 +95,6 @@ EVENT_STAB_DEC = {
 }
 
 EVENT_STAB_INC = {
-	title='EVENT_STAB_INC_title',
-	desc='EVENT_STAB_INC_desc',
-
     value=0,
 
 	percondition = function(self)
@@ -120,9 +116,6 @@ EVENT_STAB_INC = {
 }
 
 EVENT_TIANX_YHSX_JQ1={
-	title='EVENT_TIANX_YHSX_JQ1_title',
-	desc='EVENT_TIANX_YHSX_JQ1_desc',
-
     suggest='',
 
 	percondition = function(self)
@@ -145,7 +138,7 @@ EVENT_TIANX_YHSX_JQ1={
 	end,
 
 	historyrecord = function(self)
-		return self.title
+		return self.TITLE
 	end,
 
     option1={
@@ -204,9 +197,6 @@ EVENT_TIANX_YHSX_JQ1={
 }
 
 EVENT_EMP_HEATH_DEC={
-	title='EMP_HEATH_DEC',
-	desc='EMP_HEATH_DEC',
-
 	percondition = function(self)
 	    local value = 0.001
 
@@ -222,11 +212,10 @@ EVENT_EMP_HEATH_DEC={
 	end,
 
 	initialize = function(self, param)
-		desc=string.format(self.desc, param)
 	end,
 
 	historyrecord = function(self)
-		return self.title
+		return self.TITLE
 	end,
 
 	option1={
@@ -241,9 +230,6 @@ EVENT_EMP_HEATH_DEC={
 }
 
 EVENT_EMP_HEATH_INC={
-	title='EMP_HEATH_INC',
-	desc='EMP_HEATH_INC',
-
 	percondition = function(self)
 	    local value = 0.001
 
@@ -255,7 +241,6 @@ EVENT_EMP_HEATH_INC={
 	end,
 
 	initialize = function(self, param)
-		desc=string.format(self.desc, param)
 	end,
 
 	option1={
@@ -270,9 +255,6 @@ EVENT_EMP_HEATH_INC={
 }
 
 EVENT_EMP_DIE={
-	title='EVENT_EMP_DIE',
-	desc='EVENT_EMP_DIE',
-
 	percondition = function(self)	
 		local heath = GMData.Emp.Heath.Value()
 
@@ -303,7 +285,7 @@ EVENT_EMP_DIE={
 	end,
 
 	historyrecord = function(self)
-		return self.title
+		return self.TITLE
 	end,
 
 	option1={
@@ -318,8 +300,6 @@ EVENT_EMP_DIE={
 }
 
 EVENT_SG_ILL_RESIGN={
-	title='EVENT_SG_ILL_RESIGN',
-	desc='EVENT_SG_ILL_RESIGN%s__',
 	personname='',
 
 	percondition = function(self)
@@ -338,19 +318,21 @@ EVENT_SG_ILL_RESIGN={
         end
 
         if(Probability.IsProbOccur(prob)) then
-
             return true
         end
 
 		return false
 	end,
 
+	desc = function(self)
+		return string.format(self.TITLE, self.personname)
+	end,
+
 	initialize = function(self, param)
-		self.desc=string.format(self.desc, param)
 	end,
 
 	historyrecord = function(self)
-		return self.title
+		return self.TITLE
 	end,
 
 	option1={
@@ -367,8 +349,6 @@ EVENT_SG_ILL_RESIGN={
 }
 
 EVENT_SG_SUICDIE={
-	title='EVENT_SG_SUICDIE',
-	desc='EVENT_SG_SUICDIE%s__',
 	personname='',
 
 	percondition = function(self)
@@ -394,7 +374,7 @@ EVENT_SG_SUICDIE={
 	end,
 
 	historyrecord = function(self)
-		return self.title
+		return self.TITLE
 	end,
 
 	option1={
@@ -412,9 +392,6 @@ EVENT_SG_SUICDIE={
 }
 
 EVENT_SG_EMPTY={
-	title='EVENT_SG_EMPTY',
-	desc='EVENT_SG_EMPTY%s__',
-
 	officename='',
 
     suggest1='',
@@ -440,7 +417,85 @@ EVENT_SG_EMPTY={
 	end,
 
 	historyrecord = function(self)
-		return self.title
+		return self.TITLE
+	end,
+
+	initialize = function(self, param)
+		local tableSelect = {}
+
+		local factions = GMData.GetFactionArray()
+		for i =1, #factions do
+			local persons = GMData.GetPersonArray(Selector.ByOffice('JQX').ByFaction(factions[i].name))
+			table.sort(persons, function(a, b)
+				return a.score > b.score
+			end)
+			table.insertRange(tableSelect, persons, 2)
+		end
+
+		table.sort(tableSelect, function(a, b)
+		    return a.score > b.score
+		end)
+
+        self.suggest1 = tableSelect[1].name
+        self.suggest2 = tableSelect[2].name
+        self.suggest3 = tableSelect[3].name
+	end,
+
+	option1={
+		desc = function()
+            return 'op1_test'..EVENT_SG_EMPTY.suggest1
+        end,
+		process = function(self, op)
+		     GMData.Appoint(EVENT_SG_EMPTY.suggest1, EVENT_SG_EMPTY.officename)
+		end
+	},
+
+	option2={
+		desc = function()
+            return 'op2_test'..EVENT_SG_EMPTY.suggest2
+        end,
+		process = function(self, op)
+		    GMData.Appoint(EVENT_SG_EMPTY.suggest2, EVENT_SG_EMPTY.officename)
+		end
+	},
+
+	option3={
+		desc = function()
+            return 'op3_test'..EVENT_SG_EMPTY.suggest3
+        end,
+		process = function(self, op)
+		    GMData.Appoint(EVENT_SG_EMPTY.suggest3, EVENT_SG_EMPTY.officename)
+		end
+	}
+}
+
+EVENT_JQ_EMPTY={
+	officename='',
+
+    suggest1='',
+    suggest2='',
+    suggest3='',
+
+	percondition = function(self)
+	    self.officename=''
+	    self.suggest1=''
+        self.suggest2=''
+        self.suggest3=''
+
+	    array = {'SG1', 'SG2', 'SG3'}
+        for  i=1,#array do
+			local person = GMData.GetPerson(Selector.ByOffice(array[i]))
+            if( person == nil ) then
+                self.officename = array[i]
+                return true
+            end
+		end
+
+		return false
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
 	end,
 
 	initialize = function(self, param)

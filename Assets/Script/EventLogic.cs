@@ -32,7 +32,7 @@ public class EventLogic : MonoBehaviour
         {
 			yield return new WaitForSeconds(0.5f);
 
-            dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options, eventobj.SelectOption, eventobj.Historyrecord);
+            dialog = DialogLogic.newDialogInstace(eventobj.KEY, eventobj.content, eventobj.options, eventobj.SelectOption, eventobj.Historyrecord);
 
 			yield return new WaitUntil (isChecked);
 

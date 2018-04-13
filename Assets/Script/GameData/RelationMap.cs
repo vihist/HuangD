@@ -85,7 +85,7 @@ partial class MyGame
 				listResult.Add (p);
 			}
 
-			return listResult;
+            return listResult;
 		}
 
 		public List<Person> GetPersonBySelector(SelectElem Selector, List<Person> ListPerson)
@@ -97,13 +97,30 @@ partial class MyGame
             }
             else
             {
-                Offices = GetOffice(ListPerson.ToArray());
+                Offices = GetOffice(ListPerson.ToArray()).ToArray();
             }
 
             List<Office> SelectOffices = Offices.Where(Selector.Complie<Office>()).ToList();
 
             return GetPerson(SelectOffices.ToArray());
 		}
+
+        public List<Office> GetOfficeBySelector(SelectElem Selector, List<Office> ListOffice)
+        {
+            Person[] Persons = null;
+            if (ListOffice == null)
+            {
+                Persons = Inst.personManager.GetByName(Inst.DictOffce2Person.Values.ToArray());
+            }
+            else
+            {
+                Persons = GetPerson(ListOffice.ToArray()).ToArray();
+            }
+
+            List<Person> SelectPerson = Persons.Where(Selector.Complie<Person>()).ToList();
+
+            return GetOffice(SelectPerson.ToArray());
+        }
 
 		public Office GetOffice(Person p)
 		{
@@ -129,7 +146,7 @@ partial class MyGame
 			return office;
 		}
 
-        public Office[] GetOffice(Person[] Persons)
+        public List<Office> GetOffice(Person[] Persons)
         {
             List<Office> listResult = new List<Office>();
             foreach(Person p in Persons)
@@ -141,7 +158,7 @@ partial class MyGame
                 }
             }
 
-            return listResult.ToArray();
+            return listResult;
 
         }
 

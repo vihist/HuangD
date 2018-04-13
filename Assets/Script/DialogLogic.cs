@@ -35,7 +35,7 @@ public class DialogLogic : MonoBehaviour
         Text txContent = dialog.transform.Find("content").GetComponent<Text>();
 
         txTitle.text = title;
-		txContent.text = content;
+        txContent.text = content;
 
         for(int i=0; i<options.Length; i++)
         {

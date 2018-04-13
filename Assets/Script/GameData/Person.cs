@@ -104,7 +104,7 @@ public partial class MyGame
             return lstPerson.Find(x => x.name == name);
         }
 
-        public List<Person> GetByName(string[] names)
+        public Person[] GetByName(string[] names)
         {
             List<Person> lstResult = new List<Person>();
             foreach (string name in names)
@@ -118,7 +118,7 @@ public partial class MyGame
                 lstResult.Add(o);
             }
 
-            return lstResult;
+            return lstResult.ToArray();
         }
 
         public int Count

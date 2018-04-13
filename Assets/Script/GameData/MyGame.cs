@@ -139,6 +139,50 @@ public partial class MyGame
         return lstResult.ToArray();
     }
 
+    public Office[] GetOffice(BySelector selecor)
+    {
+        if (selecor.empty)
+        {
+            throw new ArgumentException ("seletor is empty!");
+        }
+
+        Debug.Log(String.Format("GetOffice {0}", selecor.ToString()));
+
+        List<Office> lstResult = null;
+        if (!selecor.offices.empty)
+        {
+            lstResult = officeManager.GetOfficeBySelector(selecor.offices);
+        }
+        if (!selecor.persons.empty)
+        {
+            lstResult = relOffice2Person.GetOfficeBySelector(selecor.offices, lstResult);
+        }
+        if (!selecor.factions.empty)
+        {
+            List<Person>  listPerson = relFaction2Person.GetPersonBySelector(selecor.factions, null);
+
+            List<string> listPersonName = new List<string>();
+            foreach(Person p in listPerson)
+            {
+                listPersonName.Add(p.name);
+            }
+
+            BySelector selectbyPerson = Selector.ByPerson(listPersonName.ToArray());
+
+            lstResult = relOffice2Person.GetOfficeBySelector(selectbyPerson.persons, lstResult);
+        }
+
+        if (lstResult == null)
+        {
+            lstResult = new List<Office>();
+        }
+
+        var listDebug = from o in lstResult select o.name;
+        Debug.Log(String.Format("GetOffice result:{0}", string.Join(",", listDebug.ToArray())));
+
+        return lstResult.ToArray ();
+    }
+
     public void   SetFlag(string key, string value)
     {
         DictFlag[key] = value;

@@ -13,14 +13,22 @@ public class GMEvent
 
 		optionList = new List<ItfOption> ();
 
-        Debug.Log("Event Start:" + itf.title);
+        Debug.Log("Event Start:" + itf.title());
 	}
+
+    public string KEY
+    {
+        get 
+        {
+            return itf.KEY;
+        }
+    }
 
 	public string title
 	{
 		get 
 		{
-			return itf.title;
+            return itf.title();
 		}
 	}
 
@@ -28,7 +36,7 @@ public class GMEvent
 	{
 		get 
 		{
-			return itf.desc;
+            return itf.desc();
 		}
 	}
 
@@ -138,7 +146,7 @@ public class EventManager
 	{  
 		foreach (ItfEvent ie in StreamManager.eventDictionary.Values) 
 		{
-            Debug.Log("percondition event"+ie.title);
+            Debug.Log("percondition event"+ie.KEY);
 			if (!ie.percondition())
 			{
 				continue;
