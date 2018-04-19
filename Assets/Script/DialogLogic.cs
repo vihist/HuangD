@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using WDT;
+
+using XLua;
 
 public class DialogLogic : MonoBehaviour
 {
@@ -22,31 +25,55 @@ public class DialogLogic : MonoBehaviour
 
 
 
-	public delegate string DelegateProcess (string op, out string nextParam);
+    public delegate object DelegateProcess (string op, out string nextParam);
     public delegate string DelegateHistory ();
 
-    public static GameObject newDialogInstace(string title, string content, KeyValuePair<bool, string>[] options, DelegateProcess delegateProcess, DelegateHistory delegateHistory)
+    public static GameObject newDialogInstace(string title, object content, KeyValuePair<string, string>[] options, DelegateProcess delegateProcess, DelegateHistory delegateHistory)
 	{
 		GameObject UIRoot = GameObject.Find("Canvas").gameObject;
-		GameObject dialog = Instantiate(Resources.Load(string.Format("Prefabs/Dialog/Dialog_{0}Btn", options.Length)), UIRoot.transform) as GameObject;
+        GameObject dialog = null;
+        if (content.GetType() == typeof(string))
+        {
+            dialog = Instantiate(Resources.Load(string.Format("Prefabs/Dialog/Dialog_{0}Btn", options.Length)), UIRoot.transform) as GameObject;
+
+            Text txTitle = dialog.transform.Find("title").GetComponent<Text>();
+            Text txContent = dialog.transform.Find("content").GetComponent<Text>();
+
+            txTitle.text = title;
+            txContent.text = (string)content;
+        }
+        else
+        {
+            dialog = Instantiate(Resources.Load("Prefabs/Dialog/DataTablesSimple"), UIRoot.transform) as GameObject;
+
+            WDataTable wdataTable = dialog.GetComponent<WDataTable>();
+            List<List<string>> raw = (List<List<string>>)content;
+
+            IList<IList<object>> data = new List<IList<object>>();
+            for (int i = 1; i < raw.Count; i++)
+            {
+                List<object> elem = new List<object>();
+                foreach(string str in raw[i])
+                {
+                    elem.Add(str);
+                }
+
+                data.Add(elem);
+            }
+
+            wdataTable.InitDataTable(data, raw[0]);
+        }
+
 		dialog.transform.SetAsFirstSibling();
-
-        Text txTitle = dialog.transform.Find("title").GetComponent<Text>();
-        Text txContent = dialog.transform.Find("content").GetComponent<Text>();
-
-        txTitle.text = title;
-        txContent.text = content;
 
         for(int i=0; i<options.Length; i++)
         {
 			Button optionTran = dialog.transform.Find (string.Format ("option{0}", i + 1)).GetComponent<Button> ();
-			if (!options [i].Key) 
-			{
-				optionTran.enabled = false;
-			}
-
+           
 			Text txop = optionTran.transform.Find("Text").GetComponent<Text>();
 			txop.text = options[i].Value;
+
+            dialog.GetComponent<DialogLogic> ().optionName2KeyDict.Add(optionTran.name, options[i].Key);
         }
 
 		dialog.GetComponent<DialogLogic> ().delegateProcess = delegateProcess;
@@ -58,20 +85,31 @@ public class DialogLogic : MonoBehaviour
     public void OnEventButton(Button btn)
     {
         Debug.Log("Event:" + title + ", OnButton:" + btn.name);
-        
-		string name = btn.name.Replace ("option", "op");
+       
+        object ret = delegateProcess (optionName2KeyDict[btn.name], out _nexparam);
+        _result = "";
 
-		_result = delegateProcess (name, out _nexparam);
-		if (_result == null) 
-		{
-			_result = "";
-		}
-
-        _historyrecord = delegateHistory();
-        if (_historyrecord == null) 
+        if (ret == null)
         {
-            _historyrecord = "";
+            return;
         }
+
+        if (ret.GetType () == typeof(string)) 
+        {
+            _result = (string)ret;
+        } 
+        else if(ret.GetType () == typeof(LuaTable))
+        {
+            _table = new List<List<string>>();
+
+            List<object> list = ((XLua.LuaTable)ret).Cast<List<object>>();
+            foreach(object o in list)
+            {
+                _table.Add(((XLua.LuaTable)o).Cast<List<string>>());
+            }
+        }
+                    
+        _historyrecord = delegateHistory();
     }
 
 	public string result
@@ -98,6 +136,14 @@ public class DialogLogic : MonoBehaviour
         }
     }
 
+    public List<List<string>> table
+    {
+        get
+        {
+            return _table;
+        }
+    }
+
 	private DelegateProcess delegateProcess;
     private DelegateHistory delegateHistory;
 
@@ -105,4 +151,6 @@ public class DialogLogic : MonoBehaviour
 	private string _result;
 	private string _nexparam;
     private string _historyrecord;
+    private Dictionary<string, string> optionName2KeyDict = new Dictionary<string, string>();
+    private List<List<string>> _table;
 }

@@ -107,7 +107,7 @@ public partial class MyGame
         List<Faction> lstResult = null;
         if (!selecor.factions.empty)
         {
-            lstResult = factionManager.factionBySelector(selecor.persons);
+            lstResult = factionManager.factionBySelector(selecor.factions);
         }
         if (!selecor.persons.empty)
         {
@@ -219,6 +219,41 @@ public partial class MyGame
 
         relOffice2Person.Set(p, o);
 
+    }
+
+    public void PreCreatePerson2(string faction, int score)
+    {
+    }
+
+    [LuaCallCSharp]
+    public class PER_CREATE_PERSON
+    {
+        public string factionName;
+        public string personName;
+        public int  score;
+    }
+
+    public PER_CREATE_PERSON PreCreatePerson(string faction, int score)
+    {
+        Debug.Log(faction + score.ToString());
+
+        PER_CREATE_PERSON pc = new PER_CREATE_PERSON();
+        pc.factionName = faction;
+        pc.score = score;
+        pc.personName = StreamManager.personName.GetRandomMale();
+
+        return  pc;
+    }
+
+    public Person CreatePerson(PER_CREATE_PERSON p, string officename)
+    {
+        Person person = new Person(p);
+        personManager.Add(person);
+
+        relFaction2Person.Set(factionManager.GetByName(p.factionName), person);
+        Appoint(p.personName, officename);
+
+        return person;
     }
 
     private MyGame()

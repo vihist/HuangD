@@ -1,6 +1,4 @@
 EVENT_TIANX_YHSX={
-	select_desc = '',
-
 	desc = function(self)
 		local office = GMData.GetOffice(Selector.ByOffice('JQ1'))
 		local person = GMData.GetPerson(Selector.ByOffice('JQ1'))
@@ -11,20 +9,15 @@ EVENT_TIANX_YHSX={
 		if(GMData.Flag.Get('TX_YHSX') ~= nil) then
 	        return false
 	    end
-		return true
+		return false
 	end,
 
 	historyrecord = function(self)
-		return self.TITLE..self.select_desc
+		return self.TITLE
 	end,
 
     option1={
-        desc = function()
-            return 'op1_test'
-		end,
-		
 		process = function(self)
-			EVENT_TIANX_YHSX.select_desc = 'op1_test'
             GMData.Flag.Set('TX_YHSX', '')
             return 'EVENT_STAB_DEC', 1
         end
@@ -49,9 +42,6 @@ EVENT_TIANX_YHSX_END={
 	end,
 
     option1={
-        desc = function()
-            return 'op1_test'
-        end,
         process = function(self)
             GMData.Flag.Clear('TX_YHSX')
         end
@@ -85,11 +75,8 @@ EVENT_STAB_DEC = {
 	end,
 
     option1={
-        desc = function()
-            return 'op1_test'
-        end,
         process = function(self)
-            GMData.Stability.Dec(EVENT_STAB_DEC.value)
+            GMData.Stability.Dec(self.parent.value)
         end
     }
 }
@@ -106,11 +93,8 @@ EVENT_STAB_INC = {
 	end,
 
     option1={
-        desc = function()
-            return 'op1_test'
-        end,
         process = function(self)
-            GMData.Stability.Inc(EVENT_STAB_DEC.value);
+            GMData.Stability.Inc(self.parent.value);
         end
     }
 }
@@ -142,32 +126,30 @@ EVENT_TIANX_YHSX_JQ1={
 	end,
 
     option1={
-        desc = function()
-           return 'op1_test'
-        end,
         process = function(self)
             GMData.Flag.Set('TX_YHSX', 'Stab')
         end
     },
 
     option2={
+		percondition = function(self)
+			if(self.parent.suggest == '') then
+				return false
+			else
+				return true
+			end
+		end,
+
         desc = function(self)
-            if(EVENT_TIANX_YHSX_JQ1.suggest ~= '') then
-                return {string.format('op2_test%s', EVENT_TIANX_YHSX_JQ1.suggest), true}
-            else
-                return {'suggest is null', false}
-            end
+            return string.format(self.DESC, self.parent.suggest)
         end,
 
         process = function(self)
-            GMData.Flag.Set('TX_YHSX', EVENT_TIANX_YHSX_JQ1.suggest)
+            GMData.Flag.Set('TX_YHSX', self.parent.suggest)
         end
     },
 
     option3={
-        desc = function()
-            return 'op3_test'
-        end,
         process = function(self)
             GMData.Flag.Set('TX_YHSX', 'Self')
         end
@@ -219,10 +201,6 @@ EVENT_EMP_HEATH_DEC={
 	end,
 
 	option1={
-		desc = function()
-            return 'op1_test'
-        end,
-
 		process = function(self, op)
 			GMData.Emp.Heath.Dec(1)
 		end
@@ -244,10 +222,6 @@ EVENT_EMP_HEATH_INC={
 	end,
 
 	option1={
-		desc = function()
-            return 'op1_test'
-        end,
-
 		process = function(self, op)
 			GMData.Emp.Heath.Inc(1)
 		end
@@ -289,10 +263,6 @@ EVENT_EMP_DIE={
 	end,
 
 	option1={
-		desc = function()
-            return 'op1_test'
-        end,
-
 		process = function(self, op)
 			GMData.Emp.Die()
 		end
@@ -336,13 +306,8 @@ EVENT_SG_ILL_RESIGN={
 	end,
 
 	option1={
-		desc = function()
-            return 'op1_test'
-        end,
 		process = function(self, op)
-		    print(EVENT_SG_ILL_RESIGN.personname)
-			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_ILL_RESIGN.personname ))
-			person:Die()
+			GMData.Person.Die(self.parent.personname);
 			GMData.Flag.Set('TX_YHSX', 'DIE')
 		end
 	}
@@ -378,13 +343,8 @@ EVENT_SG_SUICDIE={
 	end,
 
 	option1={
-		desc = function()
-            return 'op1_test'
-        end,
 		process = function(self, op)
-		    print(EVENT_SG_SUICDIE.personname)
-			local person = GMData.GetPerson(Selector.ByPerson(EVENT_SG_SUICDIE.personname ))
-			person:Die()
+			GMData.Person.Die(self.parent.personname);
 			GMData.Flag.Set('TX_YHSX', 'DIE')
 			return 'EVENT_STAB_DEC', 1
 		end
@@ -442,29 +402,29 @@ EVENT_SG_EMPTY={
 	end,
 
 	option1={
-		desc = function()
-            return 'op1_test'..EVENT_SG_EMPTY.suggest1
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest1)
         end,
 		process = function(self, op)
-		     GMData.Appoint(EVENT_SG_EMPTY.suggest1, EVENT_SG_EMPTY.officename)
+		     GMData.Appoint(self.parent.suggest1, self.parent.officename)
 		end
 	},
 
 	option2={
-		desc = function()
-            return 'op2_test'..EVENT_SG_EMPTY.suggest2
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest2)
         end,
 		process = function(self, op)
-		    GMData.Appoint(EVENT_SG_EMPTY.suggest2, EVENT_SG_EMPTY.officename)
+		    GMData.Appoint(self.parent.suggest2, self.parent.officename)
 		end
 	},
 
 	option3={
-		desc = function()
-            return 'op3_test'..EVENT_SG_EMPTY.suggest3
+		desc = function(self)
+            return string.format(self.DESC, EVENT_SG_EMPTY.suggest3)
         end,
 		process = function(self, op)
-		    GMData.Appoint(EVENT_SG_EMPTY.suggest3, EVENT_SG_EMPTY.officename)
+		    GMData.Appoint(self.parent.suggest3, self.parent.officename)
 		end
 	}
 }
@@ -486,8 +446,6 @@ EVENT_JQ_EMPTY={
 		if(office == nil) then			
 			return false
 		end
-
-		print('EVENT_JQ_EMPTY*************************************'..office.name)
 
 		local person = GMData.GetPerson(Selector.ByOffice('SG1'))
 		if(person == nil) then			
@@ -532,29 +490,146 @@ EVENT_JQ_EMPTY={
 	end,
 
 	option1={
-		desc = function()
-            return 'op1_test'..EVENT_JQ_EMPTY.suggest1
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest1)
         end,
 		process = function(self, op)
-		     GMData.Appoint(EVENT_JQ_EMPTY.suggest1, EVENT_JQ_EMPTY.officename)
+		     GMData.Appoint(self.parent.suggest1, self.parent.officename)
 		end
 	},
 
 	option2={
-		desc = function()
-            return 'op2_test'..EVENT_JQ_EMPTY.suggest2
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest2)
         end,
 		process = function(self, op)
-		    GMData.Appoint(EVENT_JQ_EMPTY.suggest2, EVENT_JQ_EMPTY.officename)
+		    GMData.Appoint(self.parent.suggest2, self.parent.officename)
 		end
 	},
 
 	option3={
-		desc = function()
-            return 'op3_test'..EVENT_JQ_EMPTY.suggest3
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest3)
         end,
 		process = function(self, op)
-		    GMData.Appoint(EVENT_JQ_EMPTY.suggest3, EVENT_JQ_EMPTY.officename)
+		    GMData.Appoint(self.parent.suggest3, self.parent.officename)
 		end
 	}
+}
+
+EVENT_CS_EMPTY={
+	officename='',
+
+    suggest1='',
+    suggest2='',
+    suggest3='',
+
+	percondition = function(self)
+	    self.officename=''
+	    self.suggest1=''
+        self.suggest2=''
+        self.suggest3=''
+
+		local office = GMData.GetOffice(Selector.ByOffice('CSX').ByPerson(''))
+		if(office == nil) then			
+			return false
+		end
+
+		local person = GMData.GetPerson(Selector.ByOffice('SG1'))
+		if(person == nil) then			
+			return false
+		end
+
+		self.officename = office.name
+		return true
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	initialize = function(self, param)
+		local tableSelect = {}
+
+		local factionSG1 = GMData.GetFaction(Selector.ByOffice('SG1'))
+
+		while(#tableSelect < 3)
+		do
+			local factionName = ''
+			if(Probability.IsProbOccur(0.5)) then
+				factionName = factionSG1.name
+			else
+				factionName = GMData.GetFaction(Selector.ByFactionNOT(factionSG1.name)).name
+			end
+
+			local temp = GMData.Person.PreCreate('WAI', 10)
+			print(temp)
+
+			table.insert(tableSelect, temp)
+		end
+
+        self.suggest1 = tableSelect[1]
+        self.suggest2 = tableSelect[2]
+        self.suggest3 = tableSelect[3]
+	end,
+
+	option1={
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest1.personName)
+        end,
+		process = function(self, op)
+			GMData.Person.Create(self.parent.suggest1, self.parent.officename)
+		end
+	},
+
+	option2={
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest2.personName)
+        end,
+		process = function(self, op)
+			GMData.Person.Create(self.parent.suggest2, self.parent.officename)
+		end
+	},
+
+	option3={
+		desc = function(self)
+            return string.format(self.DESC, self.parent.suggest3.personName)
+        end,
+		process = function(self, op)
+			GMData.Person.Create(self.parent.suggest3, self.parent.officename)
+		end
+	}
+}
+
+EVENT_CS_KAOHE={
+	KaoheTable = {},
+
+	percondition = function(self)
+		if(GMData.Date.month() == 1 and GMData.Date.day() == 2) then
+			return true
+		else
+			return fale
+		end
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	initialize = function(self, param)
+		table.remove(self.KaoheTable)
+
+		local offices = GMData.GetOfficeArray(Selector.ByOffice('CSX'))
+		for i = 1, #offices do
+			local person = GMData.GetPerson(Selector.ByOffice(offices[i].name))
+			local faction = GMData.GetFaction(Selector.ByPerson(person.name))
+			table.insert(self.KaoheTable, {KAOHE_TABLE.OFFICE, KAOHE_TABLE.NAME, KAOHE_TABLE.VALUE})
+		end
+	end,
+
+	option1={
+		process = function(self, op)
+			return self.parent.KaoheTable
+		end
+	},
 }

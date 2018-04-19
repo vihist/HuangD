@@ -181,8 +181,8 @@ public class StreamManager
 			else
 				print(name.."" is not on"")
 			end
-			requiredir(name..""/static"")
-			requiredir(name..""/event"")
+            requiredir(name..""/event"")
+			requiredir(name..""/static"")	
 			print(""********** LOAD END ""..name)
 		end
 
@@ -193,16 +193,7 @@ public class StreamManager
 			loadmod(""mod""..array[i])
 		end
 
-        event_metatable = {
-            KEY = '',
-            TITLE = '',
-            DESC = '',
-            desc = function(self)
-               return self.DESC
-            end,
-            title = function(self)
-               return self.TTILE
-             end,           
+        event_metatable = {        
             initialize = function(self, param)
             end,
             historyrecord = function(self)
@@ -213,8 +204,35 @@ public class StreamManager
             if type(v) == ""table"" and string.find(k, ""EVENT_"") == 1 then
                 setmetatable(v, { __index = event_metatable })
                 v.KEY = k
-                v.TTILE = _G['TEXT_'..k..'_title']
-                v.DESC = _G['TEXT_'..k..'_desc']
+                if(v.desc == nil) then
+                    v.desc = function(self)
+                        print(self.DESC)
+                        return self.DESC
+                    end
+                end
+                if(v.title == nil) then
+                    v.title = function(self)
+                        return self.TITLE
+                    end
+                end
+                
+                for k1,v1 in pairs(v) do
+                    if type(v1) == ""table"" and string.find(k1, ""option"") == 1 then
+                        if(v1.desc == nil) then
+                            v1.desc = function(self)
+                                print(self.DESC)
+                                return self.DESC
+                            end
+                        end
+                        if(v1.percondition == nil) then
+                            v1.percondition = function(self)
+                                return true
+                            end
+                        end
+                        v1.KEY = k1
+                        v1.parent = v
+                    end
+                end
             end
         end
 
@@ -232,8 +250,12 @@ public class StreamManager
             end 
         end
 
+        Probability = CS.Tools.Probability
         Selector = CS.MyGame.Selector
+        
+        
         GMData={
+
 	        GetPersonArray = function(name)
 		        return listToTable(CS.MyGame.Inst:GetPerson(name))
 	        end,
@@ -242,19 +264,47 @@ public class StreamManager
 		        return listToTable(CS.MyGame.Inst:GetFaction(name))
 	        end,
             
+            GetOfficeArray = function(name)
+                return listToTable(CS.MyGame.Inst:GetOffice(name))
+            end,
+
             GetPerson = function(name)
                 local persons = listToTable(CS.MyGame.Inst:GetPerson(name))
-                return persons[1]
+                if(#persons == 0) then
+                    return nil
+                end
+                if(#persons == 1) then
+                    return persons[1]
+                end
+                
+                local i = Probability.GetRandomNum(1, #persons)
+                return persons[i]
             end,
 
             GetFaction = function(name)
                 local factions = listToTable(CS.MyGame.Inst:GetFaction(name))
-                return factions[1]
+                if(#factions == 0) then
+                    return nil
+                end
+                if(#factions == 1) then
+                    return factions[1]
+                end
+                
+                local i = Probability.GetRandomNum(1, #factions)
+                return factions[i]
             end,
             
             GetOffice = function(name)
                 local offices = listToTable(CS.MyGame.Inst:GetOffice(name))
-                return offices[1]
+                if(#offices == 0) then
+                    return nil
+                end
+                if(#offices == 1) then
+                    return offices[1]
+                end
+                
+                local i = Probability.GetRandomNum(1, #offices)
+                return offices[i]
             end,
 
             Appoint = function(person, office)
@@ -327,10 +377,32 @@ public class StreamManager
                 Value = function()
                     return CS.MyGame.Inst.GetStability()
                 end
+            },
+
+            Person = {
+                PreCreate = function(faction, score)
+                    return CS.MyGame.Inst:PreCreatePerson(faction, score)
+                end,
+                
+                Create = function(pInfo, office)
+                    return CS.MyGame.Inst:CreatePerson(pInfo, office)
+                end,
+
+                Die = function(value)
+                    local person = GMData.GetPerson(Selector.ByPerson(value))
+                    person:Die()
+                end
+            },
+            
+            Date = {
+                month = function()
+                    return CS.MyGame.Inst.date.month
+                end,
+                day = function()
+                    return CS.MyGame.Inst.date.day
+                end
             }
         }
-
-		Probability = CS.Tools.Probability
     ";
 }
 
@@ -352,8 +424,10 @@ public interface ItfPersonName
 [CSharpCallLua]
 public interface ItfOption
 {
-	object desc ();
-	string process(out string result);
+    string KEY{ get;}
+    bool   percondition();
+	string desc ();
+    object process(out string result);
 }
 
 [CSharpCallLua]

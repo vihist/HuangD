@@ -11,19 +11,11 @@ public class GMEvent
 		this.itf = itf;
 		this.param = param;
 
-		optionList = new List<ItfOption> ();
+        optionDic = new Dictionary<string, ItfOption>();
 
         Debug.Log("Event Start:" + itf.title());
 	}
-
-    public string KEY
-    {
-        get 
-        {
-            return itf.KEY;
-        }
-    }
-
+        
 	public string title
 	{
 		get 
@@ -40,35 +32,19 @@ public class GMEvent
 		}
 	}
 
-	public KeyValuePair<bool, string>[] options
+	public KeyValuePair<string, string>[] options
     {
         get
         {
-			List<KeyValuePair<bool, string>> result = new List<KeyValuePair<bool, string>> ();
-			foreach (ItfOption option in optionList) 
+			List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>> ();
+            foreach (ItfOption option in optionDic.Values) 
 			{
-				object rslt = option.desc ();
+                if (!option.percondition())
+                {
+                    continue;
+                }
 
-				if (rslt.GetType () == typeof(string)) 
-				{
-					result.Add (new KeyValuePair<bool, string> (true, (string)rslt));
-				} 
-				else 
-				{
-					List<object> list = ((XLua.LuaTable)rslt).Cast<List<object>>();
-					if (list.Count == 1) 
-					{
-						result.Add (new KeyValuePair<bool, string> (true, (string)list [0]));
-					} 
-					else if (list.Count == 2) 
-					{
-						result.Add (new KeyValuePair<bool, string> ((bool)list [1], (string)list [0]));
-					} 
-					else 
-					{
-						throw new ArgumentOutOfRangeException ();
-					}
-				}
+                result.Add (new KeyValuePair<string, string> (option.KEY, option.desc ()));
 			}
 
 			return result.ToArray ();
@@ -85,49 +61,37 @@ public class GMEvent
 
 	public void Initlize()
 	{
-			itf.initialize (param);
+		itf.initialize (param);
 
-			if (itf.option1 != null)
-			{
-				optionList.Add (itf.option1);
-			}
-			if (itf.option2 != null)
-			{
-				optionList.Add (itf.option2);
-			}
-			if (itf.option3 != null)
-			{
-				optionList.Add (itf.option3);
-			}
-			if (itf.option4 != null)
-			{
-				optionList.Add (itf.option4);
-			}
-			if (itf.option5 != null)
-			{
-				optionList.Add (itf.option5);
-			}
-	}
-
-	public string SelectOption(string op, out string ret)
-	{
-		_isChecked = true;
-		switch (op) 
+		if (itf.option1 != null)
 		{
-		case "op1":
-			return optionList [0].process (out ret);
-		case "op2":
-			return optionList [1].process (out ret);
-		case "op3":
-			return optionList [2].process (out ret);
-		case "op4":
-			return optionList [3].process (out ret);
-		case "op5":
-			return optionList [4].process (out ret);
-		default:
-			throw new ArgumentOutOfRangeException();
+            optionDic.Add (itf.option1.KEY, itf.option1);
+		}
+		if (itf.option2 != null)
+		{
+            optionDic.Add (itf.option2.KEY, itf.option2);
+		}
+		if (itf.option3 != null)
+		{
+            optionDic.Add (itf.option3.KEY, itf.option3);
+		}
+		if (itf.option4 != null)
+		{
+            optionDic.Add (itf.option4.KEY, itf.option4);
+		}
+		if (itf.option5 != null)
+		{
+            optionDic.Add (itf.option5.KEY, itf.option5);
 		}
 	}
+
+    public object SelectOption(string opKey, out string ret)
+	{
+        _isChecked = true;
+
+        return optionDic[opKey].process(out ret);
+       
+    }
 
     public string Historyrecord()
     {
@@ -135,8 +99,9 @@ public class GMEvent
     }
 
 	private ItfEvent itf;
-	private List<ItfOption> optionList;
 	private bool _isChecked;
+    private Dictionary<string, ItfOption> optionDic;
+
 	private string param;
 }
 
@@ -179,6 +144,16 @@ public class EventManager
             
 		nextEvent = new GMEvent (StreamManager.eventDictionary [key], param);
 	}
+
+    public void Insert(List<List<string>> table)
+    {
+        if (table.Count == 0) 
+        {
+            return;
+        }
+
+        //nextEvent = new GMEvent ("TABLE_DIALOG", table);
+    }
 
 	private GMEvent nextEvent = null;
 }

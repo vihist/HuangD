@@ -11,7 +11,12 @@ public partial class MyGame
     [Serializable, LuaCallCSharp]
     public class Person
     {
-        public Person(Boolean isMale)
+        public Person(Boolean isMale) : this(isMale, Tools.Probability.GetRandomNum(10, 90))
+        {
+            
+        }
+
+        public Person(Boolean isMale, int score)
         {
             if (isMale)
             {
@@ -22,7 +27,13 @@ public partial class MyGame
                 _name = StreamManager.personName.GetRandomFemale();
             }
 
-            _score = Tools.Probability.GetRandomNum(10, 90);
+            _score = score;
+        }
+
+        public Person(PER_CREATE_PERSON p)
+        {
+            _name = p.personName;
+            _score = p.score;
         }
 
         public string name
@@ -144,6 +155,11 @@ public partial class MyGame
                 default:
                     break;
             }
+        }
+
+        public void Add(Person p)
+        {
+            lstPerson.Add(p);
         }
 
         [SerializeField]
