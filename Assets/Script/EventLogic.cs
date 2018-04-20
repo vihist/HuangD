@@ -19,12 +19,7 @@ public class EventLogic : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-        IList<IList<object>> aaa = new List<IList<object>>();
-        aaa.Add(new List<object>{  "1", "2", "3" } );
-
-
-
-        testWDataTable.InitDataTable(aaa, new List<string>{"a", "b", "c"});
+        
 	}
 	
 	// Update is called once per frame
@@ -36,11 +31,11 @@ public class EventLogic : MonoBehaviour
     private IEnumerator OnTimer()
 	{
 		float costtime = 0.0f;
-		foreach(GMEvent eventobj in eventManager.GetEvent ())
+        foreach(ItfEvent eventobj in eventManager.GetEvent ())
         {
 			yield return new WaitForSeconds(0.5f);
 
-            dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options, eventobj.SelectOption, eventobj.Historyrecord);
+            dialog = DialogLogic.newDialogInstace(eventobj.title, eventobj.content, eventobj.options, eventobj.SelectOption, eventobj.History);
 
 			yield return new WaitUntil (isChecked);
 
@@ -49,7 +44,7 @@ public class EventLogic : MonoBehaviour
 
 			string key = dialog.GetComponent<DialogLogic> ().result;
 			string param = dialog.GetComponent<DialogLogic> ().nexparam;
-            List<List<string>> showTable = dialog.GetComponent<DialogLogic>().table;
+            List<List<object>> showTable = dialog.GetComponent<DialogLogic>().table;
             			
 			Destroy (dialog);
 

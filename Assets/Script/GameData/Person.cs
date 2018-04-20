@@ -60,6 +60,11 @@ public partial class MyGame
             }
         }
 
+        public int ScoreAdd(int value)
+        {
+            return _score += value;
+        }
+
         public static List<Action<object, string>> ListListener = new List<Action<object, string>>();
 
         [SerializeField]

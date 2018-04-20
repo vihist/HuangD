@@ -84,7 +84,7 @@ public class StreamManager
 			{
                 Debug.Log ("anaylize " + key);
 
-                ItfEvent value = luaenv.Global.Get<string, ItfEvent> (key);
+                ItfLuaEvent value = luaenv.Global.Get<string, ItfLuaEvent> (key);
                 eventDictionary.Add (key, value);
 			}
 		}
@@ -125,7 +125,7 @@ public class StreamManager
 	public  static DynastyName dynastyName = new DynastyName();
 	public  static YearName yearName = new YearName();
 	public  static PersonName personName = new PersonName();
-	public  static Dictionary<string, ItfEvent> eventDictionary = new Dictionary<string, ItfEvent>();
+	public  static Dictionary<string, ItfLuaEvent> eventDictionary = new Dictionary<string, ItfLuaEvent>();
 
 #pragma warning disable 414  
 	private static StreamManager wInst = new StreamManager();
@@ -391,6 +391,11 @@ public class StreamManager
                 Die = function(value)
                     local person = GMData.GetPerson(Selector.ByPerson(value))
                     person:Die()
+                end,
+
+                ScoreAdd = function(name, value)
+                    local person = GMData.GetPerson(Selector.ByPerson(name))
+                    person:ScoreAdd(value)
                 end
             },
             
@@ -431,7 +436,7 @@ public interface ItfOption
 }
 
 [CSharpCallLua]
-public interface ItfEvent
+public interface ItfLuaEvent
 {
     string KEY { get;}
     string title();

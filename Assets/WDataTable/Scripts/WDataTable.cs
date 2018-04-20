@@ -56,7 +56,7 @@ namespace WDT
         private GameObject _btnObj = null;
 
         // state
-        private bool _useSelect = true;
+        private bool _useSelect = false;
         private bool _isIsRadioSelect = false;
         private readonly List<int> _selectIndexList = new List<int>();
 
@@ -200,7 +200,7 @@ namespace WDT
         /// </summary>
         /// <param name="datas">The datas.</param>
         /// <param name="columns">The columns.</param>
-        public void InitDataTable(IList<IDictionary<string, object>> datas, IList<string> columns)
+        public void InitDataTable(IList<IDictionary<string, object>> datas, IList<string> columns, string buttonDesc, Action<Button> buttonAction)
         {
             IList<IList<object>> newDatas = new List<IList<object>>();
             for (int i = 0; i < datas.Count; i++)
@@ -212,7 +212,7 @@ namespace WDT
                 }
                 newDatas.Add(subData);
             }
-            InitDataTable(newDatas, columns);
+            InitDataTable(newDatas, columns, buttonDesc, buttonAction);
         }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace WDT
         /// </summary>
         /// <param name="datas">The datas.</param>
         /// <param name="columns">The columns.</param>
-        public void InitDataTable(IList<IList<object>> datas, IList<string> columns)
+        public void InitDataTable(IList<IList<object>> datas, IList<string> columns, string buttonDesc, Action<Button> buttonAction)
         {
             if (!_CheckInputData(datas, columns))
                 return;
@@ -288,12 +288,12 @@ namespace WDT
             }
 
             var btnObject = new GameObject();
+            btnObject.name = "option1";
             btnObject.AddComponent<HorizontalLayoutGroup>();
             btnObject.transform.SetParent(_contentObject.transform);
             _btnObj = btnObject;
 
             var BgCom = btnObject.AddComponent<Image>();
-            BgCom.name = "Image";
             BgCom.color = Color.gray;
             BgCom.raycastTarget = true;
             //_rowBgList.Add(BgCom);
@@ -301,6 +301,9 @@ namespace WDT
             var btnCom = btnObject.AddComponent<Button>();
             btnCom.colors = _rowColorBlock;
             btnCom.navigation = _noneNavi;
+            btnCom.onClick.AddListener(() => { buttonAction(btnCom); });
+
+            _ConfigTextObject(btnCom.gameObject, buttonDesc);
 
             _UpdateLayoutSize();
         }
@@ -474,7 +477,7 @@ namespace WDT
 
         private void _ConfigTextObject(GameObject parentObject, string text)
         {
-            var textObject = new GameObject("text", typeof(RectTransform));
+            var textObject = new GameObject("Text", typeof(RectTransform));
             textObject.transform.SetParent(parentObject.transform);
 
             var rTrans = textObject.GetComponent<RectTransform>();
@@ -582,5 +585,7 @@ namespace WDT
             if (_useSelect)
                 SelectByIndex(index);
         }
+            
+        private Action _OnClickButton;
     }
 }

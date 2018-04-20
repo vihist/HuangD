@@ -618,17 +618,31 @@ EVENT_CS_KAOHE={
 
 	initialize = function(self, param)
 		table.remove(self.KaoheTable)
+		table.insert(self.KaoheTable, {TABLE_KAOHE_COLUM.OFFICE, TABLE_KAOHE_COLUM.NAME, TABLE_KAOHE_COLUM.FACTION, TABLE_KAOHE_COLUM.VALUE})
+
+		factionSG1 = GMData.GetFaction(Selector.ByOffice('SG1'))
 
 		local offices = GMData.GetOfficeArray(Selector.ByOffice('CSX'))
 		for i = 1, #offices do
 			local person = GMData.GetPerson(Selector.ByOffice(offices[i].name))
 			local faction = GMData.GetFaction(Selector.ByPerson(person.name))
-			table.insert(self.KaoheTable, {KAOHE_TABLE.OFFICE, KAOHE_TABLE.NAME, KAOHE_TABLE.VALUE})
+
+			local value = 0
+			if (faction.name == factionSG1.name) then
+				value = Probability.GetRandomNum(0, 5)
+			else
+				value = Probability.GetRandomNum(-3, 5)
+			end
+
+			table.insert(self.KaoheTable, {offices[i].name, person.name, faction.name, value})
 		end
 	end,
 
 	option1={
 		process = function(self, op)
+			for i=2, #self.parent.KaoheTable do
+				GMData.Person.ScoreAdd(self.parent.KaoheTable[i][2], self.parent.KaoheTable[i][4])
+			end
 			return self.parent.KaoheTable
 		end
 	},

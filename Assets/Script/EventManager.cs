@@ -3,9 +3,23 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class GMEvent
+public interface ItfEvent
 {
-	public GMEvent(ItfEvent itf, string param)
+    string title { get; }
+    object content { get; }
+    KeyValuePair<string, string>[] options { get;}
+
+    bool isChecked { get; }
+
+    void Initlize();
+    object SelectOption(string opKey, out string ret);
+    string History();
+
+}
+
+public class GMEvent : ItfEvent
+{
+	public GMEvent(ItfLuaEvent itf, string param)
 	{
 		_isChecked = false;
 		this.itf = itf;
@@ -16,7 +30,7 @@ public class GMEvent
         Debug.Log("Event Start:" + itf.title());
 	}
         
-	public string title
+    public string title
 	{
 		get 
 		{
@@ -24,7 +38,7 @@ public class GMEvent
 		}
 	}
 
-	public string content
+    public object content
 	{
 		get 
 		{
@@ -32,7 +46,7 @@ public class GMEvent
 		}
 	}
 
-	public KeyValuePair<string, string>[] options
+    public KeyValuePair<string, string>[] options
     {
         get
         {
@@ -51,7 +65,7 @@ public class GMEvent
         }
     }
     
-	public bool isChecked
+    public bool isChecked
 	{
 		get 
 		{
@@ -59,7 +73,7 @@ public class GMEvent
 		}
 	}
 
-	public void Initlize()
+    public void Initlize()
 	{
 		itf.initialize (param);
 
@@ -93,23 +107,83 @@ public class GMEvent
        
     }
 
-    public string Historyrecord()
+    public string History()
     {
         return itf.historyrecord();
     }
 
-	private ItfEvent itf;
+	private ItfLuaEvent itf;
 	private bool _isChecked;
     private Dictionary<string, ItfOption> optionDic;
 
 	private string param;
 }
 
+public class TableEvent : ItfEvent
+{
+    public TableEvent(List<List<object>> table)
+    {
+        _table = table;
+    }
+
+    public string title
+    { 
+        get
+        {
+            return "";
+        }
+    }
+
+    public object content 
+    {
+        get
+        {
+            return _table;
+        }
+    }
+
+    public KeyValuePair<string, string>[] options
+    { 
+        get
+        {
+            KeyValuePair<string, string>[] temp = { new KeyValuePair<string, string>("TABLE_BUTTON", "确认") };
+            return temp;
+        }
+    }
+
+    public bool isChecked
+    {
+        get 
+        {
+            return _isChecked;
+        }
+    }
+
+    public void Initlize()
+    {
+    }
+
+    public object SelectOption(string opKey, out string ret)
+    {
+        _isChecked = true;
+        ret = "";
+        return null;
+    }
+
+    public string History()
+    {
+        return "";
+    }
+
+    private bool _isChecked;
+    private List<List<object>> _table;
+}
+
 public class EventManager
 {
-	public IEnumerable<GMEvent> GetEvent()
+    public IEnumerable<ItfEvent> GetEvent()
 	{  
-		foreach (ItfEvent ie in StreamManager.eventDictionary.Values) 
+		foreach (ItfLuaEvent ie in StreamManager.eventDictionary.Values) 
 		{
             Debug.Log("percondition event"+ie.KEY);
 			if (!ie.percondition())
@@ -145,15 +219,15 @@ public class EventManager
 		nextEvent = new GMEvent (StreamManager.eventDictionary [key], param);
 	}
 
-    public void Insert(List<List<string>> table)
+    public void Insert(List<List<object>> table)
     {
-        if (table.Count == 0) 
+        if (table == null || table.Count == 0) 
         {
             return;
         }
 
-        //nextEvent = new GMEvent ("TABLE_DIALOG", table);
+        nextEvent = new TableEvent (table);
     }
 
-	private GMEvent nextEvent = null;
+	private ItfEvent nextEvent = null;
 }

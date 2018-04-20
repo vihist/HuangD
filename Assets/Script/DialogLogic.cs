@@ -47,31 +47,38 @@ public class DialogLogic : MonoBehaviour
             dialog = Instantiate(Resources.Load("Prefabs/Dialog/DataTablesSimple"), UIRoot.transform) as GameObject;
 
             WDataTable wdataTable = dialog.GetComponent<WDataTable>();
-            List<List<string>> raw = (List<List<string>>)content;
+            List<List<object>> raw = (List<List<object>>)content;
 
             IList<IList<object>> data = new List<IList<object>>();
             for (int i = 1; i < raw.Count; i++)
             {
-                List<object> elem = new List<object>();
-                foreach(string str in raw[i])
-                {
-                    elem.Add(str);
-                }
-
-                data.Add(elem);
+                data.Add(raw[i]);
             }
 
-            wdataTable.InitDataTable(data, raw[0]);
-        }
+            List<string> colums = new List<string>();
+            for (int i = 0; i < raw[0].Count; i++)
+            {
+                colums.Add((string)raw[0][i]);
+            }
 
+            Action<Button> t = new Action<Button>(dialog.GetComponent<DialogLogic> ().OnEventButton);
+            wdataTable.InitDataTable(data, colums, options[0].Value, t);
+        }
+            
 		dialog.transform.SetAsFirstSibling();
 
         for(int i=0; i<options.Length; i++)
         {
-			Button optionTran = dialog.transform.Find (string.Format ("option{0}", i + 1)).GetComponent<Button> ();
-           
-			Text txop = optionTran.transform.Find("Text").GetComponent<Text>();
-			txop.text = options[i].Value;
+            Transform tran = dialog.transform.Find(string.Format("option{0}", i + 1));
+            if (tran == null)
+            {
+                tran = dialog.transform.Find(string.Format("Content/option{0}", i + 1));
+            }
+
+            Button optionTran =tran.GetComponent<Button> ();
+
+            Text txop = optionTran.transform.Find("Text").GetComponent<Text>();
+            txop.text = options[i].Value;
 
             dialog.GetComponent<DialogLogic> ().optionName2KeyDict.Add(optionTran.name, options[i].Key);
         }
@@ -100,12 +107,12 @@ public class DialogLogic : MonoBehaviour
         } 
         else if(ret.GetType () == typeof(LuaTable))
         {
-            _table = new List<List<string>>();
+            _table = new List<List<object>>();
 
             List<object> list = ((XLua.LuaTable)ret).Cast<List<object>>();
             foreach(object o in list)
             {
-                _table.Add(((XLua.LuaTable)o).Cast<List<string>>());
+                _table.Add(((XLua.LuaTable)o).Cast<List<object>>());
             }
         }
                     
@@ -136,7 +143,7 @@ public class DialogLogic : MonoBehaviour
         }
     }
 
-    public List<List<string>> table
+    public List<List<object>> table
     {
         get
         {
@@ -152,5 +159,5 @@ public class DialogLogic : MonoBehaviour
 	private string _nexparam;
     private string _historyrecord;
     private Dictionary<string, string> optionName2KeyDict = new Dictionary<string, string>();
-    private List<List<string>> _table;
+    private List<List<object>> _table;
 }
