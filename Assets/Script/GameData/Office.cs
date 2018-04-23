@@ -50,7 +50,7 @@ public partial class MyGame
         public int Power;
     }
 
-    public enum ENUM_OFFICE
+    public enum ENUM_OFFICE_CENTER
     {
         [OfficeAttr(Power = 10)]
         SG1,
@@ -88,32 +88,38 @@ public partial class MyGame
         [OfficeAttr(Power = 5)]
         JQ9,
 
-        [OfficeAttr(Power = 3)]
-        CS1,
+//        [OfficeAttr(Power = 3)]
+//        CS1,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS2,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS3,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS4,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS5,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS6,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS7,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS8,
+//
+//        [OfficeAttr(Power = 3)]
+//        CS9,
+    }
 
+    public enum ENUM_OFFICE_LOCAL
+    {
         [OfficeAttr(Power = 3)]
-        CS2,
-
-        [OfficeAttr(Power = 3)]
-        CS3,
-
-        [OfficeAttr(Power = 3)]
-        CS4,
-
-        [OfficeAttr(Power = 3)]
-        CS5,
-
-        [OfficeAttr(Power = 3)]
-        CS6,
-
-        [OfficeAttr(Power = 3)]
-        CS7,
-
-        [OfficeAttr(Power = 3)]
-        CS8,
-
-        [OfficeAttr(Power = 3)]
-        CS9,
+        CS
     }
 
     public enum ENUM_OFFICE_FEMALE
@@ -150,22 +156,111 @@ public partial class MyGame
     }
 
     [Serializable, LuaCallCSharp]
-    public class OfficeManager
+    public class OfficeManager : ISerializationCallbackReceiver
     {
-        public OfficeManager(Type t)
+        public OfficeManager()
         {
-            foreach (var eOffice in Enum.GetValues(t))
+            foreach (var eOffice in Enum.GetValues(typeof(ENUM_OFFICE_CENTER)))
             {
 
                 FieldInfo field = eOffice.GetType().GetField(eOffice.ToString());
                 OfficeAttrAttribute attribute = Attribute.GetCustomAttribute(field, typeof(OfficeAttrAttribute)) as OfficeAttrAttribute;
 
-                lstOffice.Add(new Office(eOffice.ToString(), attribute.Power));
+                Office office = new Office(eOffice.ToString(), attribute.Power);
+                lstOfficeCenter.Add(office);
+               
+                DictName2Office.Add(office.name, office);
+            }
+
+
+            foreach (var eOffice in Enum.GetValues(typeof(ENUM_OFFICE_FEMALE)))
+            {
+
+                FieldInfo field = eOffice.GetType().GetField(eOffice.ToString());
+                OfficeAttrAttribute attribute = Attribute.GetCustomAttribute(field, typeof(OfficeAttrAttribute)) as OfficeAttrAttribute;
+
+                Office office = new Office(eOffice.ToString(), attribute.Power);
+                lstOfficeFemale.Add(office);
+
+                DictName2Office.Add(office.name, office);
+            }
+
+            foreach (var eOffice in Enum.GetValues(typeof(ENUM_OFFICE_LOCAL)))
+            {
+                FieldInfo field = eOffice.GetType().GetField(eOffice.ToString());
+                OfficeAttrAttribute attribute = Attribute.GetCustomAttribute(field, typeof(OfficeAttrAttribute)) as OfficeAttrAttribute;
+
+                foreach(var eZhouj in Enum.GetValues(typeof(Zhouj.ENUM_ZHOUJ)))
+                {
+
+                    Office office = new Office(eZhouj.ToString() + eOffice.ToString(), attribute.Power);
+                    lstOfficeLocal.Add(office);
+
+                    DictName2Office.Add(office.name, office);
+                }
+
+            }
+
+        }
+
+        public void OnBeforeSerialize()
+        {
+
+        }
+
+        public void OnAfterDeserialize()
+        {
+            foreach (var office in lstOfficeCenter)
+            {
+                DictName2Office.Add(office.name, office);
+            }
+
+            foreach (var office in lstOfficeFemale)
+            {
+                DictName2Office.Add(office.name, office);
+            }
+
+            foreach (var office in lstOfficeLocal)
+            {
+                DictName2Office.Add(office.name, office);
             }
         }
 
-        public Office[] GetRange(int start, int end)
+        public Office[] GetRange(Type t)
         {
+            List<Office> lstOffice = null;
+            switch (t.Name)
+            {
+                case "ENUM_OFFICE_CENTER":
+                    lstOffice = lstOfficeCenter;
+                    break;
+                case "ENUM_OFFICE_LOCAL":
+                    lstOffice = lstOfficeLocal;
+                    break;
+                case "ENUM_OFFICE_FEMALE":
+                    lstOffice = lstOfficeFemale;
+                    break;
+            }
+
+            return GetRange(t, 0, lstOffice.Count);
+        }
+
+        public Office[] GetRange(Type t, int start, int end)
+        {
+            List<Office> lstOffice = null;
+            switch (t.Name)
+            {
+                case "ENUM_OFFICE_CENTER":
+                    lstOffice = lstOfficeCenter;
+                    break;
+                case "ENUM_OFFICE_LOCAL":
+                    lstOffice = lstOfficeLocal;
+                    break;
+                case "ENUM_OFFICE_FEMALE":
+                    lstOffice = lstOfficeFemale;
+                    break;
+            }
+
             if (start > lstOffice.Count || start >= end)
             {
                 Office[] ps = { };
@@ -180,25 +275,33 @@ public partial class MyGame
             return lstOffice.GetRange(start, end - start).ToArray();
         }
 
-        public int Count
+        public int CountCenter
         {
             get
             {
-                return lstOffice.Count;
+                return lstOfficeCenter.Count;
+            }
+        }
+
+        public int CountLocal
+        {
+            get
+            {
+                return lstOfficeLocal.Count;
+            }
+        }
+
+        public int CountFemale
+        {
+            get
+            {
+                return lstOfficeFemale.Count;
             }
         }
 
         public Office GetByName(string name)
         {
-            foreach (Office office in lstOffice)
-            {
-                if (office.name == name)
-                {
-                    return office;
-                }
-            }
-
-            return null;
+            return DictName2Office[name];
         }
 
         public Office[] GetByName(string[] names)
@@ -206,13 +309,7 @@ public partial class MyGame
             List<Office> lstResult = new List<Office>();
             foreach (string name in names)
             {
-                Office o = lstOffice.Find(x => x.name == name);
-                if (o == null)
-                {
-                    continue;
-                }
-
-                lstResult.Add(o);
+                lstResult.Add(GetByName(name));
             }
 
             return lstResult.ToArray();
@@ -220,12 +317,19 @@ public partial class MyGame
 
         public List<Office> GetOfficeBySelector(SelectElem Selector)
         {
-            List<Office> lstResult = lstOffice.Where(Selector.Complie<Office>()).ToList();
-
+            List<Office> lstResult = DictName2Office.Values.Where(Selector.Complie<Office>()).ToList();
             return lstResult;
         }
 
         [SerializeField]
-        private List<Office> lstOffice = new List<Office>();
+        private List<Office> lstOfficeCenter = new List<Office>();
+
+        [SerializeField]
+        private List<Office> lstOfficeLocal = new List<Office>();
+
+        [SerializeField]
+        private List<Office> lstOfficeFemale = new List<Office>();
+
+        private Dictionary<string, Office> DictName2Office = new Dictionary<string, Office>();
     }
 }

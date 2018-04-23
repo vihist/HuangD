@@ -44,9 +44,9 @@ public class DialogLogic : MonoBehaviour
         }
         else
         {
-            dialog = Instantiate(Resources.Load("Prefabs/Dialog/DataTablesSimple"), UIRoot.transform) as GameObject;
+            dialog = Instantiate(Resources.Load("Prefabs/Dialog/Dialog_Table"), UIRoot.transform) as GameObject;
 
-            WDataTable wdataTable = dialog.GetComponent<WDataTable>();
+            WDataTableWithBtn wdataTable = dialog.GetComponent<WDataTableWithBtn>();
             List<List<object>> raw = (List<List<object>>)content;
 
             IList<IList<object>> data = new List<IList<object>>();

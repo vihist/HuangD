@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection; 
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
@@ -65,6 +66,7 @@ public class StreamManager
 
       	LoadName ();
 		LoadEvent ();
+        LoadUIDesc();
 	}
 
 	private void LoadName()
@@ -92,6 +94,17 @@ public class StreamManager
         Debug.Log("Load event cout:" + eventDictionary.Count.ToString());
     }
 
+    private void LoadUIDesc()
+    {
+        ItfZhoujun value = luaenv.Global.Get<string, ItfZhoujun> ("ZHOUJ");
+
+        Type ty = value.GetType();
+        PropertyInfo[] pros = ty.GetProperties();
+        foreach (PropertyInfo p in pros)
+        {
+            UIDictionary.Add(p.Name, (string)p.GetValue(value, null));
+        }
+    }
 
 	private void AnaylizePersonName()
 	{
@@ -122,10 +135,16 @@ public class StreamManager
 		dynastyName.names.AddRange (value.Split (','));
 	}
 
+    public static string GetVarName(System.Linq.Expressions.Expression<Func<string, string>> exp)  
+    {  
+        return ((System.Linq.Expressions.MemberExpression)exp.Body).Member.Name;  
+    }  
+
 	public  static DynastyName dynastyName = new DynastyName();
 	public  static YearName yearName = new YearName();
 	public  static PersonName personName = new PersonName();
 	public  static Dictionary<string, ItfLuaEvent> eventDictionary = new Dictionary<string, ItfLuaEvent>();
+    public  static Dictionary<string, string> UIDictionary = new Dictionary<string, string>();
 
 #pragma warning disable 414  
 	private static StreamManager wInst = new StreamManager();
@@ -449,4 +468,18 @@ public interface ItfLuaEvent
 	ItfOption option3 { get;}
 	ItfOption option4 { get;}
 	ItfOption option5 { get; }
+}
+
+[CSharpCallLua]
+public interface ItfZhoujun
+{
+    string Zhouj1 { get;}
+    string Zhouj2 { get;}
+    string Zhouj3 { get;}
+    string Zhouj4 { get;}
+    string Zhouj5 { get;}
+    string Zhouj6 { get;}
+    string Zhouj7 { get;}
+    string Zhouj8 { get;}
+    string Zhouj9 { get;}
 }

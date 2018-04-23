@@ -421,7 +421,7 @@ EVENT_SG_EMPTY={
 
 	option3={
 		desc = function(self)
-            return string.format(self.DESC, EVENT_SG_EMPTY.suggest3)
+            return string.format(self.DESC, self.parent.suggest3)
         end,
 		process = function(self, op)
 		    GMData.Appoint(self.parent.suggest3, self.parent.officename)

@@ -78,7 +78,7 @@ public class EventLogic : MonoBehaviour
 		return true;
 	}
 
-    public WDataTable testWDataTable;
+    public WDataTableWithBtn testWDataTable;
 
     public static bool isEventLogicRun = true;
 	private float m_fWaitTime;

@@ -51,7 +51,7 @@ class HouFeiUI
 		//factionName = tran.Find("faction/value").GetComponent<Text> ();
 
 		Debug.Log ("Key:" + UIKey);
-		office = MyGame.Inst.femaleOfficeManager.GetByName (UIKey);
+		office = MyGame.Inst.officeManager.GetByName (UIKey);
 		officeName.text = office.name;
 		Debug.Log ("Text:" + officeName.text);
 

@@ -34,15 +34,15 @@ public partial class MyGame
 		dynastyName = strDynastyName;
         date = new GameTime();
 
-		officeManager = new OfficeManager (typeof(ENUM_OFFICE));
-		femaleOfficeManager = new OfficeManager (typeof(ENUM_OFFICE_FEMALE));
+		officeManager = new OfficeManager ();
+		//femaleOfficeManager = new OfficeManager (typeof(ENUM_OFFICE_FEMALE));
 
 		factionManager = new FactionManager ();
 
-		personManager = new PersonManager (officeManager.Count, true);
+        personManager = new PersonManager (officeManager.CountCenter + officeManager.CountLocal, true);
 		personManager.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
 
-		femalePersonManager = new PersonManager (femaleOfficeManager.Count, false);
+        femalePersonManager = new PersonManager (officeManager.CountFemale, false);
         DictFlag = new StringSerialDictionary();
 
 		Person.ListListener.Add (relOffice2Person.Listen);
@@ -263,14 +263,23 @@ public partial class MyGame
 
 	private void InitRelationOffice2Person ()
 	{
-		int iCount = officeManager.Count;
+		int iCount = officeManager.CountCenter;
 		Person[] persons = personManager.GetRange (0, iCount);
-		Office[] offices = officeManager.GetRange (0, iCount);
+        Office[] offices = officeManager.GetRange (typeof(ENUM_OFFICE_CENTER));
 
 		for (int i = 0; i < iCount; i++) 
 		{
 			relOffice2Person.Set(persons[i], offices[i]);
 		}
+
+        int iLocalCount = officeManager.CountLocal;
+        persons = personManager.GetRange (iCount, iCount+iLocalCount);
+        offices = officeManager.GetRange (typeof(ENUM_OFFICE_LOCAL));
+
+        for (int i = 0; i < iLocalCount; i++) 
+        {
+            relOffice2Person.Set(persons[i], offices[i]);
+        }
 	}
 
 	private void InitRelationFaction2Person ()
@@ -312,9 +321,9 @@ public partial class MyGame
 
 	private void InitRelationFemaleOffice2Person()
 	{
-		int iCount = femaleOfficeManager.Count;
+		int iCount = officeManager.CountFemale;
 		Person[] persons = femalePersonManager.GetRange (0, iCount);
-		Office[] offices = femaleOfficeManager.GetRange (0, iCount);
+        Office[] offices = officeManager.GetRange (typeof(ENUM_OFFICE_FEMALE));
 
 		for (int i = 0; i < iCount; i++) 
 		{
@@ -347,7 +356,7 @@ public partial class MyGame
 	public PersonManager femalePersonManager;
 
 	public OfficeManager officeManager;
-	public OfficeManager femaleOfficeManager;
+	//public OfficeManager femaleOfficeManager;
 
 	public FactionManager factionManager;
 

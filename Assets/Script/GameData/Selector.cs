@@ -94,7 +94,10 @@ public partial class MyGame
                     break;
 
                 case "CSX":
-                    ByOfficeElem.EqualList.AddRange(new List<string>{"CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "CS8", "CS9"});
+                    foreach(var eZhouj in Enum.GetValues(typeof(Zhouj.ENUM_ZHOUJ)))
+                    {
+                        ByOfficeElem.EqualList.Add(eZhouj.ToString() + "CS");
+                    }
                     break;
 
                 case "SGX":

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-
 using Random = UnityEngine.Random;
 
 namespace WDT
@@ -47,19 +45,11 @@ namespace WDT
         // Use this for initialization
         void Start()
         {
-            GameObject UIRoot = GameObject.Find("Canvas").gameObject;
-            GameObject dialog = Instantiate(Resources.Load("Prefabs/Dialog/DataTablesSimple"), UIRoot.transform) as GameObject;
-            dialog.transform.SetAsFirstSibling();
-
-            testWDataTable = dialog.GetComponent<WDataTable>();
-                
             _columns.Add("ID");
             _columns.Add("A");
             _columns.Add("B");
             _columns.Add("C");
             _columns.Add("D");
-
-            Action<Button> t = (b) => {  };
 
             // init 
             switch (loadType)
@@ -89,14 +79,10 @@ namespace WDT
                         _datas.Add(tdatas);
                         _datasDict.Add(tdatasDict);
                     }
-
-
-
                     if (loadType == LoadDataType.ListArrayType)
-                        
-                        testWDataTable.InitDataTable(_datas, _columns, "test", t);
+                        testWDataTable.InitDataTable(_datas, _columns);
                     else
-                        testWDataTable.InitDataTable(_datasDict, _columns, "test", t);
+                        testWDataTable.InitDataTable(_datasDict, _columns);
                     break;
                 case LoadDataType.JsonType:
                     var textAsset = Resources.Load("TestJson") as TextAsset;
@@ -118,7 +104,7 @@ namespace WDT
                             };
                             _datas.Add(tdatas);
                         }
-                        testWDataTable.InitDataTable(_datas, _columns, "test", t);
+                        testWDataTable.InitDataTable(_datas, _columns);
                     }
                     break;
                 default:

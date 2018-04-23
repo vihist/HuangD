@@ -10,10 +10,10 @@ using Tools;
 class StringSerialDictionary : SerialDictionary<string,string>{};
 
 [Serializable]
-class PersonNameList : SerialList<string>{};
+class NameList : SerialList<string>{};
 
 [Serializable]
-class ListSerialDictionary : SerialDictionary<string, PersonNameList>{};
+class ListSerialDictionary : SerialDictionary<string, NameList>{};
 
 partial class MyGame
 {
@@ -23,11 +23,17 @@ partial class MyGame
 	[NonSerialized]
 	public RelationFaction2Person relFaction2Person = new RelationFaction2Person();
 
+    [NonSerialized]
+    public RelationZhouj2Office relZhouj2Office = new RelationZhouj2Office();
+
 	[SerializeField]
 	private StringSerialDictionary DictOffce2Person = new StringSerialDictionary ();
 
 	[SerializeField]
 	private  ListSerialDictionary DictFaction2Person = new ListSerialDictionary ();
+
+    [SerializeField]
+    private  ListSerialDictionary DictZhouj2Office = new ListSerialDictionary ();
 
 	public class RelationOffice2Person
 	{
@@ -132,11 +138,6 @@ partial class MyGame
 
 
                 Office  office = Inst.officeManager.GetByName (officeName);
-                if (office == null) 
-                {
-                    office = Inst.femaleOfficeManager.GetByName (officeName);
-                }
-
                 if (office != null)
                 {
                     ret.Add(office);
@@ -155,10 +156,6 @@ partial class MyGame
 			}
 
 			Office  office = Inst.officeManager.GetByName (officeName);
-			if (office == null) 
-			{
-				office = Inst.femaleOfficeManager.GetByName (officeName);
-			}
 			return office;
 		}
 
@@ -217,7 +214,7 @@ partial class MyGame
 		{
 			if (!Inst.DictFaction2Person.ContainsKey (f.name))
 			{
-				Inst.DictFaction2Person.Add (f.name, new PersonNameList());
+				Inst.DictFaction2Person.Add (f.name, new NameList());
 			}
 
 			Inst.DictFaction2Person [f.name].ToList().Add (p.name);
@@ -255,7 +252,7 @@ partial class MyGame
 
 		public Faction GetFaction(string pname)
 		{
-			foreach (KeyValuePair<string, PersonNameList> kvp in Inst.DictFaction2Person)
+			foreach (KeyValuePair<string, NameList> kvp in Inst.DictFaction2Person)
 			{
 				if (kvp.Value.ToList().Contains(pname))
 				{ 
@@ -270,7 +267,7 @@ partial class MyGame
 		{
 			List<string> listFactionName = new List<string> ();
 			
-			foreach (KeyValuePair<string, PersonNameList> kvp in Inst.DictFaction2Person)
+			foreach (KeyValuePair<string, NameList> kvp in Inst.DictFaction2Person)
 			{
 				foreach (Person p in Persons)
 				{
@@ -311,7 +308,7 @@ partial class MyGame
             if (ListFaction == null)
             {
                 List<string> listPerson = new List<string>();
-                foreach(PersonNameList list in Inst.DictFaction2Person.Values)
+                foreach(NameList list in Inst.DictFaction2Person.Values)
                 {
                     listPerson.AddRange(list.ToList());
                 }
@@ -362,4 +359,35 @@ partial class MyGame
 			}
 		}
 	}
+
+    public class RelationZhouj2Office
+    {
+        public void Set(Zhouj z, Office o)
+        {
+            if (Inst.DictZhouj2Office.ContainsKey(z.name))
+            {
+                Inst.DictZhouj2Office.Add(z.name, new NameList());
+            }
+
+            Inst.DictZhouj2Office[z.name].ToList().Add (o.name);
+        }
+
+        public List<Office> GetOffices(string zname)
+        {
+            List<Office> lstResult = new List<Office>();
+            List<string> lstName = Inst.DictZhouj2Office[zname].ToList();
+            foreach(string name in lstName)
+            {
+                lstResult.Add(Inst.officeManager.GetByName(name));
+            }
+
+            return lstResult;
+        }
+
+        public List<Office> GetOffices(Zhouj z)
+        {
+            return GetOffices(z.name);
+        }
+
+    }
 }
