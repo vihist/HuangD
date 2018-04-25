@@ -608,7 +608,7 @@ EVENT_CS_KAOHE={
 		if(GMData.Date.month() == 1 and GMData.Date.day() == 2) then
 			return true
 		else
-			return fale
+			return false
 		end
 	end,
 
@@ -627,11 +627,9 @@ EVENT_CS_KAOHE={
 			local person = GMData.GetPerson(Selector.ByOffice(offices[i].name))
 			local faction = GMData.GetFaction(Selector.ByPerson(person.name))
 
-			local value = 0
-			if (faction.name == factionSG1.name) then
-				value = Probability.GetRandomNum(0, 5)
-			else
-				value = Probability.GetRandomNum(-3, 5)
+			local value = Probability.GetGaussianRandomNum(0, 5)
+			if (faction.name ~= factionSG1.name) then
+				value = value - Probability.GetGaussianRandomNum(0, 4)
 			end
 
 			table.insert(self.KaoheTable, {offices[i].name, person.name, faction.name, value})
@@ -640,10 +638,90 @@ EVENT_CS_KAOHE={
 
 	option1={
 		process = function(self, op)
+			local scoreTotal = 0
 			for i=2, #self.parent.KaoheTable do
 				GMData.Person.ScoreAdd(self.parent.KaoheTable[i][2], self.parent.KaoheTable[i][4])
+				scoreTotal = scoreTotal + self.parent.KaoheTable[i][4]
 			end
+			
+			local DebTotal = 0;
+			local prov = GMData.GetProvince()
+			for i = 1, #prov do
+				if(GMData.Province.HasDebuff(prov.deb)) then
+					DebTotal = DebTotal - 10
+				elseif(GMData.Province.HasBuff(prov.deb)) then
+					DebTotal = DebTotal + 10
+				end
+			end
+
+			GMData.Economy.Inc(100 + DebTotal + scoreTotal*10)
 			return self.parent.KaoheTable
 		end
 	},
+}
+
+EVENT_PROV_HONG_START={
+	prov = nil,
+
+	percondition = function(self)
+		local provArray = GMData.GetProvinceArray()
+		for i = 1, #provArray do
+			if(not GMData.Province.isExistFlag(provArray[i],'HONG')) then
+				prov = provArray[i]
+				return true
+			end
+		end
+		return false
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	initialize = function(self, param)
+		prov = param
+	end,
+
+	desc = function(self)
+		return string.format(self.DESC, self.prov.name)
+	end,
+
+	option1={
+		process = function(self, op)
+			GMData.Province.SetFlag(prov, 'HONG');
+		end
+	}
+}
+
+EVENT_PROV_HONG_END={
+	prov = nil,
+
+	percondition = function(self)
+		local provArray = GMData.GetProvinceArray()
+		for i = 1, #provArray do
+			if(GMData.Province.isExistFlag(provArray[i],'HONG')) then
+				prov = provArray[i]
+				return true
+			end
+		end
+		return false
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	initialize = function(self, param)
+		prov = param
+	end,
+
+	desc = function(self)
+		return string.format(self.DESC, self.prov.name)
+	end,
+
+	option1={
+		process = function(self, op)
+			GMData.Province.ClearFlag(self.parent.prov, 'HONG');
+		end
+	}
 }

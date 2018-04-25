@@ -398,6 +398,30 @@ public class StreamManager
                 end
             },
 
+            Economy = {
+                Dec = function(value)
+                    if(value == nil) then
+                        value = 1
+                    end
+
+                    CS.MyGame.Inst.Economy = CS.MyGame.Inst.Economy - value
+                    return CS.MyGame.Inst.Economy
+                end,
+
+                Inc = function(value)
+                  if(value == nil) then
+                        value = 1
+                    end
+
+                    CS.MyGame.Inst.Economy = CS.MyGame.Inst.Economy + value
+                    return CS.MyGame.Inst.Economy
+                end,
+
+                Value = function()
+                    return CS.MyGame.Inst.Economy
+                end
+            },
+
             Person = {
                 PreCreate = function(faction, score)
                     return CS.MyGame.Inst:PreCreatePerson(faction, score)
@@ -460,7 +484,7 @@ public interface ItfLuaEvent
     string KEY { get;}
     string title();
     string desc();
-	bool percondition () ;
+    bool percondition (out object obj) ;
 	void initialize(string param);
     string historyrecord();
 	ItfOption option1 { get;}

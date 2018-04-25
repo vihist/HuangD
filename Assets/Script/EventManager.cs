@@ -186,12 +186,13 @@ public class EventManager
 		foreach (ItfLuaEvent ie in StreamManager.eventDictionary.Values) 
 		{
             Debug.Log("percondition event"+ie.KEY);
-			if (!ie.percondition())
+            object obj;
+            if (!ie.percondition(out obj))
 			{
 				continue;
 			}
 
-			GMEvent eventobj = new GMEvent (ie, null);
+            GMEvent eventobj = new GMEvent (ie, obj);
 			eventobj.Initlize ();
 			yield return eventobj;
 
