@@ -197,6 +197,8 @@ public partial class MyGame
                     lstOfficeLocal.Add(office);
 
                     DictName2Office.Add(office.name, office);
+
+                    MyGame.Inst.relZhouj2Office.Set(MyGame.Inst.zhoujManager.GetByName(eZhouj.ToString()), office);
                 }
 
             }

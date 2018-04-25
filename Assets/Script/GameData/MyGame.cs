@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 using UnityEngine;
 
@@ -34,6 +35,8 @@ public partial class MyGame
 		dynastyName = strDynastyName;
         date = new GameTime();
 
+        zhoujManager = new ZhoujManager();
+
 		officeManager = new OfficeManager ();
 		//femaleOfficeManager = new OfficeManager (typeof(ENUM_OFFICE_FEMALE));
 
@@ -43,6 +46,7 @@ public partial class MyGame
 		personManager.Sort ((p1,p2)=> -(p1.score.CompareTo(p2.score)));
 
         femalePersonManager = new PersonManager (officeManager.CountFemale, false);
+
         DictFlag = new StringSerialDictionary();
 
 		Person.ListListener.Add (relOffice2Person.Listen);
@@ -54,6 +58,8 @@ public partial class MyGame
 		InitRelationFaction2Person ();
 
 		InitRelationFemaleOffice2Person ();
+
+        InitZhouj2Office();
     }
 		
 	public Person[] GetPerson(BySelector selecor)
@@ -331,6 +337,17 @@ public partial class MyGame
 		}
 	}
 
+    private void InitZhouj2Office()
+    {
+
+            foreach (Zhouj z in zhoujManager)
+            {
+
+            }
+         
+            
+    }
+
 	public string time
 	{
 		get
@@ -359,6 +376,8 @@ public partial class MyGame
 	//public OfficeManager femaleOfficeManager;
 
 	public FactionManager factionManager;
+
+    public ZhoujManager zhoujManager;
 
 	public string yearName;
 	public GameTime date;

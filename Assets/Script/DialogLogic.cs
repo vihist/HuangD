@@ -65,7 +65,7 @@ public class DialogLogic : MonoBehaviour
             wdataTable.InitDataTable(data, colums, options[0].Value, t);
         }
             
-		dialog.transform.SetAsFirstSibling();
+        dialog.transform.SetAsLastSibling();
 
         for(int i=0; i<options.Length; i++)
         {

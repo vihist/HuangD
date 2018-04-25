@@ -364,7 +364,7 @@ partial class MyGame
     {
         public void Set(Zhouj z, Office o)
         {
-            if (Inst.DictZhouj2Office.ContainsKey(z.name))
+            if (!Inst.DictZhouj2Office.ContainsKey(z.name))
             {
                 Inst.DictZhouj2Office.Add(z.name, new NameList());
             }

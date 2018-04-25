@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+using WDT;
+
 public class MainScene : MonoBehaviour
 {
     void Awake()
@@ -23,9 +25,22 @@ public class MainScene : MonoBehaviour
 
 		panelCenter = GameObject.Find ("Canvas/PanelCenter");
 
+        ZhoujTable =  GameObject.Find ("Canvas/ZhoujTable").GetComponent<WDataTable>();
+
+        ZhoujTable.gameObject.SetActive(false);
+
+        List<string> colums = new List<string>{ "aaa", "bbb", "ccc"};
+        List<IList<object>> data = new List<IList<object>>();
+        data.Add(new List<object>{ 1, 2, 3 });
+        ZhoujTable.InitDataTable(data, colums);
+        ZhoujTable.InitDataTable(data, colums);
+
+
         btnEmp.transform.SetAsFirstSibling();
         btnEmpDetail.transform.SetAsFirstSibling();
-		panelCenter.transform.SetAsFirstSibling ();
+        ZhoujTable.transform.SetAsFirstSibling();
+
+        panelCenter.transform.SetAsLastSibling ();
     }
 
     void Start()
@@ -33,6 +48,7 @@ public class MainScene : MonoBehaviour
 		panelCenter.SetActive (false);
 		btnEmpDetail.SetActive(false);
         SceneManager.LoadSceneAsync("TianXScene", LoadSceneMode.Additive);
+        //ZhoujTable.gameObject.SetActive(true);
 
         onRefresh();
     }
@@ -59,6 +75,15 @@ public class MainScene : MonoBehaviour
 
         SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1).name);
         SceneManager.LoadSceneAsync(toggle.name, LoadSceneMode.Additive);
+
+        if (toggle.name == "TianXScene")
+        {
+            //ZhoujTable.gameObject.SetActive(true);
+        }
+        else
+        {
+            ZhoujTable.gameObject.SetActive(false);
+        }
     }
 
     public void onEmperorButtonClick()
@@ -128,4 +153,5 @@ public class MainScene : MonoBehaviour
 	Slider sldEmpHeath;
 
 	GameObject panelCenter;
+    WDataTable  ZhoujTable;
 }
