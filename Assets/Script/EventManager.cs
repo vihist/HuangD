@@ -192,7 +192,7 @@ public class EventManager
 				continue;
 			}
 
-            GMEvent eventobj = new GMEvent (ie, obj);
+            GMEvent eventobj = new GMEvent (ie, null);
 			eventobj.Initlize ();
 			yield return eventobj;
 

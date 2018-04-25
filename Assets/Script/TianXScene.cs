@@ -12,9 +12,6 @@ public class TianXScene: MonoBehaviour
     void Awake()
     {
         wdataTable = GameObject.Find("Canvas/Panel/DataTablesSimple").GetComponent<WDataTable>();
-
-
-
     }
 
     // Use this for initialization

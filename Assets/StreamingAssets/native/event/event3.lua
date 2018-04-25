@@ -645,11 +645,11 @@ EVENT_CS_KAOHE={
 			end
 			
 			local DebTotal = 0;
-			local prov = GMData.GetProvince()
-			for i = 1, #prov do
-				if(GMData.Province.HasDebuff(prov.deb)) then
+			local provArray = GMData.GetProvinceArray()
+			for i = 1, #provArray do
+				if(GMData.Province.HasDebuff(provArray[i])) then
 					DebTotal = DebTotal - 10
-				elseif(GMData.Province.HasBuff(prov.deb)) then
+				elseif(GMData.Province.HasBuff(provArray[i])) then
 					DebTotal = DebTotal + 10
 				end
 			end
@@ -666,8 +666,9 @@ EVENT_PROV_HONG_START={
 	percondition = function(self)
 		local provArray = GMData.GetProvinceArray()
 		for i = 1, #provArray do
-			if(not GMData.Province.isExistFlag(provArray[i],'HONG')) then
-				prov = provArray[i]
+			if(not GMData.Province.HasDebuff(provArray[i],'HONG')) then
+				print(provArray[i].name)
+				self.prov = provArray[i]
 				return true
 			end
 		end
@@ -679,7 +680,7 @@ EVENT_PROV_HONG_START={
 	end,
 
 	initialize = function(self, param)
-		prov = param
+		
 	end,
 
 	desc = function(self)
@@ -688,7 +689,7 @@ EVENT_PROV_HONG_START={
 
 	option1={
 		process = function(self, op)
-			GMData.Province.SetFlag(prov, 'HONG');
+			GMData.Province.SetBuff(self.parent.prov, 'HONG');
 		end
 	}
 }
@@ -699,8 +700,8 @@ EVENT_PROV_HONG_END={
 	percondition = function(self)
 		local provArray = GMData.GetProvinceArray()
 		for i = 1, #provArray do
-			if(GMData.Province.isExistFlag(provArray[i],'HONG')) then
-				prov = provArray[i]
+			if(GMData.Province.HasDebuff(provArray[i],'HONG')) then
+				self.prov = provArray[i]
 				return true
 			end
 		end
@@ -712,7 +713,7 @@ EVENT_PROV_HONG_END={
 	end,
 
 	initialize = function(self, param)
-		prov = param
+		
 	end,
 
 	desc = function(self)
@@ -721,7 +722,7 @@ EVENT_PROV_HONG_END={
 
 	option1={
 		process = function(self, op)
-			GMData.Province.ClearFlag(self.parent.prov, 'HONG');
+			GMData.Province.ClearBuff(self.parent.prov, 'HONG');
 		end
 	}
 }

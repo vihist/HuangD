@@ -326,6 +326,10 @@ public class StreamManager
                 return offices[i]
             end,
 
+            GetProvinceArray = function()
+                return listToTable(CS.MyGame.Inst.zhoujManager:Array())
+            end,
+
             Appoint = function(person, office)
                 CS.MyGame.Inst:Appoint(person, office)
             end,
@@ -449,6 +453,24 @@ public class StreamManager
                 day = function()
                     return CS.MyGame.Inst.date.day
                 end
+            },
+            
+            Province = {
+                HasDebuff = function(prov, debuff)
+                    return prov:HasDebuff(debuff)
+                end,
+
+                HasBuff = function(prov, buff)
+                    return prov:HasBuff(buff)
+                end,
+
+                SetBuff = function(prov, buff)
+                    prov:SetBuff(buff)
+                end,
+
+                ClearBuff = function(prov, buff)
+                    prov:ClearBuff(buff)
+                end,   
             }
         }
     ";

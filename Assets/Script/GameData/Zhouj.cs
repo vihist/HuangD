@@ -13,7 +13,7 @@ using System.Linq;
 
 public partial class MyGame
 {
-
+    [Serializable, LuaCallCSharp]
     public class Zhouj
     {
         public class ZhoujAttribute : Attribute
@@ -43,16 +43,37 @@ public partial class MyGame
             ZHOUJ9
         }
 
+        public enum ENUM_BUFF
+        {
+            ENU_BUFF,
+            ENU_DEBUFF,
+            ENU_NULL,
+        }
+
+        public class StatusAttribute : Attribute
+        {
+            public ENUM_BUFF Buff;
+        }
+
         public enum ENUM_STATUS
         {
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_NULL)]
             NORMAL,
-            SHUI,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_DEBUFF)]
+            HONG,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_DEBUFF)]
             HAN,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_DEBUFF)]
             HUANG,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_DEBUFF)]
             WEN,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_DEBUFF)]
             ZHEN,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_BUFF)]
             FENG,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_DEBUFF)]
             KOU,
+            [StatusAttribute(Buff = ENUM_BUFF.ENU_DEBUFF)]
             FAN,
         }
 
@@ -100,6 +121,62 @@ public partial class MyGame
             }
         }
 
+        public void SetBuff(string buff)
+        {
+            ENUM_STATUS e = (ENUM_STATUS)Enum.Parse(typeof(ENUM_STATUS), buff);
+            if(!listStatus.Contains(e))
+            {
+                listStatus.Add(e);
+            }
+        }
+
+        public void ClearBuff(string buff)
+        {
+            ENUM_STATUS e = (ENUM_STATUS)Enum.Parse(typeof(ENUM_STATUS), buff);
+            listStatus.Remove(e);
+        }
+
+        public bool HasBuff(string buff)
+        {
+            if(buff == null)
+            {
+                foreach (ENUM_STATUS status in listStatus)
+                {
+                    FieldInfo field = status.GetType().GetField(status.ToString());
+                    StatusAttribute attribute = Attribute.GetCustomAttribute(field, typeof(StatusAttribute)) as StatusAttribute;
+                    if(attribute.Buff == ENUM_BUFF.ENU_BUFF)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            ENUM_STATUS e = (ENUM_STATUS)Enum.Parse(typeof(ENUM_STATUS), buff);
+            return listStatus.Contains(e);
+        }
+
+        public bool HasDebuff(string buff)
+        {
+            if (buff == null)
+            {
+                foreach (ENUM_STATUS status in listStatus)
+                {
+                    FieldInfo field = status.GetType().GetField(status.ToString());
+                    StatusAttribute attribute = Attribute.GetCustomAttribute(field, typeof(StatusAttribute)) as StatusAttribute;
+                    if (attribute.Buff == ENUM_BUFF.ENU_DEBUFF)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            ENUM_STATUS e = (ENUM_STATUS)Enum.Parse(typeof(ENUM_STATUS), buff);
+            return listStatus.Contains(e);
+        }
 
         private string _name;
         private List<ENUM_STATUS> listStatus;
@@ -107,6 +184,7 @@ public partial class MyGame
 
     }
 
+    [Serializable, LuaCallCSharp]
     public class ZhoujManager : IEnumerable
     {
         public ZhoujManager()
@@ -134,6 +212,11 @@ public partial class MyGame
             {
                 yield return lstZhouj[i];
             }
+        }
+
+        public Zhouj[] Array()
+        {
+             return lstZhouj.ToArray();
         }
 
         private List<Zhouj> lstZhouj = new List<Zhouj>();
