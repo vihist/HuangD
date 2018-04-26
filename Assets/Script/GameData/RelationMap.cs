@@ -362,7 +362,7 @@ partial class MyGame
 
     public class RelationZhouj2Office
     {
-        public void Set(Zhouj z, Office o)
+        public void Set(Province z, Office o)
         {
             if (!Inst.DictZhouj2Office.ContainsKey(z.name))
             {
@@ -384,7 +384,7 @@ partial class MyGame
             return lstResult;
         }
 
-        public List<Office> GetOffices(Zhouj z)
+        public List<Office> GetOffices(Province z)
         {
             return GetOffices(z.name);
         }

@@ -340,7 +340,7 @@ public partial class MyGame
     private void InitZhouj2Office()
     {
 
-            foreach (Zhouj z in zhoujManager)
+            foreach (Province z in zhoujManager)
             {
 
             }
@@ -356,6 +356,23 @@ public partial class MyGame
 		}
 	}
 
+    public string[] GetProvinceDebuff()
+    {
+        List<string> result = new List<string>();
+        foreach (var status in Enum.GetValues(typeof(Province.ENUM_PROV_STATUS)))
+        {
+
+            FieldInfo field = status.GetType().GetField(status.ToString());
+            Province.ProvStatusAttribute attribute = Attribute.GetCustomAttribute(field, typeof(Province.ProvStatusAttribute)) as Province.ProvStatusAttribute;
+
+            if (attribute.buffType == Province.ENUM_BUFF_TYPE.DEBUFF)
+            {
+                result.Add(status.ToString());
+            }
+        }
+
+        return result.ToArray();
+    }
 
 
     public bool   gameEnd;

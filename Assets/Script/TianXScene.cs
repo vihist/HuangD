@@ -27,12 +27,12 @@ public class TianXScene: MonoBehaviour
         List<string> colums = new List<string>{ "name", "economy", "status", "cs", "age", "faction", "score"};
         List<IList<object>> data = new List<IList<object>>();
 
-        foreach (MyGame.Zhouj zj in MyGame.Inst.zhoujManager)
+        foreach (MyGame.Province zj in MyGame.Inst.zhoujManager)
         {
             List<MyGame.Office> offices = MyGame.Inst.relZhouj2Office.GetOffices(zj.name);
             MyGame.Person p = MyGame.Inst.relOffice2Person.GetPerson(offices[0]);
             MyGame.Faction f = MyGame.Inst.relFaction2Person.GetFaction(p);
-            data.Add(new List<object>(){ zj.name, zj.economy, zj.status.ToString(), p.name, "", f.name, p.score});
+            data.Add(new List<object>(){ zj.name, zj.economy, string.Join(",", zj.status), p.name, "", f.name, p.score});
         }
 
         wdataTable.InitDataTable(data, colums);

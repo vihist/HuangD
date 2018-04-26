@@ -94,7 +94,7 @@ public partial class MyGame
                     break;
 
                 case "CSX":
-                    foreach(var eZhouj in Enum.GetValues(typeof(Zhouj.ENUM_ZHOUJ)))
+                    foreach(var eZhouj in Enum.GetValues(typeof(Province.ENUM_PROV)))
                     {
                         ByOfficeElem.EqualList.Add(eZhouj.ToString() + "CS");
                     }

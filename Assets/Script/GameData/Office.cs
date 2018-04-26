@@ -190,7 +190,7 @@ public partial class MyGame
                 FieldInfo field = eOffice.GetType().GetField(eOffice.ToString());
                 OfficeAttrAttribute attribute = Attribute.GetCustomAttribute(field, typeof(OfficeAttrAttribute)) as OfficeAttrAttribute;
 
-                foreach(var eZhouj in Enum.GetValues(typeof(Zhouj.ENUM_ZHOUJ)))
+                foreach(var eZhouj in Enum.GetValues(typeof(Province.ENUM_PROV)))
                 {
 
                     Office office = new Office(eZhouj.ToString() + eOffice.ToString(), attribute.Power);

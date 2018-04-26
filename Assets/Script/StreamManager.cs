@@ -470,7 +470,34 @@ public class StreamManager
 
                 ClearBuff = function(prov, buff)
                     prov:ClearBuff(buff)
+                end,
+                
+                GetDebuffArray = function(prov)
+                    if(prov == nil) then
+                        return listToTable(CS.MyGame.Inst:GetProvinceDebuff())
+                    end
+                    return listToTable(prov:GetDebuffArray())
                 end,   
+
+                GetDebuff = function(prov)
+                    local status = nil
+
+                    if(prov == nil) then
+                        status = listToTable(CS.MyGame.Inst:GetProvinceDebuff())
+                    else
+                        status = listToTable(prov:GetDebuffArray())
+                    end
+                    
+                    if(#status == 0) then
+                        return nil
+                    end
+                    if(#status == 1) then
+                        return status[1]
+                    end
+                    
+                    local i = Probability.GetRandomNum(1, #status)
+                    return status[i]
+                end, 
             }
         }
     ";

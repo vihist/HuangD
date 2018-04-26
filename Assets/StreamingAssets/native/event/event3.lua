@@ -654,22 +654,26 @@ EVENT_CS_KAOHE={
 				end
 			end
 
-			GMData.Economy.Inc(100 + DebTotal + scoreTotal*10)
+			GMData.Economy.Inc(100 + DebTotal + scoreTotal)
 			return self.parent.KaoheTable
 		end
 	},
 }
 
-EVENT_PROV_HONG_START={
+EVENT_PROV_DEBUFF_START={
 	prov = nil,
+	debuff = nil,
 
 	percondition = function(self)
 		local provArray = GMData.GetProvinceArray()
 		for i = 1, #provArray do
-			if(not GMData.Province.HasDebuff(provArray[i],'HONG')) then
-				print(provArray[i].name)
-				self.prov = provArray[i]
-				return true
+			if(not GMData.Province.HasDebuff(provArray[i])) then
+				--if(Probability.IsProbOccur(0.001)) then
+					print(provArray[i].name)
+					self.prov = provArray[i]
+					self.debuff = GMData.Province.GetDebuff()
+					return true
+				--end
 			end
 		end
 		return false
@@ -679,30 +683,31 @@ EVENT_PROV_HONG_START={
 		return self.TITLE
 	end,
 
-	initialize = function(self, param)
-		
-	end,
-
 	desc = function(self)
-		return string.format(self.DESC, self.prov.name)
+		return string.format(self.DESC, self.prov.name, self.debuff.name)
 	end,
 
 	option1={
 		process = function(self, op)
-			GMData.Province.SetBuff(self.parent.prov, 'HONG');
+			GMData.Province.SetBuff(self.parent.prov, self.parent.debuff);
 		end
 	}
 }
 
-EVENT_PROV_HONG_END={
+EVENT_PROV_DEBUFF_END={
 	prov = nil,
+	debuff = nil,
 
 	percondition = function(self)
 		local provArray = GMData.GetProvinceArray()
 		for i = 1, #provArray do
-			if(GMData.Province.HasDebuff(provArray[i],'HONG')) then
-				self.prov = provArray[i]
-				return true
+			if(GMData.Province.HasDebuff(provArray[i])) then
+				if(Probability.IsProbOccur(0.02)) then
+					print(provArray[i].name)
+					self.prov = provArray[i]
+					self.debuff = GMData.Province.GetDebuff(self.prov)
+					return true
+				end
 			end
 		end
 		return false
@@ -712,17 +717,13 @@ EVENT_PROV_HONG_END={
 		return self.TITLE
 	end,
 
-	initialize = function(self, param)
-		
-	end,
-
 	desc = function(self)
-		return string.format(self.DESC, self.prov.name)
+		return string.format(self.DESC, self.prov.name, self.debuff.name)
 	end,
 
 	option1={
 		process = function(self, op)
-			GMData.Province.ClearBuff(self.parent.prov, 'HONG');
+			GMData.Province.ClearBuff(self.parent.prov, self.parent.debuff);
 		end
 	}
 }
