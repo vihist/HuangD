@@ -660,7 +660,7 @@ EVENT_CS_KAOHE={
 	},
 }
 
-EVENT_PROV_DEBUFF_START={
+EVENT_PROV_DISASTER_START={
 	prov = nil,
 	debuff = nil,
 
@@ -690,19 +690,66 @@ EVENT_PROV_DEBUFF_START={
 	option1={
 		process = function(self, op)
 			GMData.Province.SetBuff(self.parent.prov, self.parent.debuff);
+			if(Probability.IsProbOccur(0.8)) then
+				return EVENT_STAB_DEC
+			end
+		end
+	},
+	option2={
+		percondition = function(self)
+			if(GMData.Economy < 20) then
+				return false
+			end
+			return true
+		end,
+		process = function(self, op)
+			self.parent.debuff.cover = 0.05
+			if(Probability.IsProbOccur(0.3)) then
+				self.parent.debuff.corrput = true
+				local Person = GMData.GetPerson(Selector.ByOffice(self.parent.prov, 'CS'))
+				GMData.Person.SetImp(Person, GMData.Crime(CORRPUT, self.parent.prov))
+			end
+
+			GMData.Province.SetBuff(self.parent.prov, self.parent.debuff);
+			GMData.Economy = GMData.Economy - 20
+		end
+	},
+	option3={
+		percondition = function(self)
+			if(GMData.Economy < 50) then
+				return false
+			end
+			return true
+		end,
+		process = function(self, op)
+			self.parent.debuff.cover = 0.09
+			if(Probability.IsProbOccur(0.3)) then
+				self.parent.debuff.corrput = true
+				local Person = GMData.GetPerson(Selector.ByOffice(self.parent.prov, 'CS'))
+				GMData.Person.SetImp(Person, GMData.Crime(CORRPUT, self.parent.prov))
+			end
+
+			GMData.Province.SetBuff(self.parent.prov, self.parent.debuff);
+			GMData.Economy = GMData.Economy - 50
 		end
 	}
+
 }
 
-EVENT_PROV_DEBUFF_END={
+EVENT_PROV_DISASTER_END={
 	prov = nil,
 	debuff = nil,
 
 	percondition = function(self)
 		local provArray = GMData.GetProvinceArray()
 		for i = 1, #provArray do
-			if(GMData.Province.HasDebuff(provArray[i])) then
-				if(Probability.IsProbOccur(0.02)) then
+			local debuff = GMData.Province.GetDebuff(provArray[i])
+			if(debuff ~= nil) then
+				local prob = 0.01
+				if(debuff.name == 'KOU' and not debuff.corrput) then
+					prob = prob + debuff.cover
+				end
+				if(Probability.IsProbOccur(prob)) then
 					print(provArray[i].name)
 					self.prov = provArray[i]
 					self.debuff = GMData.Province.GetDebuff(self.prov)
@@ -724,6 +771,222 @@ EVENT_PROV_DEBUFF_END={
 	option1={
 		process = function(self, op)
 			GMData.Province.ClearBuff(self.parent.prov, self.parent.debuff);
+		end
+	}
+}
+
+EVENT_PROV_BUFF_START={
+	prov = nil,
+	buff = nil,
+
+	percondition = function(self)
+		local provArray = GMData.GetProvinceArray()
+		for i = 1, #provArray do
+			local debuff = GMData.Province.GetDebuff(provArray[i])
+			local buff = GMData.Province.GetDebuff(provArray[i])
+			if(debuff == nil and buff == nil) then
+				local prob = 0.001
+				if(Probability.IsProbOccur(prob)) then
+					self.prov = provArray[i]
+					self.buff = GMData.Province.GetBuff()
+					return true
+				end
+			end
+		end
+		return false
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	desc = function(self)
+		return string.format(self.DESC, self.prov.name, self.debuff.name)
+	end,
+
+	option1={
+		process = function(self, op)
+			GMData.Province.SetBuff(self.parent.prov, self.parent.buff);
+		end
+	}
+}
+
+EVENT_PROV_KOU_START={
+	prov = nil,
+	debuff = nil,
+
+	percondition = function(self)
+		local provArray = GMData.GetProvinceArray()
+		for i = 1, #provArray do
+			local debuff = GMData.Province.GetDebuff(provArray[i])
+			if(debuff.name ~= 'KOU') then
+				local prob = 0.0
+				if (debuff.days < 10) then
+					prob = 0.01
+				elseif(debuff.days < 20) then
+					prob = 0.05
+				elseif(debuff.days < 30) then
+					prob = 0.1
+				elseif(debuff.days < 40) then
+					prob = 0.3
+				else
+					prob = 0.5
+				end				
+				
+				if(not debuff.corrput) then
+					prob = prob-debuff.cover
+					if(prob < 0.0) then
+						prob = 0.01
+					end
+				end
+
+				if(Probability.IsProbOccur(prob)) then
+					self.prov = provArray[i]
+					return true
+				end
+			end
+		end
+		return false
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	desc = function(self)
+		return string.format(self.DESC, self.prov.name, self.debuff.name)
+	end,
+
+	option1={
+		process = function(self, op)
+			GMData.Province.SetBuff(self.parent.prov, self.parent.debuff);
+			if(Probability.IsProbOccur(0.8)) then
+				return EVENT_STAB_DEC
+			end
+		end
+	},
+	option2={
+		percondition = function(self)
+			if(GMData.Economy < 20) then
+				return false
+			end
+			return true
+		end,
+		process = function(self, op)
+			self.parent.debuff.cover = 0.05
+			if(Probability.IsProbOccur(0.3)) then
+				self.parent.debuff.corrput = true
+				local Person = GMData.GetPerson(Selector.ByOffice(self.parent.prov, 'CS'))
+				GMData.Person.SetCrime(Person, GMData.Crime(CORRPUT))
+			end
+
+			GMData.Province.SetBuff(self.parent.prov, self.parent.debuff);
+			GMData.Economy = GMData.Economy - 20
+		end
+	},
+	option3={
+		percondition = function(self)
+			if(GMData.Economy < 50) then
+				return false
+			end
+			return true
+		end,
+		process = function(self, op)
+			self.parent.debuff.cover = 0.09
+			if(Probability.IsProbOccur(0.3)) then
+				self.parent.debuff.corrput = true
+				local Person = GMData.GetPerson(Selector.ByOffice(self.parent.prov, 'CS'))
+				GMData.Person.SetCrime(Person, GMData.Crime(CORRPUT))
+			end
+
+			GMData.Province.SetBuff(self.parent.prov, self.parent.debuff);
+			GMData.Economy = GMData.Economy - 50
+		end
+	}
+}
+
+EVENT_YSDF_DISCOVER_CRIME = {
+	person = nil,
+	crime = nil,
+
+	percondition = function(self)
+		self.person = nil
+		self.crime = nil
+
+		local crimes = GMData.GetCrimeArray()
+		for i=1, #crimes do
+			if(not crimes[i].checked) then
+				local prob = 0.05
+				local curFaction = GMData.GetFaction(Selector.ByPerson(crimes[i].person.name))
+				local SG3Faction = GMData.GetFaction(Selector.ByOffice('SG3'))
+				if(curFaction.name == SG3Faction.name)then
+					prob = prob-0.02
+				end
+				if(Probability.IsProbOccur(prob)) then
+					self.person = crimes[i].person
+					self.crime = crimes[i]
+					return true
+				end
+			end
+		end
+
+		if(Probability.IsProbOccur(0.001)) then
+			local SG3Faction = GMData.GetFaction(Selector.ByOffice('SG3'))
+			local person = GMData.GetPerson(Selector.ByOffice('CSX').ByFaction(NOT(SG3Faction.name)))
+			self.person = person
+			self.crime = GMData.Crime()
+			return true
+		end
+
+		return false
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	desc = function(self)
+		return string.format(self.DESC, self.person.name, self.crime.name)
+	end,
+
+	option1={
+		process = function(self, op)
+			GMData.Person.Die(self.parent.person)
+			return EVENT_COMMON_SCORE_INC {GMData.GetPerson(Selector.ByOffice('SG3')), crimes.score}
+		end
+	},
+	option2={
+		process = function(self, op)
+			self.crime.checked = true
+			return EVENT_COMMON_SCORE_DEC {GMData.GetPerson(Selector.ByOffice('SG3')), crimes.score}
+		end
+	}
+}
+
+EVENT_COMMON_SCORE_INC = {
+	person = nil,
+	value = 0,
+
+	percondition = function(self)
+		return false
+	end,
+
+	initialize = function(self, param)
+		self.person = param[1]
+		self.vaule = param[2]
+	end,
+
+	historyrecord = function(self)
+		return self.TITLE
+	end,
+
+	desc = function(self)
+		return string.format(self.DESC, self.person.name, self.vaule)
+	end,
+
+	option1={
+		process = function(self, op)
+			GMData.Person.ScoreAdd(self.parent.KaoheTable[i][2], self.parent.KaoheTable[i][4])
 		end
 	}
 }
