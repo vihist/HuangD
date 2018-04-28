@@ -52,14 +52,12 @@ public partial class MyGame
 
         public class ProvStatusAttribute : Attribute
         {
-            public ENUM_BUFF_TYPE buffType;
+            public bool isBuff;
         }
 
         public enum ENUM_PROV_STATUS
         {
-            [ProvStatusAttribute(buffType = ENUM_BUFF_TYPE.NORMAL)]
-            NORMAL,
-            [ProvStatusAttribute(buffType = ENUM_BUFF_TYPE.DEBUFF)]
+            [ProvStatusAttribute(isBuff = false)]
             HONG,
             [ProvStatusAttribute(buffType = ENUM_BUFF_TYPE.DEBUFF)]
             HAN,
@@ -73,9 +71,18 @@ public partial class MyGame
             KOU,
             [ProvStatusAttribute(buffType = ENUM_BUFF_TYPE.DEBUFF)]
             FAN,
-
+     
             [ProvStatusAttribute(buffType = ENUM_BUFF_TYPE.BUFF)]
             FENG
+        }
+
+        public class STATUS
+        {
+            public string name;
+            public int days;
+            public double cover;
+            public bool corrput;
+            public bool isbuff;
         }
 
         public enum ENUM_ECONOMY
@@ -85,6 +92,23 @@ public partial class MyGame
             LOW,
 
         }
+
+        public static STATUS[] GetStatusArray(bool isBufff)
+        {
+            List<string> result = new List<string>();
+            foreach (ENUM_PROV_STATUS status in listStatus)
+            {
+                FieldInfo field = status.GetType().GetField(status.ToString());
+                ProvStatusAttribute attribute = Attribute.GetCustomAttribute(field, typeof(ProvStatusAttribute)) as ProvStatusAttribute;
+                if (attribute.buffType == ENUM_BUFF_TYPE.DEBUFF)
+                {
+                    result.Add(status.ToString());
+                }
+            }
+
+            return result.ToArray();
+        }
+
         public Province(string name, ENUM_ECONOMY economy)
         {
             _name = name;
@@ -108,17 +132,11 @@ public partial class MyGame
             }
         }
 
-        public string[] status
+        public STATUS[] status
         {
             get
             {
-                List<string> result = new List<string>();
-                foreach (ENUM_PROV_STATUS status in listStatus)
-                {
-                    result.Add(status.ToString());
-                }
-
-                return result.ToArray();
+                return listStatus.ToArray();
             }
         }
 

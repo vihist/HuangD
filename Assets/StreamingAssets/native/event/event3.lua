@@ -697,7 +697,7 @@ EVENT_PROV_DISASTER_START={
 	},
 	option2={
 		percondition = function(self)
-			if(GMData.Economy < 20) then
+			if(GMData.Economy.Vaule() < 20) then
 				return false
 			end
 			return true
